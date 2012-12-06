@@ -7,9 +7,12 @@ It uses Promises to support non-blocking, asynchronous variables/filters/blocks.
 Most code has been translated from Ruby to CoffeeScript,
 with a few adjustments (casing) to make it feel more *CoffeeScript/JavaScript-ish*.
 
-## How [LiquidNode](https://github.com/sirlantis/liquid-node) differs from [Liquid](https://github.com/Shopify/liquid/) (or: Why this fork?)
+## How LiquidNode differs from [Liquid](https://github.com/Shopify/liquid/)
 
-The power of Node.js lies in its non-blocking nature.
+Besides being written in CoffeeScript (that easily compiles to JavaScript)
+LiquidNode had to solve a problem which Liquid for Ruby didn't have:
+the power of Node.js lies in its non-blocking nature and its' extensive use of callbacks.
+
 This presents a problem when using sequential/synchronous Liquid-expressions like `{{ store.items | count }}`
 which hide one or multiple blocking SQL-queries.
 
@@ -120,7 +123,16 @@ class Server
 
 ## State of development
 
-I'm developing this project alongside a different project. I translated a few basic tests from the original Liquid codebase - but there are hundreds of them. So if you find a bug-fix or have some time to translate further tests I'll be happy to pull them in.
+I'm developing this project alongside a different project.
+I translated a few basic tests from the original Liquid codebase -
+but there are hundreds of them.
+
+So if you find a bug-fix or have some time to translate further tests I'll be happy to pull them in.
+
+## Similar libraries
+
+* [darthapo's Liquid.js](https://github.com/darthapo/liquid.js) is liquid ported to JavaScript to be run within the browser. It doesn't handle asynchrony.
+* [tchype's Liquid.js](https://github.com/tchype/liquid.js) is `liquid-node` wrapped to run in a browser.
 
 ## License
 
