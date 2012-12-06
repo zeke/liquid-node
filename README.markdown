@@ -1,12 +1,19 @@
 # LiquidNode - The Liquid template engine on Node.js
 
-LiquidNode is a port of the Liquid template engine (originally written in Ruby) to *Node.js*. It uses Promises to support non-blocking, asynchronous variables/filters/blocks. Most code has been translated from Ruby to CoffeeScript, with a few adjustments (casing) to make it feel more *Coffee-/JavaScripty*.
+LiquidNode is a port of the Liquid template engine (originally written in Ruby) to *Node.js*.
+It uses Promises to support non-blocking, asynchronous variables/filters/blocks.
+Most code has been translated from Ruby to CoffeeScript,
+with a few adjustments (casing) to make it feel more *CoffeeScript/JavaScript-ish*.
 
 ## How [LiquidNode](https://github.com/sirlantis/liquid-node) differs from [Liquid](https://github.com/Shopify/liquid/) (or: Why this fork?)
 
-The power of Node.js lies in its non-blocking nature. This presents a problem when using sequential/synchronous Liquid-expressions like `{{ store.items | count }}` which hide one or multiple blocking SQL-queries.
+The power of Node.js lies in its non-blocking nature.
+This presents a problem when using sequential/synchronous Liquid-expressions like `{{ store.items | count }}`
+which hide one or multiple blocking SQL-queries.
 
-LiquidNode solves that problem by using [Futures and Promises](http://en.wikipedia.org/wiki/Futures_and_promises). The programmer just return Promises from asynchronous functions - the designer doesn't have to care about it.
+LiquidNode solves that problem by using [Futures and Promises](http://en.wikipedia.org/wiki/Futures_and_promises).
+The programmer just has to return a `Promise` from asynchronous functions -
+the designer won't have to care about it.
 
 ## Introduction to the Liquid template engine
 
