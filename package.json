@@ -26,6 +26,6 @@
   },
   "scripts": {
    "test": "expresso test/*.coffee",
-   "postinstall": "./node_modules/.bin/cake build"
+   "postinstall": "cake build"
   }
 }
