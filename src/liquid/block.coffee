@@ -82,4 +82,4 @@ module.exports = class Block extends require("./tag")
         catch e
           context.handleError(e)
           throw e
-      .when (result) -> result.join("")
+      .then (result) -> result.join("")

@@ -1,5 +1,6 @@
 require "./_helper"
 Liquid = require("../src/index")
+Q = require "q"
 
 asyncResult = (result) ->
   ->
@@ -10,16 +11,16 @@ module.exports =
   test_futures: (exit, assert) ->
     finalValue = null
 
-    input = Liquid.async.defer()
-    output = input.when (value) ->
+    input = Q.defer()
+    output = input.promise.then (value) ->
       Liquid.async.promise (p) ->
         todo = -> p.resolve(value + 1)
         setTimeout(todo, 10)
 
-    output.always (err, value) ->
+    output.nodeify (err, value) ->
       finalValue = value
 
-    input.resolve(1)
+    input.resolve 1
 
     exit ->
       assert.eql 2, finalValue

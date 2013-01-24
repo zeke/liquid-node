@@ -1,5 +1,5 @@
 Liquid = require("../src/index")
-Liquid.async.debug = true
+Q = require "q"
 
 # JSON.stringify fails for circular dependencies
 stringify = (v) ->
@@ -17,12 +17,12 @@ global.renderTest = (f) ->
     (expected, template, assigns, message) ->
       actual = Liquid.Template.parse(template).renderOrRaise(assigns)
 
-      if Liquid.async.isPromise(actual)
+      if Q.isPromise actual
         myId = uniqueId++
         cnt += 1
         map[myId] = { expected, template, assigns }
 
-        actual.always (err, actual) ->
+        actual.nodeify (err, actual) ->
           cnt -= 1
           delete map[myId]
 
@@ -55,7 +55,7 @@ global.renderTest = (f) ->
             template: v.template,
             expected: v.expected,
             rendered: null,
-            assigns: Object.keys(v.assigns)
+            assigns: Object.keys(v.assigns ? {})
           }
 
       assert.eql(0, cnt, "Not all render-tasks have finished: #{cnt} left.")

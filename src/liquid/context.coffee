@@ -1,5 +1,6 @@
 Liquid = require "../liquid"
-_ = require("underscore")._
+{ _ } = require "underscore"
+Q = require "q"
 
 module.exports = class Context
 
@@ -77,9 +78,9 @@ module.exports = class Context
       @push(newScope)
       result = f()
 
-      if Liquid.async.isPromise(result)
+      if Q.isPromise result
         popLater = true
-        result.always => @pop()
+        result.nodeify => @pop()
 
       result
     finally
@@ -155,9 +156,8 @@ module.exports = class Context
 
     variable or= @lookupAndEvaluate(scope, key)
 
-    Liquid.async
-      .when(variable)
-      .when((variable) => @liquify(variable))
+    Q.when(variable)
+      .then((variable) => @liquify(variable))
 
   variable: (markup) ->
     Liquid.async.promise (future) =>
@@ -172,12 +172,12 @@ module.exports = class Context
 
       object = @findVariable(firstPart)
 
-      return future.drain(object) if parts.length == 0
+      return future.resolve(object) if parts.length == 0
 
       mapper = (part, next) =>
         return next() if object == null
 
-        Liquid.async.when(object).done (_object) =>
+        Q.when(object).done (_object) =>
           object = @liquify(_object)
 
           return next() if object == null
@@ -186,14 +186,14 @@ module.exports = class Context
 
           part = @resolve(bracketMatch[1]) if bracketMatch
 
-          Liquid.async.when(part).done (part) =>
+          Q.when(part).done (part) =>
             isArrayAccess = (_.isArray(object) and _.isNumber(part))
             isObjectAccess = (_.isObject(object) and (part of object))
 
             # If object is a hash- or array-like object we look for the
             # presence of the key and if its available we return it
             if isArrayAccess or isObjectAccess
-              Liquid.async.when(@lookupAndEvaluate(object, part)).done (result) =>
+              Q.when(@lookupAndEvaluate(object, part)).done (result) =>
                 object = @liquify(result)
                 next()
 

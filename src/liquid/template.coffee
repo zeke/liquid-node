@@ -1,5 +1,6 @@
-Liquid = require("../liquid")
-_ = require("underscore")._
+Liquid = require "../liquid"
+{ _ } = require "underscore"
+Q = require "q"
 
 module.exports = class Liquid.Template
   @tags = {}
@@ -71,13 +72,14 @@ module.exports = class Liquid.Template
     try
       # render the nodelist.
       # TODO: original implementation used arrays up until here (for performance reasons)
-      Liquid.async.when(@root.render(context))
+      Q.when(@root.render(context))
     finally
       @errors = context.errors
 
   renderOrRaise: (args...) ->
-    @rethrowErrors = true
-    @render(args...)
+    Q.when(true).then =>
+      @rethrowErrors = true
+      @render(args...)
 
   # private api
 

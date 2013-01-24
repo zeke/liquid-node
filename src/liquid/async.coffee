@@ -19,14 +19,14 @@ module.exports = Async =
       iterator = (item, cb) ->
         Q.when(item).then((i) -> callback(i)).nodeify cb
 
-      async.forEach array, iterator, nodeify(deferred)
+      async.forEachSeries array, iterator, nodeify(deferred)
 
   map: (array, callback) ->
     Async.promise (deferred) ->
       iterator = (item, cb) ->
         Q.when(item).then((i) -> callback(i)).nodeify cb
 
-      async.map array, iterator, nodeify(deferred)
+      async.mapSeries array, iterator, nodeify(deferred)
 
   reduce: (array, callback, memo) ->
     Async.promise (deferred) ->
@@ -39,25 +39,32 @@ module.exports = Async =
   some: (array, callback) ->
     Async.promise (deferred) ->
       iterator = (item, cb) ->
-        Q.when(item).then((i) -> callback(i)).then cb
+        Q.when(item).then((i) -> callback(i)).then(((v) -> cb(v)), deferred.reject)
 
-      async.some array, iterator, nodeify(deferred)
+      async.some array, iterator, (r) -> deferred.resolve r
 
   detect: (array, callback) ->
     Async.promise (deferred) ->
       iterator = (item, cb) ->
-        Q.when(item).then((i) -> callback(i)).then cb
+        Q.when(item).then((i) -> callback(i)).then(((v) -> cb(v)), deferred.reject)
 
-      async.detect array, iterator, nodeify(deferred)
+      async.detectSeries array, iterator, (r) -> deferred.resolve(r)
 
   promise: (callback) ->
     deferred = Q.defer()
-    callback deferred
+
+    try
+      callback deferred
+    catch e
+      deferred.reject e
+
     deferred.promise
 
-module.exports = async
+module.exports = Async
 
 return
+
+# A few simple tests
 
 aPost = ->
   return {
