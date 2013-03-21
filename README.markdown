@@ -20,6 +20,8 @@ LiquidNode solves that problem by using [Futures and Promises](http://en.wikiped
 The programmer just has to return a `Promise` from asynchronous functions -
 the designer won't have to care about it.
 
+**Note** Visit the `q` branch where I've chosen Q as the implementation for Promises. `q` will be merged into `master` soon.
+
 ## Introduction to the Liquid template engine
 
 Liquid is a template engine which was written with very specific requirements:
