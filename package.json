@@ -12,14 +12,16 @@
     "type": "git",
     "url": "git://github.com/sirlantis/liquid-node.git"
   },
-  "directories": { "src": "./src", "lib": "./lib", "test": "./test" },
+  "directories": { "src": "./src", "test": "./test" },
   "main": "./lib/index.js",
   "engines": {
     "node": "~0.6.5"
   },
   "dependencies": {
     "coffee-script": "1.4.x",
-    "underscore": ">=1.2.3"
+    "underscore": ">=1.2.3",
+    "q": ">= 0.8.12",
+    "async": ">= 0.1.22"
   },
   "devDependencies": {
     "expresso": ">=0.9.0"

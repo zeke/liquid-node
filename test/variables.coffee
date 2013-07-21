@@ -70,7 +70,7 @@ module.exports =
     context.addFilters(MoneyFilter)
 
     called = false
-    new Liquid.Variable("var | money").render(context).always (err, result) ->
+    new Liquid.Variable("var | money").render(context).nodeify (err, result) ->
       assert.equal ' 1000$ ', result
       called = true
 

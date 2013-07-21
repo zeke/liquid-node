@@ -1,5 +1,6 @@
 Liquid = require "../../liquid"
-_ = require("underscore")._
+{ _ } = require "underscore"
+Q = require "q"
 
 # "For" iterates over an array or collection.
 # Several useful variables are available to you within the loop.
@@ -77,7 +78,7 @@ module.exports = class For extends Liquid.Block
   render: (context) ->
     context.registers.for or= {}
 
-    Liquid.async.when(context.get(@collectionName)).when (collection) =>
+    Q.when(context.get(@collectionName)).then (collection) =>
       return @renderElse(context) unless collection and collection.forEach
 
       from = if @attributes.offset == "continue"
@@ -117,7 +118,7 @@ module.exports = class For extends Liquid.Block
             catch e
               console.log "for-loop failed: %s %s", e, e.stack
               throw e
-          .when (chunks) -> chunks.join("")
+          .then (chunks) -> chunks.join("")
 
   sliceCollectionUsingEach: (collection, from, to) ->
     segments = []

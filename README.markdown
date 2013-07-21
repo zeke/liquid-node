@@ -66,13 +66,13 @@ promise = template.render name: "tobi"          # => [Promise Object]
 promise.done console.log                        # >> "hi tobi"
 ```
 
-## Implementation of Promises (LiquidNode specific)
+## Promises with Q
 
-LiquidNode uses a custom Promise implementation. It's loosely based on [jQuery's Deferred](http://api.jquery.com/category/deferred-object/), [Promises/A](http://wiki.commonjs.org/wiki/Promises/A), and [Q](https://github.com/kriskowal/q). Its API is designed to prevent callback-pyramids (spaghetti-code 2.0).
+LiquidNode uses the promise implementation of [Q](https://github.com/kriskowal/q).
 
 ```coffeescript
-fs        = require "fs"
-{async}   = require "liquid-node"
+fs = require "fs"
+Q  = require "q"
 
 class Server
   name: ->
@@ -80,45 +80,33 @@ class Server
 
   # A deferred can either be resolved (no error) or rejected (error).
   think: ->
-    async.promise (deferred) ->
-      later = -> deferred.resolve(42)
-      setTimeout(later, 1000)
+    Q.timeout(1000).then(42)
 
   # This is an example of how to wait for a Promise:
   patientMethod: ->
     deepThought = @think()
+    deepThought.done (answer) -> console.log "The answer is: %s.", answer
+    deepThought.fail (e) -> console.log "Universe reset: %s.", e
 
-    deepThought
-      .done (answer) -> console.log "The answer is: %s.", answer
-      .fail (e) -> console.log "Universe reset: %s.", e
-      .always (e) -> console.log "Look on the bright side of life."
-
-    # By the way: the left-hand side of async.promise returns a
-    # read-only view (Promise) to the Deferred. This means an
-    # Illuminati can't interfere with it on this side of the
-    # Promise.
-    #
-    # deepThought.resolve(23) isn't available.
-
-  # For node-ish callbacks you can use `deferred.node`. This
+  # For node-ish callbacks you can use `defer.nodeify`. This
   # will automatically resolve/reject based on the first argument.
   accounts: ->
-    async.promise (deferred) ->
-      fs.readFile "/etc/passwd", "utf-8", deferred.node
+    deferred = Q.defer()
+    fs.readFile "/etc/passwd", "utf-8", deferred.nodeify
 
   # If you don't want to check, whether an object is a Promise or not
-  # just use `async.when`. It will build a Promise around it if necessary.
+  # just use `Q.when`. It will build a Promise around it if necessary.
   unsure: (promiseWannabe) ->
-    async.when(promiseWannabe)
+    Q.when(promiseWannabe)
 
-  # You can chain Promises using `promise.when().when().when()...`.
-  # A `when` will be called with the resolution of the previous `when`.
+  # You can chain Promises using `promise.then().then().then()...`.
+  # A `then` will be called with the resolution of the previous `then`.
   recipe: ->
     gotoStore()
-      .when (store) -> store.getEggs()
-      .when (eggs) ->
+      .then (store) -> store.getEggs()
+      .then (eggs) ->
         # or nest the when-calls
-        eggs.split().when (yolk) -> bakeWith(yolk)
+        eggs.split().then (yolk) -> bakeWith(yolk)
       .done (pancake) ->
         console.log "Pancake is ready!"
 ```

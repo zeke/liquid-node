@@ -1,5 +1,6 @@
 Liquid = require("../liquid")
-_ = require("underscore")._
+{ _ } = require "underscore"
+Q = require "q"
 
 # Holds variables. Variables are only loaded "just in time"
 # and are not evaluated as part of the render stage
@@ -37,7 +38,7 @@ module.exports = class Variable
         context.get(a)
 
       dependencies = [output, filterargs...]
-      waitingFor = _(dependencies).select (o) -> Liquid.async.isPromise(o)
+      waitingFor = _(dependencies).select (o) -> Q.isPromise o
 
       execute = =>
         try
@@ -51,21 +52,21 @@ module.exports = class Variable
 
         Liquid.async.promise (result) ->
           dependencies.forEach (k, i) =>
-            return unless Liquid.async.isPromise(k)
+            return unless Q.isPromise k
 
-            k.always (err, r) =>
+            k.nodeify (err, r) =>
               if i == 0
                 output = r
               else
                 filterargs[i-1] = r
 
               counter--
-              result.drain(execute()) if counter == 0
+              result.resolve(execute()) if counter == 0
       else
         execute()
 
-    Liquid.async.when(context.get(@name)).when (value) =>
-      Liquid.async.reduce(@filters, mapper, value).when (value) =>
+    Q.when(context.get(@name)).then (value) =>
+      Liquid.async.reduce(@filters, mapper, value).then (value) =>
         if value instanceof Liquid.Drop
           if typeof value.toString == "function"
             value.context = context
