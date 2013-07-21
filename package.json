@@ -5,7 +5,7 @@
     { "name": "Tony Heupel", "email": "tonyheupel@gmail.com" }
   ],
   "description": "Node.js port of Tobias Lütke's Liquid template engine.",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "homepage": "https://github.com/sirlantis/liquid-node",
   "bugs": "https://github.com/sirlantis/liquid-node/issues",
   "repository": {
