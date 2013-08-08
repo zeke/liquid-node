@@ -24,3 +24,6 @@ module.exports =
 
     assigns = {'array': [ 1, 1, 1, 1] }
     render('1','{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}',assigns)
+
+  test_reverse: renderTest (render, assert) ->
+    render('321', '{% for item in array reversed %}{{ item }}{% endfor %}', array: [ 1, 2, 3 ])
