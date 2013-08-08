@@ -11,7 +11,7 @@ with a few adjustments (casing) to make it feel more *CoffeeScript/JavaScript-is
 
 Besides being written in CoffeeScript (that easily compiles to JavaScript)
 LiquidNode had to solve a problem which Liquid for Ruby didn't have:
-the power of Node.js lies in its non-blocking nature and its' extensive use of callbacks.
+the power of Node.js lies in its non-blocking nature and its extensive use of callbacks.
 
 This presents a problem when using sequential/synchronous Liquid-expressions like `{{ store.items | count }}`
 which hide one or multiple blocking SQL-queries.
