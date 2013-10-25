@@ -6,7 +6,7 @@
     { "name": "Henry Bergius", "email": "henri.bergius@iki.fi" }
   ],
   "description": "Node.js port of Tobias Lütke's Liquid template engine.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/sirlantis/liquid-node",
   "bugs": "https://github.com/sirlantis/liquid-node/issues",
   "repository": {
