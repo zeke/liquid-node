@@ -2,7 +2,8 @@
   "name": "liquid-node",
   "author": "Marcel Jackwerth <marcel@northdocks.com>",
   "contributors": [
-    { "name": "Tony Heupel", "email": "tonyheupel@gmail.com" }
+    { "name": "Tony Heupel", "email": "tonyheupel@gmail.com" },
+    { "name": "Henry Bergius", "email": "henri.bergius@iki.fi" }
   ],
   "description": "Node.js port of Tobias Lütke's Liquid template engine.",
   "version": "0.1.0",
