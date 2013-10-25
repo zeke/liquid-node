@@ -23,5 +23,8 @@ module.exports =
     render('1', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', array: [ 1, 1, 1, 1 ])
   
   test_reverse: renderTest (render, assert) ->
-    render('321', '{% for item in array reversed %}{{ item }}{% endfor %}', array: [ 1, 2, 3 ])
+    array = [ 1, 2, 3 ]
+    render('321', '{% for item in array reversed %}{{ item }}{% endfor %}', array: array)
+    assert.eql 3, array.length, "Expected array contents to remain the same"
+    assert.eql 1, array[0], "Expected array order to remain the same"
     
