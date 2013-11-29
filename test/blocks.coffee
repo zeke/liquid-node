@@ -29,6 +29,8 @@ module.exports =
     render('', '{%for item in array%}{{forloop.index}}{%endfor%}', array: [])
     render('first123', '{% for item in array %}{% if forloop.first%}first{% endif %}{{forloop.index}}{% endfor %}', array: [1,2,3])
     render('123last', '{% for item in array %}{{forloop.index}}{% if forloop.last%}last{% endif %}{% endfor %}', array: [1,2,3])
+    render('vw', '{%for item in array limit:2%}{{item}}{%endfor%}', array: ['v','w','x','y'])
+    render('xy', '{%for item in array offset:2%}{{item}}{%endfor%}', array: ['v','w','x','y'])
 
   test_ifchanged: renderTest (render, assert) ->
     render('123', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', array: [ 1, 1, 2, 2, 3, 3 ])
