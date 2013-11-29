@@ -120,23 +120,6 @@ module.exports = class For extends Liquid.Block
               throw e
           .then (chunks) -> chunks.join("")
 
-  sliceCollectionUsingEach: (collection, from, to) ->
-    segments = []
-    index = 0
-    yielded = 0
-
-    _(collection).find (item) =>
-      if to and to <= index
-        true
-
-      if from <= index
-        segments.push item
-
-      index += 1
-      false
-
-    segments
-
   sliceCollection: (collection, from, to) ->
     if to then collection[from...to] else collection[from...]
 
