@@ -126,21 +126,20 @@ module.exports = class Context
   resolve: (key) ->
     if Liquid.Context.Literals.hasOwnProperty key
       Liquid.Context.Literals[key]
+    else if match = /^'(.*)'$/.exec(key) # Single quoted strings
+      match[1]
+    else if match = /^"(.*)"$/.exec(key) # Double quoted strings
+      match[1]
+    else if match = /^(\d+)$/.exec(key) # Integer and floats
+      Number(match[1])
+    else if match = /^\((\S+)\.\.(\S+)\)$/.exec(key) # Ranges
+      lo = Number(resolve(match[1]))
+      hi = Number(resolve(match[2]))
+      # TODO: generate Range
+    else if match = /^(\d[\d\.]+)$/.exec(key) # Floats
+      Number(match[1])
     else
-      if match = /^'(.*)'$/.exec(key) # Single quoted strings
-        match[1]
-      else if match = /^"(.*)"$/.exec(key) # Double quoted strings
-        match[1]
-      else if match = /^(\d+)$/.exec(key) # Integer and floats
-        Number(match[1])
-      else if match = /^\((\S+)\.\.(\S+)\)$/.exec(key) # Ranges
-        lo = Number(resolve(match[1]))
-        hi = Number(resolve(match[2]))
-        # TODO: generate Range
-      else if match = /^(\d[\d\.]+)$/.exec(key) # Floats
-        Number(match[1])
-      else
-        @variable(key)
+      @variable(key)
 
 
   findVariable: (key) ->
