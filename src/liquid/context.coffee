@@ -135,7 +135,7 @@ module.exports = class Context
     else if match = /^\((\S+)\.\.(\S+)\)$/.exec(key) # Ranges
       lo = Number(resolve(match[1]))
       hi = Number(resolve(match[2]))
-      # TODO: generate Range
+      throw new Error "Ranges are not supported."
     else if match = /^(\d[\d\.]+)$/.exec(key) # Floats
       Number(match[1])
     else
