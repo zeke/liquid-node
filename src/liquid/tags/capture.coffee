@@ -15,7 +15,7 @@ module.exports = class Capture extends Liquid.Block
   Syntax = /(\w+)/
   SyntaxHelp = "Syntax Error in 'capture' - Valid syntax: capture [var]"
 
-  constructor: (tagName, markup, tokens) ->
+  constructor: (template, tagName, markup, tokens) ->
     match = Syntax.exec(markup)
 
     if match
@@ -29,5 +29,3 @@ module.exports = class Capture extends Liquid.Block
     output = super
     context.lastScope()[@to] = output
     ""
-
-Liquid.Template.registerTag 'capture', Capture

@@ -2,7 +2,7 @@ Liquid = require("../liquid")
 _ = require("underscore")._
 util = require "util"
 
-module.exports = class Block extends require("./tag")
+module.exports = class Block extends Liquid.Tag
   @IsTag             = ///^#{Liquid.TagStart.source}///
   @IsVariable        = ///^#{Liquid.VariableStart.source}///
   @FullToken         = ///^#{Liquid.TagStart.source}\s*(\w+)\s*(.*)?#{Liquid.TagEnd.source}$///
@@ -25,8 +25,8 @@ module.exports = class Block extends require("./tag")
             return
 
           # fetch the tag from registered blocks
-          if tag = Liquid.Template.tags[match[1]]
-            @nodelist.push new tag(match[1], match[2], tokens, @template)
+          if tag = @template.tags[match[1]]
+            @nodelist.push new tag(@template, match[1], match[2], tokens)
           else
             # this tag is not registered with the system
             # pass it to the current block for special

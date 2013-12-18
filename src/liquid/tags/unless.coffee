@@ -8,6 +8,4 @@ module.exports = class Unless extends Liquid.If
   #
   render: (context) ->
     @blocks[0].negate = true
-    super(context)
-
-Liquid.Template.registerTag "unless", Unless
+    super

@@ -15,36 +15,27 @@ global.renderTest = (f) ->
 
   assertTemplateResult = (assert) ->
     (expected, template, assigns, message) ->
-      actual = Liquid.Template.parse(template).renderOrRaise(assigns)
+      engine = new Liquid.Engine
+      actual = engine.parse(template).render(assigns)
 
-      if Q.isPromise actual
-        myId = uniqueId++
-        cnt += 1
-        map[myId] = { expected, template, assigns }
+      myId = uniqueId++
+      cnt += 1
+      map[myId] = { expected, template, assigns }
 
-        actual.nodeify (err, actual) ->
-          cnt -= 1
-          delete map[myId]
-
-          if err
-            console.log "Unexpected error: %s, %s", err, err.stack
-            assert.eql err, null
-
+      actual.then (actual) ->
           assert.type actual, "string"
-
           assert.eql actual, expected, stringify({
             template,
             expected,
             actual,
             assigns
           })
-      else
-        assert.eql actual, expected, stringify({
-          template,
-          expected,
-          actual,
-          assigns
-        })
+        , (err) ->
+          console.log "Unexpected error: %s, %s", err, err.stack
+          assert.eql err, null
+      .finally ->
+        cnt -= 1
+        delete map[myId]
 
   (exit, assert) ->
     f(assertTemplateResult(assert), assert)

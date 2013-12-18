@@ -1,4 +1,4 @@
-Liquid = require("./liquid")
+Liquid = require "./liquid"
 util = require "util"
 
 # based on node's lib/assert.js
@@ -24,6 +24,7 @@ Liquid.Error = customError "Error"
 
   Liquid[className] = customError("Liquid.#{className}", Liquid.Error)
 
+Liquid.Engine           = require("./liquid/engine")
 Liquid.Helpers          = require("./liquid/helpers")
 Liquid.Drop             = require("./liquid/drop")
 Liquid.Strainer         = require("./liquid/strainer")
@@ -36,8 +37,6 @@ Liquid.Template         = require("./liquid/template")
 Liquid.StandardFilters  = require("./liquid/standard_filters")
 Liquid.Condition        = require("./liquid/condition")
 Liquid.ElseCondition    = require("./liquid/else_condition")
-
-Liquid.Template.registerFilter(Liquid.StandardFilters)
 
 Liquid.Assign           = require("./liquid/tags/assign")
 Liquid.Capture          = require("./liquid/tags/capture")

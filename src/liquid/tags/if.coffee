@@ -22,7 +22,7 @@ module.exports = class If extends Liquid.Block
     +)
   ///
 
-  constructor: (tagName, markup, tokens) ->
+  constructor: (template, tagName, markup, tokens) ->
     @blocks = []
     @pushBlock('if', markup)
     super
@@ -40,8 +40,10 @@ module.exports = class If extends Liquid.Block
           if block.negate then !ok else ok
 
       firstBlock.then (block) =>
-        return "" unless block?
-        @renderAll(block.attachment, context)
+        if block?
+          @renderAll block.attachment, context
+        else
+          ""
 
   # private
 
@@ -70,6 +72,4 @@ module.exports = class If extends Liquid.Block
       condition
 
     @blocks.push block
-    @nodelist = block.attach([])
-
-Liquid.Template.registerTag "if", If
+    @nodelist = block.attach []

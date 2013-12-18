@@ -53,7 +53,7 @@ module.exports = class For extends Liquid.Block
       \s*(reversed)?
     ///
 
-  constructor: (tagName, markup, tokens) ->
+  constructor: (template, tagName, markup, tokens) ->
     match = Syntax.exec(markup)
 
     if match
@@ -128,5 +128,3 @@ module.exports = class For extends Liquid.Block
       return @renderAll(@elseBlock, context)
     else
       ""
-
-Liquid.Template.registerTag "for", For

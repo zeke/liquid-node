@@ -1,13 +1,12 @@
 module.exports = class Tag
-  constructor: (@tagName, @markup, tokens, @template) ->
-    @parse(tokens)
+  constructor: (@template, @tagName, @markup, tokens) ->
+    @parse tokens
 
-  parse: (tokens) ->
+  parse: ->
 
   name: ->
-    tagName = /^function (\w+)\(/.exec(@constructor.toString())?[1]
-    tagName or= 'UnknownTag'
-    tagName.toLowerCase()
+    # /^function (\w+)\(/.exec(@constructor.toString())?[1]
+    (@constructor.name ? 'UnknownTag').toLowerCase()
 
   render: ->
     ""

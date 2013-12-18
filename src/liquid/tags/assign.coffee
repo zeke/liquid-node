@@ -9,7 +9,7 @@ module.exports = class Assign extends Liquid.Tag
       ((?:#{Liquid.QuotedFragment.source}))
     ///
 
-  constructor: (tagName, markup, tokens) ->
+  constructor: (template, tagName, markup, tokens) ->
     if match = Syntax.exec(markup)
       @to = match[1]
       @from = match[2]
@@ -25,5 +25,3 @@ module.exports = class Assign extends Liquid.Tag
       Liquid.log "#{@from} -> #{@to}: %j", value
       context.lastScope()[@to] = value
       ''
-
-Liquid.Template.registerTag('assign', Assign)

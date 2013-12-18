@@ -1,4 +1,4 @@
-_ = require("underscore")._
+{ _ } = require "underscore"
 
 # A drop in liquid is a class which allows you to to export DOM
 # like things to liquid.

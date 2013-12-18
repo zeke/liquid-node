@@ -17,13 +17,11 @@ Liquid = require "../../liquid"
 #
 
 module.exports = class Increment extends Liquid.Tag
-  constructor: (tagName, markup, tokens) ->
+  constructor: (template, tagName, markup, tokens) ->
     @variable = markup.trim()
     super
 
   render: (context) ->
-    value = context.environments[0][@variable] or= 0
+    value = context.environments[0][@variable] ?= 0
     context.environments[0][@variable] = value + 1
-    value.toString()
-
-Liquid.Template.registerTag "increment", Increment
+    String(value)

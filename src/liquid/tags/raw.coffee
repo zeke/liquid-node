@@ -14,5 +14,3 @@ module.exports = class Raw extends Liquid.Block
         break
       else if token.length > 0
         @nodelist.push(token)
-
-Liquid.Template.registerTag "raw", Raw

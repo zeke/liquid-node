@@ -3,19 +3,6 @@ Liquid = require "../liquid"
 Q = require "q"
 
 module.exports = class Liquid.Template
-  @tags = {}
-
-  @registerTag: (name, klass) ->
-    @tags[name.toString()] = klass
-
-  @registerFilter = (obj) ->
-    Liquid.Strainer.globalFilter(obj)
-    123123123123
-
-  @parse: (source) ->
-    template = new Liquid.Template()
-    template.parse(source)
-    template
 
   # creates a new <tt>Template</tt> from an array of tokens.
   # Use <tt>Template.parse</tt> instead
@@ -23,13 +10,15 @@ module.exports = class Liquid.Template
     @registers = {}
     @assigns = {}
     @instanceAssigns = {}
+    @tags = {}
     @errors = []
-
+    @rethrowErrors = true
 
   # Parse source code.
   # Returns self for easy chaining
-  parse: (source) ->
-    @root = new Liquid.Document(@tokenize(source), @)
+  parse: (@engine, source) ->
+    @tags = @engine.tags
+    @root = new Liquid.Document @, @tokenize(source)
     @
 
   # Render takes a hash with local variables.
@@ -45,8 +34,8 @@ module.exports = class Liquid.Template
   #    be accessed from filters and tags and might be useful to integrate
   #    liquid more with its host application
   #
-  render: (args...) ->
-    return "" unless @root?
+  _render: (args...) ->
+    return Q("") unless @root?
 
     context = if args[0] instanceof Liquid.Context
       args.shift()
@@ -76,10 +65,8 @@ module.exports = class Liquid.Template
     finally
       @errors = context.errors
 
-  renderOrRaise: (args...) ->
-    Q.when(true).then =>
-      @rethrowErrors = true
-      @render(args...)
+  render: (args...) ->
+    Q.fcall => @_render args...
 
   # private api
 

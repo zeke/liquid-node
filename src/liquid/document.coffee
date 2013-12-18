@@ -1,7 +1,9 @@
-module.exports = class Liquid extends require("./block")
+Liquid = require "../liquid"
+
+module.exports = class Liquid.Document extends Liquid.Block
   # we don't need markup to open this block
-  constructor: (tokens, @template) ->
-    @parse(tokens)
+  constructor: (@template, tokens) ->
+    @parse tokens
 
   # There isn't a real delimter
   blockDelimiter: ->
