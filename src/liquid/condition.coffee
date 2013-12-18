@@ -82,6 +82,5 @@ module.exports = class Condition
     left = context.get(left)
     right = context.get(right)
 
-    Q.when(left).then (left) =>
-      Q.when(right).then (right) =>
-        operation @, left, right
+    Q.all([left, right]).then ([left, right]) =>
+      operation @, left, right
