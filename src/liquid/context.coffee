@@ -156,8 +156,7 @@ module.exports = class Context
     Q.when(variable).then(@liquify.bind(@))
 
   variable: (markup) ->
-    Liquid.async.promise (future) =>
-
+    Q.fcall =>
       parts = Liquid.Helpers.scan(markup, Liquid.VariableParser)
       squareBracketed = /^\[(.*)\]$/
 
@@ -167,76 +166,55 @@ module.exports = class Context
         firstPart = match[1]
 
       object = @findVariable(firstPart)
+      return object if parts.length is 0
 
-      return future.resolve(object) if parts.length == 0
+      mapper = (part, object) =>
+        return Q.when(object) unless object?
 
-      mapper = (part, next) =>
-        return next() unless object?
+        Q.when(object).then(@liquify.bind(@)).then (object) =>
+          return object unless object?
 
-        Q.when(object).done (_object) =>
-          object = @liquify(_object)
-
-          return next() unless object?
-
-          bracketMatch = squareBracketed.exec(part)
-
+          bracketMatch = squareBracketed.exec part
           part = @resolve(bracketMatch[1]) if bracketMatch
 
-          Q.when(part).done (part) =>
+          Q.when(part).then (part) =>
             isArrayAccess = (_.isArray(object) and _.isNumber(part))
             isObjectAccess = (_.isObject(object) and (part of object))
+            isSpecialAccess = (
+              !bracketMatch and object and
+              (_.isArray(object) or _.isString(object)) and
+              ["size", "first", "last"].indexOf(part) >= 0
+            )
 
-            # If object is a hash- or array-like object we look for the
-            # presence of the key and if its available we return it
             if isArrayAccess or isObjectAccess
-              Q.when(@lookupAndEvaluate(object, part)).done (result) =>
-                object = @liquify(result)
-                next()
-
-            else
-              isSpecialAccess = (
-                !bracketMatch and object and
-                (_.isArray(object) or _.isString(object)) and
-                ["size", "first", "last"].indexOf(part) >= 0
-              )
-
+              # If object is a hash- or array-like object we look for the
+              # presence of the key and if its available we return it
+              Q.when(@lookupAndEvaluate(object, part)).then(@liquify.bind(@))
+            else if isSpecialAccess
               # Some special cases. If the part wasn't in square brackets
               # and no key with the same name was found we interpret
               # following calls as commands and call them on the
-              # current object
-              if isSpecialAccess
-                object = switch part
-                  when "size"
-                    @liquify(object.length)
-                  when "first"
-                    @liquify(object[0])
-                  when "last"
-                    @liquify(object[object.length-1])
-                  else
-                    @liquify(object)
-
-                next()
-
-              else
-                object = null
-                next()
+              # current object              
+              switch part
+                when "size"
+                  @liquify(object.length)
+                when "first"
+                  @liquify(object[0])
+                when "last"
+                  @liquify(object[object.length-1])
+                else
+                  throw new Error "Unknown special accessor: #{part}"
 
       # The iterator walks through the parsed path step
       # by step and waits for promises to be fulfilled.
-      iterator = (index) ->
-        try
-          mapper parts[index], (err) ->
-            index += 1
+      iterator = (object, index) ->
+        if index < parts.length       
+          mapper(parts[index], object).then (object) -> iterator(object, index + 1)
+        else
+          Q.when(object)
 
-            if index < parts.length
-              iterator(index)
-            else
-              future.resolve(object)
-        catch e
-          console.log("Couldn't walk variable: #{markup}")
-          future.reject(e)
-
-      iterator(0)
+      iterator(object, 0).then null, (err) ->
+        throw new Error "Couldn't walk variable: #{markup}: #{err}"
 
   lookupAndEvaluate: (obj, key) ->
     value = obj[key]
@@ -251,20 +229,18 @@ module.exports = class Context
 
     _(lastScope).chain().keys().forEach (key) =>
       _(@environments).detect (env) =>
-        if _(env).keys().indexOf(key) >= 0
+        if env.hasOwnProperty key
           lastScope[key] = @lookupAndEvaluate(env, key)
           true
 
   liquify: (object) ->
-    return object unless object?
+    Q.when(object).then (object) =>
+      unless object?
+        return object 
+      else if typeof object.toLiquid is "function"
+        object = object.toLiquid()
+      else if typeof object is "object"
+        true # throw new Error "Complex object #{JSON.stringify(object)} would leak into template."
 
-    if typeof object.toLiquid == "function"
-      object = object.toLiquid()
-    else
-      # TODO: implement toLiquid for native types
-      true
-
-    if object instanceof Liquid.Drop
-      object.context = @
-
-    object
+      object.context = @ if object instanceof Liquid.Drop
+      object
