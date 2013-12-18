@@ -241,11 +241,8 @@ module.exports = class Context
   lookupAndEvaluate: (obj, key) ->
     value = obj[key]
 
-    if _.isFunction(value)
-      obj[key] = if value.length == 0
-        value.call(obj)
-      else
-        value.call(obj, @)
+    if typeof value is 'function'
+      obj[key] = value.call obj, @ # cache result
     else
       value
 
