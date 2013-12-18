@@ -171,12 +171,12 @@ module.exports = class Context
       return future.resolve(object) if parts.length == 0
 
       mapper = (part, next) =>
-        return next() if object == null
+        return next() unless object?
 
         Q.when(object).done (_object) =>
           object = @liquify(_object)
 
-          return next() if object == null
+          return next() unless object?
 
           bracketMatch = squareBracketed.exec(part)
 
