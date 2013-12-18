@@ -124,7 +124,7 @@ module.exports = class Context
   # Example:
   #   products == empty #=> products.empty?
   resolve: (key) ->
-    if _(Liquid.Context.Literals).keys().indexOf(key) >= 0
+    if Liquid.Context.Literals.hasOwnProperty key
       Liquid.Context.Literals[key]
     else
       if match = /^'(.*)'$/.exec(key) # Single quoted strings
