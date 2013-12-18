@@ -19,7 +19,7 @@ module.exports = class Condition
     '<=': (cond, left, right) -> left <= right
     '>=': (cond, left, right) -> left >= right
     'contains': (cond, left, right) ->
-      if left and right
+      if typeof left?.indexOf is 'function'
         left.indexOf(right) >= 0
       else
         false
