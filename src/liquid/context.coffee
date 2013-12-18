@@ -143,20 +143,17 @@ module.exports = class Context
 
 
   findVariable: (key) ->
-    scope = _(@scopes).detect (s) ->
-      s.hasOwnProperty?(key)
+    scope = _(@scopes).detect (scope) -> scope.hasOwnProperty key
+    
+    variable = undefined
+    scope ?= _(@environments).detect (env) =>
+      variable = @lookupAndEvaluate(env, key)
+      variable?
 
-    variable = null
-
-    scope or= _(@environments).detect (e) =>
-      variable = @lookupAndEvaluate(e, key)
-
-    scope or= @environments[@environments.length-1] or @scopes[@scopes.length-1]
-
-    variable or= @lookupAndEvaluate(scope, key)
-
-    Q.when(variable)
-      .then((variable) => @liquify(variable))
+    scope ?= _(@environments).last or _(@scopes).last
+    variable ?= @lookupAndEvaluate(scope, key)
+    
+    Q.when(variable).then(@liquify.bind(@))
 
   variable: (markup) ->
     Liquid.async.promise (future) =>
