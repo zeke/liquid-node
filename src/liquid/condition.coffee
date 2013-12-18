@@ -20,11 +20,7 @@ module.exports = class Condition
     '>':    (cond, left, right) -> left > right
     '<=':   (cond, left, right) -> left <= right
     '>=':   (cond, left, right) -> left >= right
-    'contains': (cond, left, right) ->
-      if typeof left?.indexOf is 'function'
-        left.indexOf(right) >= 0
-      else
-        false
+    'contains': (cond, left, right) -> left?.indexOf?(right) >= 0
 
   operators: ->
     Liquid.Condition.operators
