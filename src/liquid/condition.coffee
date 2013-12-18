@@ -11,13 +11,15 @@ Q = require "q"
 #
 module.exports = class Condition
   @operators =
-    '==': (cond, left, right) ->  cond.equalVariables(left, right)
-    '!=': (cond, left, right) -> !cond.equalVariables(left, right)
-    '<>': (cond, left, right) -> !cond.equalVariables(left, right)
-    '<':  (cond, left, right) -> left < right
-    '>':  (cond, left, right) -> left > right
-    '<=': (cond, left, right) -> left <= right
-    '>=': (cond, left, right) -> left >= right
+    '==':   (cond, left, right) ->  cond.equalVariables(left, right)
+    'is':   (cond, left, right) ->  cond.equalVariables(left, right)
+    '!=':   (cond, left, right) -> !cond.equalVariables(left, right)
+    '<>':   (cond, left, right) -> !cond.equalVariables(left, right)
+    'isnt': (cond, left, right) ->  cond.equalVariables(left, right)
+    '<':    (cond, left, right) -> left < right
+    '>':    (cond, left, right) -> left > right
+    '<=':   (cond, left, right) -> left <= right
+    '>=':   (cond, left, right) -> left >= right
     'contains': (cond, left, right) ->
       if typeof left?.indexOf is 'function'
         left.indexOf(right) >= 0
