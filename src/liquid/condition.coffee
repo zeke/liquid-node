@@ -22,9 +22,6 @@ module.exports = class Condition
     '>=':       (cond, left, right) -> left >= right
     'contains': (cond, left, right) -> left?.indexOf?(right) >= 0
 
-  operators: ->
-    Liquid.Condition.operators
-
   constructor: (@left, @operator, @right) ->
     @childRelation = null
     @childCondition = null
