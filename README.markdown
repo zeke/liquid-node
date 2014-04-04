@@ -86,7 +86,7 @@ class Server
   patientMethod: ->
     deepThought = @think()
     deepThought.done (answer) -> console.log "The answer is: %s.", answer
-    deepThought.fail (e) -> console.log "Universe reset: %s.", e
+    deepThought.catch (e) -> console.log "Universe reset: %s.", e
 
   # For node-ish callbacks you can use `defer.nodeify`. This
   # will automatically resolve/reject based on the first argument.

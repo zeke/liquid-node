@@ -114,7 +114,7 @@ getPosts()
     console.log "Name: %s", name
     name
   .timeout(500)
-  .fail (e) ->
+  .catch (e) ->
     console.log "Failed: %s.", e
   .done ->
     console.log "Success."
