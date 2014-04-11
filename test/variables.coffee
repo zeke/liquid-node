@@ -1,63 +1,64 @@
 Liquid = require("../src/index")
+{ expect } = require "chai"
 
-module.exports =
-  test_variable: (onExit, assert) ->
+describe "Variables", ->
+  it "test_variable", ->
     variable = new Liquid.Variable('hello')
-    assert.equal variable.name, 'hello'
+    expect(variable.name).to.equal 'hello'
 
-  test_filters: (onExit, assert) ->
+  it "test_filters", ->
     v = new Liquid.Variable('hello | textileze')
-    assert.equal 'hello', v.name
-    assert.deepEqual [["textileze",[]]], v.filters
+    expect('hello').to.equal v.name
+    expect([["textileze",[]]]).to.deep.equal v.filters
 
     v = new Liquid.Variable('hello | textileze | paragraph')
-    assert.equal 'hello', v.name
-    assert.deepEqual [["textileze",[]], ["paragraph",[]]], v.filters
+    expect('hello').to.equal v.name
+    expect([["textileze",[]], ["paragraph",[]]]).to.deep.equal v.filters
 
     v = new Liquid.Variable("""hello | strftime: '%Y'""")
-    assert.equal 'hello', v.name
-    assert.deepEqual [["strftime",["'%Y'"]]], v.filters
+    expect('hello').to.equal v.name
+    expect([["strftime",["'%Y'"]]]).to.deep.equal v.filters
 
     v = new Liquid.Variable("""'typo' | link_to: 'Typo', true""")
-    assert.equal """'typo'""", v.name
-    assert.deepEqual [["link_to",["'Typo'", "true"]]], v.filters
+    expect("""'typo'""").to.equal v.name
+    expect([["link_to",["'Typo'", "true"]]]).to.deep.equal v.filters
 
     v = new Liquid.Variable("""'typo' | link_to: 'Typo', false""")
-    assert.equal """'typo'""", v.name
-    assert.deepEqual [["link_to",["'Typo'", "false"]]], v.filters
+    expect("""'typo'""").to.equal v.name
+    expect([["link_to",["'Typo'", "false"]]]).to.deep.equal v.filters
 
     v = new Liquid.Variable("""'foo' | repeat: 3""")
-    assert.equal """'foo'""", v.name
-    assert.deepEqual [["repeat",["3"]]], v.filters
+    expect("""'foo'""").to.equal v.name
+    expect([["repeat",["3"]]]).to.deep.equal v.filters
 
     v = new Liquid.Variable("""'foo' | repeat: 3, 3""")
-    assert.equal """'foo'""", v.name
-    assert.deepEqual [["repeat",["3","3"]]], v.filters
+    expect("""'foo'""").to.equal v.name
+    expect([["repeat",["3","3"]]]).to.deep.equal v.filters
 
     v = new Liquid.Variable("""'foo' | repeat: 3, 3, 3""")
-    assert.equal """'foo'""", v.name
-    assert.deepEqual [["repeat",["3","3","3"]]], v.filters
+    expect("""'foo'""").to.equal v.name
+    expect([["repeat",["3","3","3"]]]).to.deep.equal v.filters
 
     v = new Liquid.Variable("""hello | strftime: '%Y, okay?'""")
-    assert.equal 'hello', v.name
-    assert.deepEqual [["strftime",["'%Y, okay?'"]]], v.filters
+    expect('hello').to.equal v.name
+    expect([["strftime",["'%Y, okay?'"]]]).to.deep.equal v.filters
 
     v = new Liquid.Variable(""" hello | things: "%Y, okay?", 'the other one'""")
-    assert.equal 'hello', v.name
-    assert.deepEqual [["things",["\"%Y, okay?\"","'the other one'"]]], v.filters
+    expect('hello').to.equal v.name
+    expect([["things",["\"%Y, okay?\"","'the other one'"]]]).to.deep.equal v.filters
 
-  test_filter_with_date_parameter: (onExit, assert) ->
+  it "test_filter_with_date_parameter", ->
     v = new Liquid.Variable(""" '2006-06-06' | date: "%m/%d/%Y" """)
-    assert.equal "'2006-06-06'", v.name
-    assert.deepEqual [["date",["\"%m/%d/%Y\""]]], v.filters
+    expect("'2006-06-06'").to.equal v.name
+    expect([["date",["\"%m/%d/%Y\""]]]).to.deep.equal v.filters
 
   # TODO
 
-  test_simple_variable: renderTest (render, assert) ->
-    render('worked', '{{test}}', test:'worked')
-    render('worked wonderfully', '{{test}}', test:'worked wonderfully')
+  it "test_simple_variable", ->
+    renderTest('worked', '{{test}}', test:'worked')
+    renderTest('worked wonderfully', '{{test}}', test:'worked wonderfully')
 
-  test_local_filter: (onExit, assert) ->
+  it "test_local_filter", ->
     MoneyFilter =
       money: (input) ->
         require('util').format(' %d$ ', input)
@@ -69,10 +70,5 @@ module.exports =
     context.set 'var', 1000
     context.addFilters(MoneyFilter)
 
-    called = false
-    new Liquid.Variable("var | money").render(context).nodeify (err, result) ->
-      assert.equal ' 1000$ ', result
-      called = true
-
-    onExit ->
-      assert.equal true, called
+    new Liquid.Variable("var | money").render(context).then (result) ->
+      expect(result).to.equal ' 1000$ '
