@@ -77,5 +77,7 @@ module.exports = class Condition
     left = context.get(left)
     right = context.get(right)
 
-    Promise.all([left, right]).spread (left, right) =>
+    Promise
+    .join(left, right)
+    .spread (left, right) =>
       operation @, left, right
