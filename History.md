@@ -7,10 +7,25 @@
 In Liquid (Ruby) you register tags and additional filters at the Template class.
 So your project only has a single possible configuration.
 
-**API-Change** Signature of Tag constructors changed to match `render` signature (context passed first).
+```diff
++ var engine = new Liquid.Engine;
+- Liquid.Template.registerTag(...);
++ engine.registerTag(...);
+- var output = Liquid.Template.parse(templateString).renderOrRaise({ foo: 42 });
++ var output = engine.parse(templateString).render({ foo: 42 });
+```
 
-Old: `function(tagName, markup, tokens, template) { ... }`
-New: `function(template, tagName, markup, tokens) { ... }`
+Also note that `renderOrRaise` has been removed, since `render` has been returning a promise for some time.
+
+### CHANGE: Tag Constructors
+
+The signature of Tag-constructors changed to match `render()` signature where the
+"context" is passed first.
+
+```diff
+- function(tagName, markup, tokens, template) { ... }
++ function(template, tagName, markup, tokens) { ... }
+```
 
 ### 0.1.5
 
