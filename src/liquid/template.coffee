@@ -16,7 +16,7 @@ module.exports = class Liquid.Template
 
   # Parse source code.
   # Returns self for easy chaining
-  parse: (@engine, source) ->
+  parse: (@engine, source = "") ->
     @tags = @engine.tags
     @root = new Liquid.Document @, @tokenize(source)
     @
