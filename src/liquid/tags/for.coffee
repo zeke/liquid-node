@@ -101,24 +101,30 @@ module.exports = class For extends Liquid.Block
       context.registers["for"][@name] = from + segment.length
 
       context.stack =>
-        Liquid.async.map segment, (item, index) =>
-            try
-              context.set @variableName, item
-              context.set "forloop",
-                name    : @name
-                length  : length
-                index   : index + 1
-                index0  : index,
-                rindex  : length - index
-                rindex0 : length - index - 1
-                first   : index == 0
-                last    : index == length - 1
-
-              @renderAll(@forBlock, context)
-            catch e
-              console.log "for-loop failed: %s %s", e, e.stack
-              throw e
-          .then (chunks) -> chunks.join("")
+        Promise.reduce(segment, (output, item, index) =>
+          context.set @variableName, item
+          context.set "forloop",
+            name    : @name
+            length  : length
+            index   : index + 1
+            index0  : index,
+            rindex  : length - index
+            rindex0 : length - index - 1
+            first   : index == 0
+            last    : index == length - 1
+            
+          Promise
+          .try =>
+            @renderAll(@forBlock, context)
+          .then (rendered) ->
+            output.push rendered
+            output
+          .catch (e) ->
+            output.push context.handleError e
+            output
+        , [])
+        .then (all) ->
+          all.join("")
 
   sliceCollection: (collection, from, to) ->
     if to then collection[from...to] else collection[from...]

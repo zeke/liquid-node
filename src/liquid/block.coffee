@@ -1,6 +1,6 @@
 Liquid = require("../liquid")
-_ = require("underscore")._
 util = require "util"
+Promise = require "bluebird"
 
 module.exports = class Block extends Liquid.Tag
   @IsTag             = ///^#{Liquid.TagStart.source}///
@@ -75,11 +75,19 @@ module.exports = class Block extends Liquid.Tag
     throw new Liquid.SyntaxError("#{@blockName()} tag was never closed")
 
   renderAll: (list, context) ->
-    Liquid.async
-      .map list, (token) ->
-        try
-          if token.render then token.render(context) else token
-        catch e
-          context.handleError(e)
-          throw e
-      .then (result) -> result.join("")
+    Promise.reduce(list, (output, token) ->
+      if typeof token?.render is "function"
+        Promise.try ->
+          Promise
+          .cast(token.render(context))
+          .then (renderedToken) ->
+            output.push renderedToken
+            output
+        .catch (e) ->
+          output.push context.handleError e
+          output
+      else
+        output.push token
+        output
+    , [])
+    .then (all) -> all.join ""

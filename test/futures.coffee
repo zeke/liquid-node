@@ -3,9 +3,7 @@ Liquid = require("../src/index")
 Promise = require "bluebird"
 
 asyncResult = (result) ->
-  ->
-    Liquid.async.promise (p) ->
-      setTimeout((-> p.resolve(result)), 10)
+  -> Promise.cast(result).delay(10)
 
 module.exports =
   test_simple_variable: renderTest (render, assert) ->

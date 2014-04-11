@@ -1,5 +1,3 @@
-async = require("./async")
-
 module.exports =
   scan: (string, regexp, globalMatch = false) ->
     result = []

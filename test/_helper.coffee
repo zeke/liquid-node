@@ -22,17 +22,18 @@ global.renderTest = (f) ->
       cnt += 1
       map[myId] = { expected, template, assigns }
 
-      actual.then (actual) ->
-          assert.type actual, "string"
-          assert.eql actual, expected, stringify({
-            template,
-            expected,
-            actual,
-            assigns
-          })
-        , (err) ->
-          console.log "Unexpected error: %s, %s", err, err.stack
-          assert.eql err, null
+      actual
+      .then (actual) ->
+        assert.type actual, "string"
+        assert.eql actual, expected, stringify({
+          template,
+          expected,
+          actual,
+          assigns
+        })
+      .catch (err) ->
+        console.log "Unexpected error: %s, %s", err, err.stack
+        try assert.eql err, null
       .finally ->
         cnt -= 1
         delete map[myId]

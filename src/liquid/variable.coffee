@@ -34,39 +34,23 @@ module.exports = class Variable
     return '' unless @name?
 
     mapper = (output, filter) =>
-      filterargs = _(filter[1]).map (a) =>
-        context.get(a)
+      filterargs = _(filter[1]).map (a) -> context.get a
 
-      dependencies = [output, filterargs...]
-      waitingFor = _(dependencies).select (o) -> o instanceof Promise
-
-      execute = =>
+      Promise
+      .join(output, filterargs...)
+      .spread (output, filterargs...) ->
         try
-          context.invoke(filter[0], output, filterargs...)
+          context.invoke filter[0], output, filterargs...
         catch e
           throw e unless e instanceof Liquid.FilterNotFound
           throw new Liquid.FilterNotFound("Error - filter '#{filter[0]}' in '#{@markup}' could not be found.")
 
-      if waitingFor.length > 0
-        counter = waitingFor.length
-
-        Liquid.async.promise (result) ->
-          dependencies.forEach (k, i) =>
-            return unless k.nodeify?
-
-            k.nodeify (err, r) =>
-              if i == 0
-                output = r
-              else
-                filterargs[i-1] = r
-
-              counter--
-              result.resolve(execute()) if counter == 0
-      else
-        execute()
-
-    Promise.cast(context.get(@name)).then (value) =>
-      Liquid.async.reduce(@filters, mapper, value).then (value) =>
+    Promise
+    .cast(context.get(@name))
+    .then (value) =>
+      Promise
+      .reduce(@filters, mapper, value)
+      .then (value) =>
         if value instanceof Liquid.Drop
           if typeof value.toString == "function"
             value.context = context

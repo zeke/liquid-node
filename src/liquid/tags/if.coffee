@@ -35,11 +35,17 @@ module.exports = class If extends Liquid.Block
 
   render: (context) ->
     context.stack =>
-      firstBlock = Liquid.async.detect @blocks, (block) ->
-        Promise.cast(block.evaluate(context)).then (ok) ->
-          if block.negate then !ok else ok
-
-      firstBlock.then (block) =>
+      Promise.reduce(@blocks, (chosenBlock, block) ->
+        return chosenBlock if chosenBlock? # short-circuit
+        
+        Promise
+        .try ->
+          block.evaluate context
+        .then (ok) ->
+          ok = !ok if block.negate
+          block if ok
+      , null)
+      .then (block) =>
         if block?
           @renderAll block.attachment, context
         else
