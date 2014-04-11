@@ -1,6 +1,6 @@
 Liquid = require "../liquid"
 { _ } = require "underscore"
-Q = require "q"
+Promise = require "bluebird"
 
 module.exports = class Liquid.Engine
   constructor: ->

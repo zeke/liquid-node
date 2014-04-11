@@ -1,5 +1,5 @@
 Liquid = require("../src/index")
-Q = require "q"
+Promise = require "bluebird"
 
 # JSON.stringify fails for circular dependencies
 stringify = (v) ->

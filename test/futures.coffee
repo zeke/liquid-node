@@ -1,6 +1,6 @@
 require "./_helper"
 Liquid = require("../src/index")
-Q = require "q"
+Promise = require "bluebird"
 
 asyncResult = (result) ->
   ->
@@ -8,23 +8,6 @@ asyncResult = (result) ->
       setTimeout((-> p.resolve(result)), 10)
 
 module.exports =
-  test_futures: (exit, assert) ->
-    finalValue = null
-
-    input = Q.defer()
-    output = input.promise.then (value) ->
-      Liquid.async.promise (p) ->
-        todo = -> p.resolve(value + 1)
-        setTimeout(todo, 10)
-
-    output.nodeify (err, value) ->
-      finalValue = value
-
-    input.resolve 1
-
-    exit ->
-      assert.eql 2, finalValue
-
   test_simple_variable: renderTest (render, assert) ->
     render 'worked', '{{ test }}',
       test: asyncResult("worked")

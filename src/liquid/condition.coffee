@@ -1,6 +1,6 @@
 Liquid = require "../liquid"
 { _ } = require "underscore"
-Q = require "q"
+Promise = require "bluebird"
 
 # Container for liquid nodes which conveniently wraps decision making logic
 #
@@ -33,10 +33,10 @@ module.exports = class Condition
 
     switch @childRelation
       when "or"
-        Q.when(result).then (result) =>
+        Promise.cast(result).then (result) =>
           result or @childCondition.evaluate(context)
       when "and"
-        Q.when(result).then (result) =>
+        Promise.cast(result).then (result) =>
           result and @childCondition.evaluate(context)
       else
         result
@@ -77,5 +77,5 @@ module.exports = class Condition
     left = context.get(left)
     right = context.get(right)
 
-    Q.spread [left, right], (left, right) =>
+    Promise.all([left, right]).spread (left, right) =>
       operation @, left, right

@@ -1,6 +1,6 @@
 Liquid = require "../liquid"
 { _ } = require "underscore"
-Q = require "q"
+Promise = require "bluebird"
 
 module.exports = class Liquid.Template
 
@@ -61,12 +61,12 @@ module.exports = class Liquid.Template
     try
       # render the nodelist.
       # TODO: original implementation used arrays up until here (for performance reasons)
-      Q.when(@root.render(context))
+      Promise.cast(@root.render(context))
     finally
       @errors = context.errors
 
   render: (args...) ->
-    Q.fcall => @_render args...
+    Promise.try => @_render args...
 
   # private api
 

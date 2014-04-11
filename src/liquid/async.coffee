@@ -1,4 +1,4 @@
-Q = require "q"
+Promise = require "bluebird"
 async = require "async"
 
 nodeify = (deferred) ->
@@ -17,7 +17,7 @@ module.exports = Async =
   forEach: (array, callback) ->
     Async.promise (deferred) ->
       iterator = (item, cb) ->
-        Q.when(item).then((i) -> callback(i)).nodeify cb
+        Promise.cast(item).then((i) -> callback(i)).nodeify cb
 
       async.forEachSeries array, iterator, nodeify(deferred)
 
@@ -25,41 +25,40 @@ module.exports = Async =
     Async.promise (deferred) ->
       c = 0
       iterator = (item, cb) ->
-        Q.when(item).then((i) -> callback(i, c++)).nodeify cb
+        Promise.cast(item).then((i) -> callback(i, c++)).nodeify cb
 
       async.mapSeries array, iterator, nodeify(deferred)
 
   reduce: (array, callback, memo) ->
     Async.promise (deferred) ->
-      Q.when(memo).then (memo) ->
+      Promise.cast(memo).then (memo) ->
         iterator = (memo, item, cb) ->
-          Q.when(item).then((i) -> callback(memo, i)).nodeify cb
+          Promise.cast(item).then((i) -> callback(memo, i)).nodeify cb
 
         async.reduce array, memo, iterator, nodeify(deferred)
 
   some: (array, callback) ->
     Async.promise (deferred) ->
       iterator = (item, cb) ->
-        Q.when(item).then((i) -> callback(i)).then(((v) -> cb(v)), deferred.reject)
+        Promise.cast(item).then((i) -> callback(i)).then(((v) -> cb(v)), deferred.reject)
 
       async.some array, iterator, (r) -> deferred.resolve r
 
   detect: (array, callback) ->
     Async.promise (deferred) ->
       iterator = (item, cb) ->
-        Q.when(item).then((i) -> callback(i)).then(((v) -> cb(v)), deferred.reject)
+        Promise.cast(item).then((i) -> callback(i)).then(((v) -> cb(v)), deferred.reject)
 
       async.detectSeries array, iterator, (r) -> deferred.resolve(r)
 
   promise: (callback) ->
-    deferred = Q.defer()
-
-    try
-      callback deferred
-    catch e
-      deferred.reject e
-
-    deferred.promise
+    new Promise (resolve, reject) ->
+      try
+        callback
+          resolve: resolve
+          reject: reject
+      catch e
+        reject e
 
 module.exports = Async
 

@@ -1,6 +1,6 @@
 Liquid = require "../../liquid"
 { _ } = require "underscore"
-Q = require "q"
+Promise = require "bluebird"
 
 # "For" iterates over an array or collection.
 # Several useful variables are available to you within the loop.
@@ -78,7 +78,7 @@ module.exports = class For extends Liquid.Block
   render: (context) ->
     context.registers.for or= {}
 
-    Q.when(context.get(@collectionName)).then (collection) =>
+    Promise.cast(context.get(@collectionName)).then (collection) =>
       return @renderElse(context) unless collection and collection.forEach
 
       from = if @attributes.offset == "continue"
