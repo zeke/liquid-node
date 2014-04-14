@@ -61,9 +61,14 @@ For standard use you can just pass it the content of a file and call render with
 ```coffeescript
 Liquid = require "liquid-node"
 
-template = Liquid.Template.parse("hi {{name}}") # Parses and compiles the template
-promise = template.render name: "tobi"          # => [object Promise]
-promise.done console.log.bind(console)          # >> "hi tobi"
+engine = new Liquid.Engine
+engine.registerTag "MyTag", MyTag
+engine.registerFilter "myFilter", (input) ->
+  String(input).toUpperCase()
+
+template = engine.parse("hi {{name}}")  # Parses and compiles the template
+promise = template.render name: "tobi"  # => [object Promise]
+promise.done console.log.bind(console)  # >> "hi tobi"
 ```
 
 ## Promises with `bluebird`
