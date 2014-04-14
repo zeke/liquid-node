@@ -35,7 +35,7 @@
     "mocha": "~1.18.2"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha -r coffee-script/register -r test/*.coffee -R spec",
+    "test": "./node_modules/.bin/mocha --compilers coffee:coffee-script/register -r test/*.coffee -R spec",
     "compile": "./node_modules/.bin/coffee --output lib --map --compile src",
     "prepublish": "npm test && npm run-script compile"
   }
