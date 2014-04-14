@@ -35,7 +35,7 @@ module.exports = class Liquid.Template
   #    liquid more with its host application
   #
   _render: (args...) ->
-    return Q("") unless @root?
+    return Promise.cast("") unless @root?
 
     context = if args[0] instanceof Liquid.Context
       args.shift()
