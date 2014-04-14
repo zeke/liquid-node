@@ -3,10 +3,13 @@
 ## 0.3.0 (next release)
 
 - IMPROVEMENT: `Liquid.SyntaxError`s now include a location of the error.
+- IMPROVEMENT: `assign`-Tag doesn't wait on fulfilment of promise.
 - API: `template.render(assigns [, options])` won't accept filters as second argument anymore.
 - API: Switched to `bluebird` as implementation for promises - might cause API break.
 - API: Tokens passed to `parse()` are now objects instead of strings with `col`, `line` and `value`.
+- MISC: CoffeeScript is now compiled to JavaScript when a new version of LiquidNode is published.
 - INTERNAL: Switched to `mocha` for testing.
+- INTERNAL: Rewrote testing suites.
 - INTERNAL: Dropped dependency on `underscore`.
 
 ## 0.2.0
