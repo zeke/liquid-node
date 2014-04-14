@@ -20,8 +20,7 @@
     "url": "git://github.com/sirlantis/liquid-node.git"
   },
   "directories": {
-    "src": "./src",
-    "test": "./test"
+    "lib": "./lib"
   },
   "main": "./lib/index.js",
   "engines": {
@@ -32,14 +31,12 @@
   },
   "devDependencies": {
     "coffee-script": "~1.7.1",
-    "expresso": ">=0.9.0",
-    "grunt": "~0.4.2",
-    "grunt-release": "~0.6.0",
-    "chai": "^1.9.1",
-    "mocha": "^1.18.2"
+    "chai": "~1.9.1",
+    "mocha": "~1.18.2"
   },
   "scripts": {
-    "postinstall": "cake build"
     "test": "./node_modules/.bin/mocha -r coffee-script/register -r test/*.coffee",
+    "compile": "./node_modules/.bin/coffee --output lib --map --compile src",
+    "prepublish": "npm test && npm run-script compile"
   }
 }
