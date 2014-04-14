@@ -79,3 +79,10 @@ describe "Conditions", ->
       renderTest(' YES ','{% if foo.bar %} NO {% else %} YES {% endif %}', 'foo': {})
       renderTest(' YES ','{% if foo.bar %} NO {% else %} YES {% endif %}', 'notfoo': {'bar': true})
     ])
+
+  describe "unless", ->
+    it "negates 'false'", ->
+      renderTest(' TRUE ','{% unless false %} TRUE {% endunless %}')
+
+    it "negates 'true'", ->
+      renderTest('','{% unless true %} FALSE {% endunless %}')
