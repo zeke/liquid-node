@@ -1,5 +1,4 @@
 Liquid = require("../liquid")
-{ _ } = require "underscore"
 Promise = require "bluebird"
 
 # Holds variables. Variables are only loaded "just in time"
@@ -23,18 +22,18 @@ module.exports = class Variable
       @name = match[1]
       if match2 = ///#{Liquid.FilterSeparator.source}\s*(.*)///.exec(match[2])
         filters = Liquid.Helpers.scan(match2[1], Liquid.Variable.FilterParser)
-        _(filters).forEach (f) =>
+        filters.forEach (f) =>
           if match3 = /\s*(\w+)/.exec(f)
             filtername = match3[1]
             filterargs = Liquid.Helpers.scan(f, ///(?:#{Liquid.FilterArgumentSeparator.source}|#{Liquid.ArgumentSeparator.source})\s*(#{Liquid.QuotedFragment.source})///)
-            filterargs = _(filterargs).flatten()
+            filterargs = Array::concat.apply [], filterargs
             @filters.push [filtername, filterargs]
 
   render: (context) ->
     return '' unless @name?
 
     mapper = (output, filter) =>
-      filterargs = _(filter[1]).map (a) -> context.get a
+      filterargs = filter[1].map (a) -> context.get a
 
       Promise
       .join(output, filterargs...)

@@ -1,5 +1,4 @@
 Liquid = require "../liquid"
-{ _ } = require "underscore"
 Promise = require "bluebird"
 
 # Container for liquid nodes which conveniently wraps decision making logic
@@ -56,7 +55,7 @@ module.exports = class Condition
     false
 
   inspect: ->
-    operands = _([@left, @operator, @right]).compact().join('#')
+    operands = [@left, @operator, @right].join(' ')
     "<Condition [#{operands}], attachment: #{@attachment}>"
 
   # private API

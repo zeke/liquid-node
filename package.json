@@ -28,7 +28,6 @@
     "node": ">= 0.4"
   },
   "dependencies": {
-    "underscore": ">=1.2.3",
     "bluebird": "^1.2.2"
   },
   "devDependencies": {

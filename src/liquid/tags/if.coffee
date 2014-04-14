@@ -1,5 +1,4 @@
 Liquid = require "../../liquid"
-{ _ } = require "underscore"
 Promise = require "bluebird"
 
 module.exports = class If extends Liquid.Block

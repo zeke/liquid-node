@@ -1,11 +1,10 @@
 Liquid = require "../liquid"
-{ _ } = require "underscore"
 Promise = require "bluebird"
 
 module.exports = class Context
 
   constructor: (environments = {}, outerScope = {}, registers = {}, rethrowErrors = false) ->
-    @environments = _.flatten [environments]
+    @environments = Array::concat.apply [], [environments]
     @scopes = [outerScope or {}]
     @registers = registers
     @errors = []
@@ -20,12 +19,12 @@ module.exports = class Context
   # Template object. see <tt>Template.register_filter</tt>
   # for that
   addFilters: (filters) ->
-    filters = _([filters]).chain().flatten().compact().value()
+    filters = Array::concat.apply [], [filters]
     filters.forEach (filter) =>
       unless filter instanceof Object
-        throw new Error("Expected Object but got: #{typeof(filter)}")
+        throw new Error("Expected Object but got: #{typeof filter}")
 
-      _.extend @strainer, filter
+      @strainer.extend filter
 
   handleError: (e) ->
     @errors.push e
@@ -49,7 +48,8 @@ module.exports = class Context
     throw new Error("Nesting too deep") if @scopes.length > 100
 
   merge: (newScope = {}) ->
-    _(@scopes[0]).extend(newScope)
+    for own k, v of newScope
+      @scopes[0][k] = v
 
   pop: ->
     Liquid.log "SCOPE POP"
@@ -141,19 +141,31 @@ module.exports = class Context
     else
       @variable(key)
 
-
   findVariable: (key) ->
-    scope = _(@scopes).detect (scope) -> scope.hasOwnProperty key
-    
+    variableScope = undefined
     variable = undefined
-    scope ?= _(@environments).detect (env) =>
-      variable = @lookupAndEvaluate(env, key)
-      variable?
 
-    scope ?= _(@environments).last or _(@scopes).last
-    variable ?= @lookupAndEvaluate(scope, key)
+    @scopes.some (scope) ->
+      if scope.hasOwnProperty key
+        variableScope = scope
+        true
+
+    unless variableScope?
+      @environments.some (env) =>
+        variable = @lookupAndEvaluate env, key
+        variableScope = env if variable?
+
+    unless variableScope?
+      if @environments.length > 0
+        variableScope = @environments[@environments.length - 1]
+      else if @scopes.length > 0
+        variableScope = @scopes[@scopes.length - 1]
+      else
+        throw new Error "No scopes to find variable in."
+
+    variable ?= @lookupAndEvaluate(variableScope, key)
     
-    Promise.cast(variable).then(@liquify.bind(@))
+    Promise.cast(variable).then (v) => @liquify v
 
   variable: (markup) ->
     Promise.try =>
@@ -178,11 +190,11 @@ module.exports = class Context
           part = @resolve(bracketMatch[1]) if bracketMatch
 
           Promise.cast(part).then (part) =>
-            isArrayAccess = (_.isArray(object) and _.isNumber(part))
-            isObjectAccess = (_.isObject(object) and (part of object))
+            isArrayAccess = (Array.isArray(object) and isFinite(part))
+            isObjectAccess = (object instanceof Object and (part of object))
             isSpecialAccess = (
               !bracketMatch and object and
-              (_.isArray(object) or _.isString(object)) and
+              (Array.isArray(object) or Object::toString.call(object) is "[object String]") and
               ["size", "first", "last"].indexOf(part) >= 0
             )
 
@@ -227,10 +239,10 @@ module.exports = class Context
   squashInstanceAssignsWithEnvironments: ->
     lastScope = @lastScope()
 
-    _(lastScope).chain().keys().forEach (key) =>
-      _(@environments).detect (env) =>
+    Object.keys(lastScope).forEach (key) =>
+      @environments.some (env) =>
         if env.hasOwnProperty key
-          lastScope[key] = @lookupAndEvaluate(env, key)
+          lastScope[key] = @lookupAndEvaluate env, key
           true
 
   liquify: (object) ->

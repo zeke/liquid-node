@@ -1,11 +1,13 @@
-_ = require("underscore")._
-
 module.exports = class Strainer
 
   constructor: (@context) ->
-
+    
+  extend: (filter) ->
+    for own k, v of filter
+      @[k] = v
+      
   @globalFilter: (filter) ->
-    _.extend Strainer::, filter
+    @::extend.call Strainer::, filter
 
   @create: (context) ->
-    new Strainer(context)
+    new Strainer context

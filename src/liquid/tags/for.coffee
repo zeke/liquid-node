@@ -1,5 +1,4 @@
 Liquid = require "../../liquid"
-{ _ } = require "underscore"
 Promise = require "bluebird"
 
 # "For" iterates over an array or collection.
