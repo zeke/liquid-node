@@ -79,3 +79,16 @@ describe "Liquid.Variable", ->
       variable = new Liquid.Variable "var | money"
       variable.render(context).then (result) ->
         expect(result).to.equal ' $1000 '
+
+  # TODO: This doesn't work yet.
+  it.skip "prevents 'RangeError: Maximum call stack size exceeded'", ->
+    doc = "{{ a"
+    doc += ".a" while doc.length < (1024 * 1024)
+    doc += ".b"
+    doc += " }}"
+
+    a = {}
+    a.a = -> a
+    a.b = -> "STOP"
+
+    renderTest "STOP", doc, a: a
