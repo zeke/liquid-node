@@ -86,3 +86,6 @@ describe "Conditions", ->
 
     it "negates 'true'", ->
       renderTest('','{% unless true %} FALSE {% endunless %}')
+
+    it "supports else", ->
+      renderTest(' TRUE ','{% unless true %} FALSE {% else %} TRUE {% endunless %}')
