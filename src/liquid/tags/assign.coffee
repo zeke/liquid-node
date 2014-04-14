@@ -19,9 +19,5 @@ module.exports = class Assign extends Liquid.Tag
     super
 
   render: (context) ->
-    value = context.get(@from)
-
-    Promise.cast(value).then (value) =>
-      Liquid.log "#{@from} -> #{@to}: %j", value
-      context.lastScope()[@to] = value
-      ''
+    context.lastScope()[@to] = context.get(@from)
+    ''
