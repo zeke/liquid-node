@@ -20,15 +20,15 @@ LiquidNode solves that problem by using [Futures and Promises](http://en.wikiped
 The programmer just has to return a `Promise` from asynchronous functions -
 the designer won't have to care about it.
 
-LiquidNode uses the popular [Q implementation](https://github.com/kriskowal/q) of Promises.
+LiquidNode uses the fast [bluebird](https://github.com/petkaantonov/bluebird) implementation of [Promises/A+](http://promisesaplus.com/) since `0.3.0`.
 
 ## Introduction to the Liquid template engine
 
 Liquid is a template engine which was written with very specific requirements:
 
 * It has to have beautiful and simple markup. Template engines which don't produce good looking markup are no fun to use.
-* It needs to be non evaling and secure. Liquid templates are made so that users can edit them. You don't want to run code on your server which your users wrote.
-* It has to be stateless. Compile and render steps have to be seperate so that the expensive parsing and compiling can be done once and later on you can just render it passing in a hash with local variables and objects.
+* It needs to be non `eval`ing and secure. Liquid templates are made so that users can edit them. You don't want to run code on your server which your users wrote.
+* It has to be stateless. Compile and render steps have to be separate so that the expensive parsing and compiling can be done once and later on you can just render it passing in a hash with local variables and objects.
 
 ## Why you should use Liquid
 
@@ -53,7 +53,7 @@ Liquid is a template engine which was written with very specific requirements:
 </ul>
 ```
 
-## Howto use Liquid
+## How to use Liquid
 
 Liquid supports a very simple API based around the Liquid.Template class.
 For standard use you can just pass it the content of a file and call render with an object.
@@ -62,17 +62,18 @@ For standard use you can just pass it the content of a file and call render with
 Liquid = require "liquid-node"
 
 template = Liquid.Template.parse("hi {{name}}") # Parses and compiles the template
-promise = template.render name: "tobi"          # => [Promise Object]
-promise.done console.log                        # >> "hi tobi"
+promise = template.render name: "tobi"          # => [object Promise]
+promise.done console.log.bind(console)          # >> "hi tobi"
 ```
 
-## Promises with Q
+## Promises with `bluebird`
 
-LiquidNode uses the promise implementation of [Q](https://github.com/kriskowal/q).
+LiquidNode uses the promise implementation of [bluebird](https://github.com/petkaantonov/bluebird)
+which adheres to the the open standard [Promises/A+](http://promisesaplus.com/).
 
 ```coffeescript
 fs = require "fs"
-Q  = require "q"
+Promise  = require "bluebird"
 
 class Server
   name: ->
@@ -80,7 +81,7 @@ class Server
 
   # A deferred can either be resolved (no error) or rejected (error).
   think: ->
-    Q.timeout(1000).then(42)
+    Promise.cast(0).delay(1000).then -> 42
 
   # This is an example of how to wait for a Promise:
   patientMethod: ->
@@ -88,16 +89,10 @@ class Server
     deepThought.done (answer) -> console.log "The answer is: %s.", answer
     deepThought.catch (e) -> console.log "Universe reset: %s.", e
 
-  # For node-ish callbacks you can use `defer.nodeify`. This
-  # will automatically resolve/reject based on the first argument.
-  accounts: ->
-    deferred = Q.defer()
-    fs.readFile "/etc/passwd", "utf-8", deferred.nodeify
-
   # If you don't want to check, whether an object is a Promise or not
-  # just use `Q.when`. It will build a Promise around it if necessary.
+  # just use `Promise.cast`. It wrap the object in a Promise if necessary.
   unsure: (promiseWannabe) ->
-    Q.when(promiseWannabe)
+    Promise.cast(promiseWannabe)
 
   # You can chain Promises using `promise.then().then().then()...`.
   # A `then` will be called with the resolution of the previous `then`.
