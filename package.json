@@ -31,7 +31,7 @@
     "bluebird": "^1.2.2"
   },
   "devDependencies": {
-    "coffee-script": "~1.4.0",
+    "coffee-script": "~1.7.1",
     "expresso": ">=0.9.0",
     "grunt": "~0.4.2",
     "grunt-release": "~0.6.0",
@@ -39,7 +39,7 @@
     "mocha": "^1.18.2"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha -r coffee-script -r test/*.coffee",
     "postinstall": "cake build"
+    "test": "./node_modules/.bin/mocha -r coffee-script/register -r test/*.coffee",
   }
 }

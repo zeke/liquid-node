@@ -39,7 +39,7 @@ describe "Futures", ->
       renderTest 'YES', '{% unless test %}YES{% else %}NO{% endunless %}',
         test: asyncResult(false)
 
-      renderTest 'Monkeys', '{% capture heading %}{{animal}}{% endcapture %}{{heading}}'
+      renderTest 'Monkeys', '{% capture heading %}{{animal}}{% endcapture %}{{heading}}',
         animal: asyncResult("Monkeys")
 
       renderTest 'YES', '{% assign test = var %}{% if test %}YES{% else %}NO{% endif %}',
@@ -82,3 +82,4 @@ describe "Futures", ->
     a.b = -> "STOP"
 
     render "STOP", doc, a: a
+  ###
