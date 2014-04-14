@@ -13,33 +13,42 @@ Promise = require "bluebird"
 #
 module.exports = class Variable
   @FilterParser = ///(?:#{Liquid.FilterSeparator.source}|(?:\s*(?!(?:#{Liquid.FilterSeparator.source}))(?:#{Liquid.QuotedFragment.source}|\S+)\s*)+)///
+  VariableNameFragment = ///\s*(#{Liquid.QuotedFragment.source})(.*)///
+  FilterListFragment = ///#{Liquid.FilterSeparator.source}\s*(.*)///
+  FilterArgParser = ///(?:#{Liquid.FilterArgumentSeparator.source}|#{Liquid.ArgumentSeparator.source})\s*(#{Liquid.QuotedFragment.source})///
 
   constructor: (@markup) ->
     @name = null
     @filters = []
 
-    if match = ///\s*(#{Liquid.QuotedFragment.source})(.*)///.exec(@markup)
-      @name = match[1]
-      if match2 = ///#{Liquid.FilterSeparator.source}\s*(.*)///.exec(match[2])
-        filters = Liquid.Helpers.scan(match2[1], Liquid.Variable.FilterParser)
-        filters.forEach (f) =>
-          if match3 = /\s*(\w+)/.exec(f)
-            filtername = match3[1]
-            filterargs = Liquid.Helpers.scan(f, ///(?:#{Liquid.FilterArgumentSeparator.source}|#{Liquid.ArgumentSeparator.source})\s*(#{Liquid.QuotedFragment.source})///)
-            filterargs = Array::concat.apply [], filterargs
-            @filters.push [filtername, filterargs]
+    match = VariableNameFragment.exec @markup
+    return unless match
+
+    @name = match[1]
+
+    match = FilterListFragment.exec match[2]
+    return unless match
+
+    filters = Liquid.Helpers.scan match[1], Liquid.Variable.FilterParser
+    filters.forEach (filter) =>
+      match = /\s*(\w+)/.exec filter
+      return unless match
+      filterName = match[1]
+      filterArgs = Liquid.Helpers.scan filter, FilterArgParser
+      filterArgs = Array::concat.apply [], filterArgs
+      @filters.push [filterName, filterArgs]
 
   render: (context) ->
     return '' unless @name?
 
     mapper = (output, filter) =>
-      filterargs = filter[1].map (a) -> context.get a
+      filterArgs = filter[1].map (a) -> context.get a
 
       Promise
-      .join(output, filterargs...)
-      .spread (output, filterargs...) ->
+      .join(output, filterArgs...)
+      .spread (output, filterArgs...) ->
         try
-          context.invoke filter[0], output, filterargs...
+          context.invoke filter[0], output, filterArgs...
         catch e
           throw e unless e instanceof Liquid.FilterNotFound
           throw new Liquid.FilterNotFound("Error - filter '#{filter[0]}' in '#{@markup}' could not be found.")
