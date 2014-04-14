@@ -2,8 +2,10 @@
 
 ## 0.3.0 (next release)
 
+- IMPROVEMENT: `Liquid.SyntaxError`s now include a location of the error.
 - API: `template.render(assigns [, options])` won't accept filters as second argument anymore.
 - API: Switched to `bluebird` as implementation for promises - might cause API break.
+- API: Tokens passed to `parse()` are now objects instead of strings with `col`, `line` and `value`.
 - INTERNAL: Switched to `mocha` for testing.
 - INTERNAL: Dropped dependency on `underscore`.
 

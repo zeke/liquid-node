@@ -15,31 +15,34 @@ module.exports = class Block extends Liquid.Tag
     while tokens.length > 0
       token = tokens.shift()
 
-      if Block.IsTag.test(token)
-        if match = Block.FullToken.exec(token)
-          # if we found the proper block delimitor just end parsing
-          # here and let the outer block proceed
+      try
+        if Block.IsTag.test(token.value)
+          if match = Block.FullToken.exec(token.value)
+            # if we found the proper block delimitor just end parsing
+            # here and let the outer block proceed
 
-          if @blockDelimiter() == match[1]
-            @endTag()
-            return
+            if @blockDelimiter() == match[1]
+              @endTag()
+              return
 
-          # fetch the tag from registered blocks
-          if tag = @template.tags[match[1]]
-            @nodelist.push new tag(@template, match[1], match[2], tokens)
+            # fetch the tag from registered blocks
+            if tag = @template.tags[match[1]]
+              @nodelist.push new tag(@template, match[1], match[2], tokens)
+            else
+              # this tag is not registered with the system
+              # pass it to the current block for special
+              # handling or error reporting
+              @unknownTag(match[1], match[2], tokens)
           else
-            # this tag is not registered with the system
-            # pass it to the current block for special
-            # handling or error reporting
-            @unknownTag(match[1], match[2], tokens)
+            throw new Liquid.SyntaxError("Tag '#{token.value}' was not properly terminated with regexp: #{Liquid.TagEnd.inspect}")
+        else if Block.IsVariable.test(token.value)
+          @nodelist.push @createVariable(token)
+        else if token.value.length is 0
+          # skip empty tokens
         else
-          throw new Liquid.SyntaxError("Tag '#{token}' was not properly terminated with regexp: #{Liquid.TagEnd.inspect}")
-      else if Block.IsVariable.test(token)
-        @nodelist.push @createVariable(token)
-      else if token == ''
-        # pass
-      else
-        @nodelist.push token
+          @nodelist.push token.value
+      catch e
+        throw new Liquid.SyntaxError("#{e.message} at line #{token.line} column #{token.col}")
 
     # Make sure that its ok to end parsing in the current block.
     # Effectively this method will throw and exception unless the
@@ -64,12 +67,12 @@ module.exports = class Block extends Liquid.Tag
     @tagName
 
   createVariable: (token) ->
-    match = Liquid.Block.ContentOfVariable.exec(token)?[1]
+    match = Liquid.Block.ContentOfVariable.exec(token.value)?[1]
     return new Liquid.Variable(match) if match
-    throw new Liquid.SyntaxError("Variable '#{@token}' was not properly terminated with regexp: #{Liquid.Block.VariableEnd.inspect}")
+    throw new Liquid.SyntaxError("Variable '#{token.value}' was not properly terminated with regexp: #{Liquid.Block.VariableEnd.inspect}")
 
   render: (context) ->
-    @renderAll(@nodelist, context)
+    @renderAll @nodelist, context
 
   assertMissingDelimitation: ->
     throw new Liquid.SyntaxError("#{@blockName()} tag was never closed")

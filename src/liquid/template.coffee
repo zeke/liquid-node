@@ -76,4 +76,19 @@ module.exports = class Liquid.Template
     # removes the rogue empty element at the beginning of the array
     tokens.shift() if tokens[0]?.length is 0
 
-    tokens
+    line = 1
+    col = 1
+
+    tokens.map (value) ->
+      result = { value, col, line }
+
+      lastIndex = value.lastIndexOf "\n"
+
+      if lastIndex < 0
+        col += value.length
+      else
+        linebreaks = value.split("\n").length - 1
+        line += linebreaks
+        col = value.length - lastIndex
+
+      result
