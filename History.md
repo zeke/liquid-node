@@ -1,5 +1,12 @@
 # LiquidNode Change History
 
+## 0.3.0 (next release)
+
+- API: `template.render(assigns [, options])` won't accept filters as second argument anymore.
+- API: Switched to `bluebird` as implementation for promises - might cause API break.
+- INTERNAL: Switched to `mocha` for testing.
+- INTERNAL: Dropped dependency on `underscore`.
+
 ## 0.2.0
 
 ### NEW: Engine
