@@ -42,7 +42,9 @@ module.exports = class Block extends Liquid.Tag
         else
           @nodelist.push token.value
       catch e
-        throw new Liquid.SyntaxError("#{e.message} at line #{token.line} column #{token.col}")
+        e.message = "#{e.message}\n    at #{token.value} (#{token.filename}:#{token.line}:#{token.col})"
+        e.location ?= { col: token.col, line: token.line, filename: token.filename }
+        throw e 
 
     # Make sure that its ok to end parsing in the current block.
     # Effectively this method will throw and exception unless the
