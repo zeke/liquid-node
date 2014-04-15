@@ -2,13 +2,15 @@
 
 ## 0.3.0 (next release)
 
-- IMPROVEMENT: `Liquid.SyntaxError`s now include a location of the error.
-- IMPROVEMENT: `assign`-Tag doesn't wait on fulfillment of promise.
+- API: Tags can now return arrays in `render()` that will be concatenated to a string.
 - API: `template.parse()` and `engine.parse()` will return a Promise now.
+- API: `template.parse()` is now async-aware. Any Tag can do async parsing now.
 - API: `template.render(assigns [, options])` won't accept filters as second argument anymore.
 - API: Switched to `bluebird` as implementation for promises - might cause API break.
 - API: Tokens passed to `parse()` are now objects instead of strings with `col`, `line` and `value`.
 - API: `parse()` doesn't accept objects with a `source` property anymore.
+- IMPROVEMENT: `Liquid.SyntaxError`s now include a location of the error.
+- IMPROVEMENT: `assign`-Tag doesn't wait on fulfillment of promise.
 - MISC: CoffeeScript is now compiled to JavaScript when a new version of LiquidNode is published.
 - INTERNAL: Switched to `mocha` for testing.
 - INTERNAL: Rewrote testing suites.
