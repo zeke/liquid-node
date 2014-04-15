@@ -58,7 +58,7 @@ module.exports = class For extends Liquid.Block
     if match
       @variableName = match[1]
       @collectionName = match[2]
-      @name = "#{match[1]}=#{match[2]}"
+      @registerName = "#{match[1]}=#{match[2]}"
       @reversed = match[3]
       @attributes = {}
 
@@ -81,7 +81,7 @@ module.exports = class For extends Liquid.Block
       return @renderElse(context) unless collection and collection.forEach
 
       from = if @attributes.offset == "continue"
-        Number(context.registers["for"][@name]) or 0
+        Number(context.registers["for"][@registerName]) or 0
       else
         Number(@attributes.offset) or 0
 
@@ -97,13 +97,13 @@ module.exports = class For extends Liquid.Block
       length = segment.length
 
       # Store our progress through the collection for the continue flag
-      context.registers["for"][@name] = from + segment.length
+      context.registers["for"][@registerName] = from + segment.length
 
       context.stack =>
         Promise.reduce(segment, (output, item, index) =>
           context.set @variableName, item
           context.set "forloop",
-            name    : @name
+            name    : @registerName
             length  : length
             index   : index + 1
             index0  : index,
