@@ -1,6 +1,6 @@
 module.exports = class Tag
   constructor: (@template, @tagName, @markup, tokens) ->
-    @parse tokens
+    @_promise = @parse tokens
 
   parse: ->
 

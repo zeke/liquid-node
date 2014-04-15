@@ -9,49 +9,50 @@ module.exports = class Block extends Liquid.Tag
   @ContentOfVariable = ///^#{Liquid.VariableStart.source}(.*)#{Liquid.VariableEnd.source}$///
 
   parse: (tokens) ->
-    @nodelist or= []
-    @nodelist.pop() while @nodelist.length > 0
+    @nodelist ?= []
+    @nodelist.length = 0 # clear array
 
-    while tokens.length > 0
-      token = tokens.shift()
+    @_parse(tokens).then =>
+      # Make sure that its ok to end parsing in the current block.
+      # Effectively this method will throw and exception unless the
+      # current block is of type Document
+      @assertMissingDelimitation()
 
-      try
-        if Block.IsTag.test(token.value)
-          if match = Block.FullToken.exec(token.value)
-            # if we found the proper block delimitor just end parsing
-            # here and let the outer block proceed
+  _parse: (tokens) ->
+    return Promise.cast() if tokens.length is 0 or @ended
+    token = tokens.shift()
 
-            if @blockDelimiter() == match[1]
-              @endTag()
-              return
+    @_promise = Promise
+    .try =>
+      if Block.IsTag.test(token.value)
+        match = Block.FullToken.exec(token.value)
 
-            # fetch the tag from registered blocks
-            if tag = @template.tags[match[1]]
-              @nodelist.push new tag(@template, match[1], match[2], tokens)
-            else
-              # this tag is not registered with the system
-              # pass it to the current block for special
-              # handling or error reporting
-              @unknownTag(match[1], match[2], tokens)
-          else
-            throw new Liquid.SyntaxError("Tag '#{token.value}' was not properly terminated with regexp: #{Liquid.TagEnd.inspect}")
-        else if Block.IsVariable.test(token.value)
-          @nodelist.push @createVariable(token)
-        else if token.value.length is 0
-          # skip empty tokens
-        else
-          @nodelist.push token.value
-      catch e
-        e.message = "#{e.message}\n    at #{token.value} (#{token.filename}:#{token.line}:#{token.col})"
-        e.location ?= { col: token.col, line: token.line, filename: token.filename }
-        throw e 
+        unless match
+          throw new Liquid.SyntaxError("Tag '#{token.value}' was not properly terminated with regexp: #{Liquid.TagEnd.inspect}")
 
-    # Make sure that its ok to end parsing in the current block.
-    # Effectively this method will throw and exception unless the
-    # current block is of type Document
-    @assertMissingDelimitation()
+        return @endTag() if @blockDelimiter() is match[1]
+
+        Tag = @template.tags[match[1]]
+        return @unknownTag match[1], match[2], tokens unless Tag
+
+        tag = new Tag @template, match[1], match[2], tokens
+        @nodelist.push tag
+        tag._promise
+      else if Block.IsVariable.test(token.value)
+        @nodelist.push @createVariable(token)
+      else if token.value.length is 0
+        # skip empty tokens
+      else
+        @nodelist.push token.value
+    .catch (e) =>
+      e.message = "#{e.message}\n    at #{token.value} (#{token.filename}:#{token.line}:#{token.col})"
+      e.location ?= { col: token.col, line: token.line, filename: token.filename }
+      throw e
+    .then =>
+      @_parse tokens
 
   endTag: ->
+    @ended = true
 
   unknownTag: (tag, params, tokens) ->
     switch tag
@@ -77,7 +78,7 @@ module.exports = class Block extends Liquid.Tag
     @renderAll @nodelist, context
 
   assertMissingDelimitation: ->
-    throw new Liquid.SyntaxError("#{@blockName()} tag was never closed")
+    throw new Liquid.SyntaxError("#{@blockName()} tag was never closed") unless @ended
 
   renderAll: (list, context) ->
     Promise.reduce(list, (output, token) ->
