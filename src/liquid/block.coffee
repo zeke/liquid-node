@@ -96,4 +96,3 @@ module.exports = class Block extends Liquid.Tag
         output.push token
         output
     , [])
-    .then (all) -> all.join ""

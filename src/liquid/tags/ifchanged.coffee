@@ -7,6 +7,8 @@ module.exports = class IfChanged extends Liquid.Block
       rendered = @renderAll @nodelist, context
 
       Promise.cast(rendered).then (output) ->
+        output = Liquid.Helpers.toFlatString output
+
         if output isnt context.registers.ifchanged
           context.registers.ifchanged = output
         else

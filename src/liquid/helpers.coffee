@@ -1,4 +1,20 @@
 module.exports =
+  flatten: (array) ->
+    output = []
+
+    _flatten = (array) ->
+      array.forEach (item) ->
+        if Array.isArray item
+          _flatten item
+        else
+          output.push item
+
+    _flatten array
+    output
+
+  toFlatString: (array) ->
+    @flatten(array).join("")
+
   scan: (string, regexp, globalMatch = false) ->
     result = []
 

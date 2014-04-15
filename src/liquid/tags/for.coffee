@@ -122,8 +122,6 @@ module.exports = class For extends Liquid.Block
             output.push context.handleError e
             output
         , [])
-        .then (all) ->
-          all.join("")
 
   sliceCollection: (collection, from, to) ->
     if to then collection[from...to] else collection[from...]

@@ -58,12 +58,9 @@ module.exports = class Liquid.Template
     if options?.filters
       context.addFilters options.filters
 
-    Promise
-    .try =>
-      # TODO: original implementation used arrays
-      #       up until here (for performance reasons)
-      #       -> benchmark this
-      @root.render context
+    @root.render(context)
+    .then (chunks) =>
+      Liquid.Helpers.toFlatString chunks
     .finally =>
       @errors = context.errors
 
