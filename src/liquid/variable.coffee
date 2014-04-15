@@ -35,7 +35,7 @@ module.exports = class Variable
       return unless match
       filterName = match[1]
       filterArgs = Liquid.Helpers.scan filter, FilterArgParser
-      filterArgs = Array::concat.apply [], filterArgs
+      filterArgs = Liquid.Helpers.flatten filterArgs
       @filters.push [filterName, filterArgs]
 
   render: (context) ->

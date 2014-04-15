@@ -4,7 +4,7 @@ Promise = require "bluebird"
 module.exports = class Context
 
   constructor: (environments = {}, outerScope = {}, registers = {}, rethrowErrors = false) ->
-    @environments = Array::concat.apply [], [environments]
+    @environments = Liquid.Helpers.flatten [environments]
     @scopes = [outerScope or {}]
     @registers = registers
     @errors = []
@@ -19,7 +19,7 @@ module.exports = class Context
   # Template object. see <tt>Template.register_filter</tt>
   # for that
   addFilters: (filters) ->
-    filters = Array::concat.apply [], [filters]
+    filters = Liquid.Helpers.flatten [filters]
     filters.forEach (filter) =>
       unless filter instanceof Object
         throw new Error("Expected Object but got: #{typeof filter}")

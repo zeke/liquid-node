@@ -84,7 +84,7 @@ module.exports =
   ## TODO!!!
 
   flatten: (input) ->
-    Array::concat.apply [], toArray(input)
+    Liquid.Helpers.flatten toArray(input)
 
   join: (input, glue=' ') ->
     @flatten(input).join(glue)
