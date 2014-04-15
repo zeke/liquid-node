@@ -1,5 +1,9 @@
-Liquid = require("../src/index")
-{ expect } = require "chai"
+global.Liquid = Liquid = require("../src/index")
+
+global.chai = chai = require "chai"
+chai.use require("chai-as-promised")
+
+global.expect = expect = chai.expect
 
 # JSON.stringify fails for circular dependencies
 stringify = (v) ->

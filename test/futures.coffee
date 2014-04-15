@@ -1,5 +1,3 @@
-require "./_helper"
-Liquid = require("../src/index")
 Promise = require "bluebird"
 
 asyncResult = (result) ->

@@ -1,6 +1,4 @@
-Liquid = require("../src/index")
 Promise = require "bluebird"
-{ expect } = require "chai"
 
 describe "Assign", ->
   it "assigns a variable", ->

@@ -1,5 +1,3 @@
-Liquid = require("../src/index")
-{ expect } = require "chai"
 util = require "util"
 
 describe "Liquid.Variable", ->

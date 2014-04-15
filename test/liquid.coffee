@@ -1,6 +1,3 @@
-Liquid = require("../src/index")
-{ expect } = require "chai"
-
 describe "Liquid", ->
   beforeEach -> @engine = new Liquid.Engine
 
