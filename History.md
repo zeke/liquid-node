@@ -4,6 +4,7 @@
 
 - IMPROVEMENT: `Liquid.SyntaxError`s now include a location of the error.
 - IMPROVEMENT: `assign`-Tag doesn't wait on fulfillment of promise.
+- API: `template.parse()` and `engine.parse()` will return a Promise now.
 - API: `template.render(assigns [, options])` won't accept filters as second argument anymore.
 - API: Switched to `bluebird` as implementation for promises - might cause API break.
 - API: Tokens passed to `parse()` are now objects instead of strings with `col`, `line` and `value`.
