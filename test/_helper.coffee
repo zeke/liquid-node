@@ -8,13 +8,14 @@ stringify = (v) ->
   catch e
     "Couldn't stringify: #{v}"
 
-global.renderTest = (expected, template, assigns) ->
+global.renderTest = (expected, templateString, assigns) ->
   engine = new Liquid.Engine
-  actual = engine.parse(template).render(assigns)
-
-  actual
-  .catch (e) ->
-    expect(e).not.to.exist
-  .then (actual) ->
-    expect(actual).to.be.a "string"
-    expect(actual).to.eq expected
+  
+  parser = engine.parse templateString
+  parser.catch (e) -> expect(e).not.to.exist
+  
+  renderer = parser.then (template) -> template.render assigns
+  renderer.catch (e) -> expect(e).not.to.exist
+  renderer.then (output) ->
+    expect(output).to.be.a "string"
+    expect(output).to.eq expected

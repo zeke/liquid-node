@@ -16,10 +16,11 @@ module.exports = class Liquid.Template
   # Parse source code.
   # Returns self for easy chaining
   parse: (@engine, source = "") ->
-    tokens = @_tokenize source
-    @tags = @engine.tags
-    @root = new Liquid.Document @, tokens
-    @
+    Promise.try =>
+      tokens = @_tokenize source
+      @tags = @engine.tags
+      @root = new Liquid.Document @, tokens
+      @
 
   # Render takes a hash with local variables.
   #
