@@ -69,8 +69,8 @@ module.exports = class Liquid.Template
   # Uses the <tt>Liquid::TemplateParser</tt> regexp to tokenize
   # the passed source
   _tokenize: (source) ->
-    source = source.source if source.source?
-    return [] if source.toString().length is 0
+    source = String source
+    return [] if source.length is 0
     tokens = source.split Liquid.TemplateParser
 
     # removes the rogue empty element at the beginning of the array

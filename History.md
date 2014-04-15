@@ -7,6 +7,7 @@
 - API: `template.render(assigns [, options])` won't accept filters as second argument anymore.
 - API: Switched to `bluebird` as implementation for promises - might cause API break.
 - API: Tokens passed to `parse()` are now objects instead of strings with `col`, `line` and `value`.
+- API: `parse()` doesn't accept objects with a `source` property anymore.
 - MISC: CoffeeScript is now compiled to JavaScript when a new version of LiquidNode is published.
 - INTERNAL: Switched to `mocha` for testing.
 - INTERNAL: Rewrote testing suites.
