@@ -4,6 +4,7 @@ global.chai = chai = require "chai"
 chai.use require("chai-as-promised")
 
 global.expect = expect = chai.expect
+Promise = require "bluebird"
 
 # JSON.stringify fails for circular dependencies
 stringify = (v) ->
@@ -16,10 +17,18 @@ global.renderTest = (expected, templateString, assigns) ->
   engine = new Liquid.Engine
   
   parser = engine.parse templateString
-  parser.catch (e) -> expect(e).not.to.exist
   
-  renderer = parser.then (template) -> template.render assigns
-  renderer.catch (e) -> expect(e).not.to.exist
-  renderer.then (output) ->
+  renderer = parser.then (template) ->
+    template.render assigns
+    
+  test = renderer.then (output) ->
     expect(output).to.be.a "string"
     expect(output).to.eq expected
+  
+  Promise.all([
+    expect(parser).to.be.fulfilled
+    expect(renderer).to.be.fulfilled
+    expect(test).to.be.fulfilled
+  ])
+  
+
