@@ -28,7 +28,7 @@ global.renderTest = (expected, templateString, assigns) ->
   Promise.all([
     expect(parser).to.be.fulfilled
     expect(renderer).to.be.fulfilled
-    expect(test).to.be.fulfilled
+    test
   ])
   
 
