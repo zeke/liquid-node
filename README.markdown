@@ -63,7 +63,7 @@ Liquid = require "liquid-node"
 
 engine = new Liquid.Engine
 engine.registerTag "MyTag", MyTag
-engine.registerFilter "myFilter", (input) ->
+engine.registerFilter myFilter: (input) ->
   String(input).toUpperCase()
 
 template = engine.parse("hi {{name}}")          # Parses and compiles the template
