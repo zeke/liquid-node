@@ -23,14 +23,10 @@ module.exports = class Liquid.Engine
   registerTag: (name, tag) ->
     @tags[name] = tag
 
-  registerFilter: (name, filter) ->
-    filters = {}
-    filters[name] = filter
-    @registerFilters filters
-
-  registerFilters: (obj) ->
-    for own k, v of obj
-      @Strainer::[k] = v if v instanceof Function
+  registerFilters: (filters...) ->
+    filters.forEach (filter) =>
+      for own k, v of filter
+        @Strainer::[k] = v if v instanceof Function
 
   parse: (source) ->
     template = new Liquid.Template

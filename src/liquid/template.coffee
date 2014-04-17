@@ -56,7 +56,7 @@ module.exports = class Liquid.Template
         @registers[k] = v
 
     if options?.filters
-      context.addFilters options.filters
+      context.registerFilters options.filters...
 
     @root.render(context)
     .then (chunks) =>

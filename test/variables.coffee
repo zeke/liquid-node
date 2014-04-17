@@ -72,7 +72,7 @@ describe "Liquid.Variable", ->
 
       context = new Liquid.Context
       context.set 'var', 1000
-      context.addFilters MoneyFilter
+      context.registerFilters MoneyFilter
 
       variable = new Liquid.Variable "var | money"
       variable.render(context).then (result) ->

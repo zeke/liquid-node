@@ -12,19 +12,14 @@ module.exports = class Context
     @strainer = new engine?.Strainer(@) ? {}
     @squashInstanceAssignsWithEnvironments()
 
-
   # Adds filters to this context.
   #
   # Note that this does not register the filters with the main
   # Template object. see <tt>Template.register_filter</tt>
   # for that
-  addFilters: (filters) ->
-    filters = Liquid.Helpers.flatten [filters]
-    filters.forEach (filterClass) =>
-      unless filterClass instanceof Object
-        throw new Error("Expected Object but got: #{typeof filterClass}")
-
-      for k, v of filterClass
+  registerFilters: (filters...) ->
+    filters.forEach (filter) =>
+      for own k, v of filter
         @strainer[k] = v if v instanceof Function
 
   handleError: (e) ->
