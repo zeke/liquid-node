@@ -45,9 +45,9 @@ module.exports = class Liquid.Template
       assigns
     else if assigns instanceof Object
       assigns = [assigns, @assigns]
-      new Liquid.Context assigns, @instanceAssigns, @registers, @rethrowErrors
+      new Liquid.Context @engine, assigns, @instanceAssigns, @registers, @rethrowErrors
     else if not assigns?
-      new Liquid.Context @assigns, @instanceAssigns, @registers, @rethrowErrors
+      new Liquid.Context @engine, @assigns, @instanceAssigns, @registers, @rethrowErrors
     else
       throw new Error "Expected Object or Liquid::Context as parameter, but was #{typeof assigns}."
 

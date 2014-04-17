@@ -3,13 +3,13 @@ Promise = require "bluebird"
 
 module.exports = class Context
 
-  constructor: (environments = {}, outerScope = {}, registers = {}, rethrowErrors = false) ->
+  constructor: (engine, environments = {}, outerScope = {}, registers = {}, rethrowErrors = false) ->
     @environments = Liquid.Helpers.flatten [environments]
     @scopes = [outerScope or {}]
     @registers = registers
     @errors = []
     @rethrowErrors = rethrowErrors
-    @strainer = Liquid.Strainer.create(@)
+    @strainer = new engine?.Strainer(@) ? {}
     @squashInstanceAssignsWithEnvironments()
 
 
@@ -20,11 +20,12 @@ module.exports = class Context
   # for that
   addFilters: (filters) ->
     filters = Liquid.Helpers.flatten [filters]
-    filters.forEach (filter) =>
-      unless filter instanceof Object
-        throw new Error("Expected Object but got: #{typeof filter}")
+    filters.forEach (filterClass) =>
+      unless filterClass instanceof Object
+        throw new Error("Expected Object but got: #{typeof filterClass}")
 
-      @strainer.extend filter
+      for k, v of filterClass
+        @strainer[k] = v if v instanceof Function
 
   handleError: (e) ->
     @errors.push e
@@ -35,12 +36,14 @@ module.exports = class Context
     else
       "Liquid error: #{e.message}"
 
-  invoke: (method, args...) ->
-    if @strainer[method]?
-      f = @strainer[method]
-      f.apply(@strainer, args)
+  invoke: (methodName, args...) ->
+    method = @strainer[methodName]
+    
+    if method instanceof Function
+      method.apply @strainer, args
     else
-      args?[0]
+      available = Object.keys @strainer
+      throw new Error "Unknown method `#{methodName}`, available: [#{available.join(', ')}]"
 
   push: (newScope = {}) ->
     Liquid.log "SCOPE PUSH"

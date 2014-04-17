@@ -26,7 +26,7 @@ module.exports = class Condition
     @childCondition = null
 
   evaluate: (context) ->
-    context or= new Liquid.Context()
+    context ?= new Liquid.Context()
 
     result = @interpretCondition(@left, @right, @operator, context)
 

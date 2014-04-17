@@ -4,6 +4,7 @@ Promise = require "bluebird"
 module.exports = class Liquid.Engine
   constructor: ->
     @tags = {}
+    @Strainer = (@context) ->
     @registerFilters Liquid.StandardFilters
     
     isSubclassOf = (klass, ofKlass) ->
@@ -23,11 +24,13 @@ module.exports = class Liquid.Engine
     @tags[name] = tag
 
   registerFilter: (name, filter) ->
-    filters = name: filter
+    filters = {}
+    filters[name] = filter
     @registerFilters filters
 
   registerFilters: (obj) ->
-    Liquid.Strainer.globalFilter obj
+    for own k, v of obj
+      @Strainer::[k] = v if v instanceof Function
 
   parse: (source) ->
     template = new Liquid.Template
