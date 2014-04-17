@@ -4,7 +4,7 @@ Promise = require "bluebird"
 module.exports = class Liquid.Engine
   constructor: ->
     @tags = {}
-    @registerFilter Liquid.StandardFilters
+    @registerFilters Liquid.StandardFilters
     
     isSubclassOf = (klass, ofKlass) ->
       unless typeof klass is 'function'
@@ -22,7 +22,11 @@ module.exports = class Liquid.Engine
   registerTag: (name, tag) ->
     @tags[name] = tag
 
-  registerFilter: (obj) ->
+  registerFilter: (name, filter) ->
+    filters = name: filter
+    @registerFilters filters
+
+  registerFilters: (obj) ->
     Liquid.Strainer.globalFilter obj
 
   parse: (source) ->
