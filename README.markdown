@@ -55,7 +55,7 @@ Liquid is a template engine which was written with very specific requirements:
 
 ## How to use Liquid
 
-Liquid supports a very simple API based around the Liquid.Template class.
+Liquid supports a very simple API based around the Liquid.Engine class.
 For standard use you can just pass it the content of a file and call render with an object.
 
 ```coffeescript
@@ -65,10 +65,35 @@ engine = new Liquid.Engine
 engine.registerTag "MyTag", MyTag
 engine.registerFilter myFilter: (input) ->
   String(input).toUpperCase()
+```
 
-template = engine.parse("hi {{name}}")  # Parses and compiles the template
-promise = template.render name: "tobi"  # => [object Promise]
-promise.done console.log.bind(console)  # >> "hi tobi"
+```coffeescript
+parsePromise = engine.parse "hi {{name}}"
+
+renderPromise = parsePromise
+  .then (template) ->
+    template.render name: "tobi"
+
+renderPromise.then (output) ->
+  console.log output # >> "hi tobi"
+```
+
+or shorter
+
+```coffeescript
+engine.parse("hi {{name}}")
+  .then (template) ->
+    template.render name: "tobi"
+  .then (output) ->
+    console.log output # >> "hi tobi"
+```
+
+or even shorter
+
+```coffeescript
+engine.parseAndRender("hi {{name}}", name: "tobi")
+  .then (output) ->
+    console.log output # >> "hi tobi"
 ```
 
 ## Promises with `bluebird`
