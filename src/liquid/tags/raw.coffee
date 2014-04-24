@@ -2,15 +2,16 @@ Liquid = require "../../liquid"
 
 module.exports = class Raw extends Liquid.Block
   parse: (tokens) ->
-    @nodelist or= []
-    @nodelist.pop() while @nodelist.length > 0
+    Promise.try =>
+      return Promise.cast() if tokens.length is 0 or @ended
 
-    while tokens.length > 0
       token = tokens.shift()
       match = Liquid.Block.FullToken.exec(token)
 
       if match and @blockDelimiter() is match[1]
-        @endTag()
-        break
+        return @endTag()
       else if token.length > 0
-        @nodelist.push(token)
+        @nodelist.push token
+
+    .then =>
+      @parse tokens

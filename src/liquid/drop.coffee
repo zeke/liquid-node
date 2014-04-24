@@ -1,5 +1,3 @@
-{ _ } = require "underscore"
-
 # A drop in liquid is a class which allows you to to export DOM
 # like things to liquid.
 # Methods of drops are callable.

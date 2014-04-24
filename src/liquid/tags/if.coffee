@@ -1,6 +1,5 @@
 Liquid = require "../../liquid"
-{ _ } = require "underscore"
-Q = require "q"
+Promise = require "bluebird"
 
 module.exports = class If extends Liquid.Block
   SyntaxHelp = "Syntax Error in tag 'if' - Valid syntax: if [expression]"
@@ -22,12 +21,12 @@ module.exports = class If extends Liquid.Block
     +)
   ///
 
-  constructor: (template, tagName, markup, tokens) ->
+  constructor: (template, tagName, markup) ->
     @blocks = []
     @pushBlock('if', markup)
     super
 
-  unknownTag: (tag, markup, tokens) ->
+  unknownTag: (tag, markup) ->
     if ["elsif", "else"].indexOf(tag) >= 0
       @pushBlock(tag, markup)
     else
@@ -35,11 +34,17 @@ module.exports = class If extends Liquid.Block
 
   render: (context) ->
     context.stack =>
-      firstBlock = Liquid.async.detect @blocks, (block) ->
-        Q.when(block.evaluate(context)).then (ok) ->
-          if block.negate then !ok else ok
-
-      firstBlock.then (block) =>
+      Promise.reduce(@blocks, (chosenBlock, block) ->
+        return chosenBlock if chosenBlock? # short-circuit
+        
+        Promise
+        .try ->
+          block.evaluate context
+        .then (ok) ->
+          ok = !ok if block.negate
+          block if ok
+      , null)
+      .then (block) =>
         if block?
           @renderAll block.attachment, context
         else

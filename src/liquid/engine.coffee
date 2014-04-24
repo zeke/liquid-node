@@ -1,11 +1,11 @@
 Liquid = require "../liquid"
-{ _ } = require "underscore"
-Q = require "q"
+Promise = require "bluebird"
 
 module.exports = class Liquid.Engine
   constructor: ->
     @tags = {}
-    @registerFilter Liquid.StandardFilters
+    @Strainer = (@context) ->
+    @registerFilters Liquid.StandardFilters
     
     isSubclassOf = (klass, ofKlass) ->
       unless typeof klass is 'function'
@@ -23,10 +23,11 @@ module.exports = class Liquid.Engine
   registerTag: (name, tag) ->
     @tags[name] = tag
 
-  registerFilter: (obj) ->
-    Liquid.Strainer.globalFilter obj
+  registerFilters: (filters...) ->
+    filters.forEach (filter) =>
+      for own k, v of filter
+        @Strainer::[k] = v if v instanceof Function
 
   parse: (source) ->
     template = new Liquid.Template
     template.parse @, source
-    template

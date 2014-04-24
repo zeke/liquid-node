@@ -1,78 +1,92 @@
-Liquid = require("../src/index")
+util = require "util"
 
-module.exports =
-  test_variable: (onExit, assert) ->
+describe "Liquid.Variable", ->
+  it "is parsed", ->
     variable = new Liquid.Variable('hello')
-    assert.equal variable.name, 'hello'
+    expect(variable.name).to.equal 'hello'
 
-  test_filters: (onExit, assert) ->
+  it "parses filters", ->
     v = new Liquid.Variable('hello | textileze')
-    assert.equal 'hello', v.name
-    assert.deepEqual [["textileze",[]]], v.filters
+    expect('hello').to.equal v.name
+    expect([["textileze",[]]]).to.deep.equal v.filters
 
+  it "parses multiple filters", ->
     v = new Liquid.Variable('hello | textileze | paragraph')
-    assert.equal 'hello', v.name
-    assert.deepEqual [["textileze",[]], ["paragraph",[]]], v.filters
+    expect('hello').to.equal v.name
+    expect([["textileze",[]], ["paragraph",[]]]).to.deep.equal v.filters
 
+  it "parses filters with arguments", ->
     v = new Liquid.Variable("""hello | strftime: '%Y'""")
-    assert.equal 'hello', v.name
-    assert.deepEqual [["strftime",["'%Y'"]]], v.filters
+    expect('hello').to.equal v.name
+    expect([["strftime",["'%Y'"]]]).to.deep.equal v.filters
 
-    v = new Liquid.Variable("""'typo' | link_to: 'Typo', true""")
-    assert.equal """'typo'""", v.name
-    assert.deepEqual [["link_to",["'Typo'", "true"]]], v.filters
-
-    v = new Liquid.Variable("""'typo' | link_to: 'Typo', false""")
-    assert.equal """'typo'""", v.name
-    assert.deepEqual [["link_to",["'Typo'", "false"]]], v.filters
-
-    v = new Liquid.Variable("""'foo' | repeat: 3""")
-    assert.equal """'foo'""", v.name
-    assert.deepEqual [["repeat",["3"]]], v.filters
-
-    v = new Liquid.Variable("""'foo' | repeat: 3, 3""")
-    assert.equal """'foo'""", v.name
-    assert.deepEqual [["repeat",["3","3"]]], v.filters
-
-    v = new Liquid.Variable("""'foo' | repeat: 3, 3, 3""")
-    assert.equal """'foo'""", v.name
-    assert.deepEqual [["repeat",["3","3","3"]]], v.filters
-
+  it "parses filters with a string-argument that contains an argument-separator", ->
     v = new Liquid.Variable("""hello | strftime: '%Y, okay?'""")
-    assert.equal 'hello', v.name
-    assert.deepEqual [["strftime",["'%Y, okay?'"]]], v.filters
+    expect('hello').to.equal v.name
+    expect([["strftime",["'%Y, okay?'"]]]).to.deep.equal v.filters
 
-    v = new Liquid.Variable(""" hello | things: "%Y, okay?", 'the other one'""")
-    assert.equal 'hello', v.name
-    assert.deepEqual [["things",["\"%Y, okay?\"","'the other one'"]]], v.filters
-
-  test_filter_with_date_parameter: (onExit, assert) ->
+  it "parses filters with date formatting parameter", ->
     v = new Liquid.Variable(""" '2006-06-06' | date: "%m/%d/%Y" """)
-    assert.equal "'2006-06-06'", v.name
-    assert.deepEqual [["date",["\"%m/%d/%Y\""]]], v.filters
+    expect("'2006-06-06'").to.equal v.name
+    expect([["date",["\"%m/%d/%Y\""]]]).to.deep.equal v.filters
 
-  # TODO
+  describe "with multiple arguments", ->
+    it "parses ", ->
+      v = new Liquid.Variable("""'typo' | link_to: 'Typo', true""")
+      expect("""'typo'""").to.equal v.name
+      expect([["link_to",["'Typo'", "true"]]]).to.deep.equal v.filters
 
-  test_simple_variable: renderTest (render, assert) ->
-    render('worked', '{{test}}', test:'worked')
-    render('worked wonderfully', '{{test}}', test:'worked wonderfully')
+    it "parses", ->
+      v = new Liquid.Variable("""'typo' | link_to: 'Typo', false""")
+      expect("""'typo'""").to.equal v.name
+      expect([["link_to",["'Typo'", "false"]]]).to.deep.equal v.filters
 
-  test_local_filter: (onExit, assert) ->
-    MoneyFilter =
-      money: (input) ->
-        require('util').format(' %d$ ', input)
+    it "parses", ->
+      v = new Liquid.Variable("""'foo' | repeat: 3""")
+      expect("""'foo'""").to.equal v.name
+      expect([["repeat",["3"]]]).to.deep.equal v.filters
 
-      money_with_underscore: (input) ->
-        require('util').format(' %d$ ', input)
+    it "parses", ->
+      v = new Liquid.Variable("""'foo' | repeat: 3, 3""")
+      expect("""'foo'""").to.equal v.name
+      expect([["repeat",["3","3"]]]).to.deep.equal v.filters
 
-    context = new Liquid.Context()
-    context.set 'var', 1000
-    context.addFilters(MoneyFilter)
+    it "parses", ->
+      v = new Liquid.Variable("""'foo' | repeat: 3, 3, 3""")
+      expect("""'foo'""").to.equal v.name
+      expect([["repeat",["3","3","3"]]]).to.deep.equal v.filters
 
-    called = false
-    new Liquid.Variable("var | money").render(context).nodeify (err, result) ->
-      assert.equal ' 1000$ ', result
-      called = true
+    it "parses when a string-argument contains an argument-separator", ->
+      v = new Liquid.Variable(""" hello | things: "%Y, okay?", 'the other one'""")
+      expect('hello').to.equal v.name
+      expect([["things",["\"%Y, okay?\"","'the other one'"]]]).to.deep.equal v.filters
 
-    onExit ->
-      assert.equal true, called
+  it "renders", ->
+    renderTest 'worked', '{{ test }}', test:'worked'
+
+  context "with filter", ->
+    it "renders", ->
+      MoneyFilter =
+        money: (input) -> util.format ' $%d ', input
+        money_with_underscore: (input) -> util.format ' $%d ', input
+
+      context = new Liquid.Context
+      context.set 'var', 1000
+      context.registerFilters MoneyFilter
+
+      variable = new Liquid.Variable "var | money"
+      variable.render(context).then (result) ->
+        expect(result).to.equal ' $1000 '
+
+  # TODO: This doesn't work yet.
+  it.skip "prevents 'RangeError: Maximum call stack size exceeded'", ->
+    doc = "{{ a"
+    doc += ".a" while doc.length < (1024 * 1024)
+    doc += ".b"
+    doc += " }}"
+
+    a = {}
+    a.a = -> a
+    a.b = -> "STOP"
+
+    renderTest "STOP", doc, a: a

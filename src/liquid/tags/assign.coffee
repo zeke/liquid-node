@@ -1,5 +1,5 @@
 Liquid = require "../../liquid"
-Q = require "q"
+Promise = require "bluebird"
 
 module.exports = class Assign extends Liquid.Tag
   SyntaxHelp = "Syntax Error in 'assign' - Valid syntax: assign [var] = [source]"
@@ -9,7 +9,7 @@ module.exports = class Assign extends Liquid.Tag
       ((?:#{Liquid.QuotedFragment.source}))
     ///
 
-  constructor: (template, tagName, markup, tokens) ->
+  constructor: (template, tagName, markup) ->
     if match = Syntax.exec(markup)
       @to = match[1]
       @from = match[2]
@@ -19,9 +19,5 @@ module.exports = class Assign extends Liquid.Tag
     super
 
   render: (context) ->
-    value = context.get(@from)
-
-    Q.when(value).then (value) =>
-      Liquid.log "#{@from} -> #{@to}: %j", value
-      context.lastScope()[@to] = value
-      ''
+    context.lastScope()[@to] = context.get(@from)
+    ''

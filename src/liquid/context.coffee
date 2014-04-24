@@ -1,31 +1,26 @@
 Liquid = require "../liquid"
-{ _ } = require "underscore"
-Q = require "q"
+Promise = require "bluebird"
 
 module.exports = class Context
 
-  constructor: (environments = {}, outerScope = {}, registers = {}, rethrowErrors = false) ->
-    @environments = _.flatten [environments]
+  constructor: (engine, environments = {}, outerScope = {}, registers = {}, rethrowErrors = false) ->
+    @environments = Liquid.Helpers.flatten [environments]
     @scopes = [outerScope or {}]
     @registers = registers
     @errors = []
     @rethrowErrors = rethrowErrors
-    @strainer = Liquid.Strainer.create(@)
+    @strainer = new engine?.Strainer(@) ? {}
     @squashInstanceAssignsWithEnvironments()
-
 
   # Adds filters to this context.
   #
   # Note that this does not register the filters with the main
   # Template object. see <tt>Template.register_filter</tt>
   # for that
-  addFilters: (filters) ->
-    filters = _([filters]).chain().flatten().compact().value()
+  registerFilters: (filters...) ->
     filters.forEach (filter) =>
-      unless filter instanceof Object
-        throw new Error("Expected Object but got: #{typeof(filter)}")
-
-      _.extend @strainer, filter
+      for own k, v of filter
+        @strainer[k] = v if v instanceof Function
 
   handleError: (e) ->
     @errors.push e
@@ -36,12 +31,14 @@ module.exports = class Context
     else
       "Liquid error: #{e.message}"
 
-  invoke: (method, args...) ->
-    if @strainer[method]?
-      f = @strainer[method]
-      f.apply(@strainer, args)
+  invoke: (methodName, args...) ->
+    method = @strainer[methodName]
+    
+    if method instanceof Function
+      method.apply @strainer, args
     else
-      args?[0]
+      available = Object.keys @strainer
+      throw new Error "Unknown method `#{methodName}`, available: [#{available.join(', ')}]"
 
   push: (newScope = {}) ->
     Liquid.log "SCOPE PUSH"
@@ -49,7 +46,8 @@ module.exports = class Context
     throw new Error("Nesting too deep") if @scopes.length > 100
 
   merge: (newScope = {}) ->
-    _(@scopes[0]).extend(newScope)
+    for own k, v of newScope
+      @scopes[0][k] = v
 
   pop: ->
     Liquid.log "SCOPE POP"
@@ -78,7 +76,7 @@ module.exports = class Context
       @push(newScope)
       result = f()
 
-      if Q.isPromise result
+      if result?.nodeify?
         popLater = true
         result.nodeify => @pop()
 
@@ -141,22 +139,34 @@ module.exports = class Context
     else
       @variable(key)
 
-
   findVariable: (key) ->
-    scope = _(@scopes).detect (scope) -> scope.hasOwnProperty key
-    
+    variableScope = undefined
     variable = undefined
-    scope ?= _(@environments).detect (env) =>
-      variable = @lookupAndEvaluate(env, key)
-      variable?
 
-    scope ?= _(@environments).last or _(@scopes).last
-    variable ?= @lookupAndEvaluate(scope, key)
+    @scopes.some (scope) ->
+      if scope.hasOwnProperty key
+        variableScope = scope
+        true
+
+    unless variableScope?
+      @environments.some (env) =>
+        variable = @lookupAndEvaluate env, key
+        variableScope = env if variable?
+
+    unless variableScope?
+      if @environments.length > 0
+        variableScope = @environments[@environments.length - 1]
+      else if @scopes.length > 0
+        variableScope = @scopes[@scopes.length - 1]
+      else
+        throw new Error "No scopes to find variable in."
+
+    variable ?= @lookupAndEvaluate(variableScope, key)
     
-    Q.when(variable).then(@liquify.bind(@))
+    Promise.cast(variable).then (v) => @liquify v
 
   variable: (markup) ->
-    Q.fcall =>
+    Promise.try =>
       parts = Liquid.Helpers.scan(markup, Liquid.VariableParser)
       squareBracketed = /^\[(.*)\]$/
 
@@ -169,27 +179,27 @@ module.exports = class Context
       return object if parts.length is 0
 
       mapper = (part, object) =>
-        return Q.when(object) unless object?
+        return Promise.cast(object) unless object?
 
-        Q.when(object).then(@liquify.bind(@)).then (object) =>
+        Promise.cast(object).then(@liquify.bind(@)).then (object) =>
           return object unless object?
 
           bracketMatch = squareBracketed.exec part
           part = @resolve(bracketMatch[1]) if bracketMatch
 
-          Q.when(part).then (part) =>
-            isArrayAccess = (_.isArray(object) and _.isNumber(part))
-            isObjectAccess = (_.isObject(object) and (part of object))
+          Promise.cast(part).then (part) =>
+            isArrayAccess = (Array.isArray(object) and isFinite(part))
+            isObjectAccess = (object instanceof Object and (part of object))
             isSpecialAccess = (
               !bracketMatch and object and
-              (_.isArray(object) or _.isString(object)) and
+              (Array.isArray(object) or Object::toString.call(object) is "[object String]") and
               ["size", "first", "last"].indexOf(part) >= 0
             )
 
             if isArrayAccess or isObjectAccess
               # If object is a hash- or array-like object we look for the
               # presence of the key and if its available we return it
-              Q.when(@lookupAndEvaluate(object, part)).then(@liquify.bind(@))
+              Promise.cast(@lookupAndEvaluate(object, part)).then(@liquify.bind(@))
             else if isSpecialAccess
               # Some special cases. If the part wasn't in square brackets
               # and no key with the same name was found we interpret
@@ -211,7 +221,7 @@ module.exports = class Context
         if index < parts.length       
           mapper(parts[index], object).then (object) -> iterator(object, index + 1)
         else
-          Q.when(object)
+          Promise.cast(object)
 
       iterator(object, 0).then null, (err) ->
         throw new Error "Couldn't walk variable: #{markup}: #{err}"
@@ -227,14 +237,14 @@ module.exports = class Context
   squashInstanceAssignsWithEnvironments: ->
     lastScope = @lastScope()
 
-    _(lastScope).chain().keys().forEach (key) =>
-      _(@environments).detect (env) =>
+    Object.keys(lastScope).forEach (key) =>
+      @environments.some (env) =>
         if env.hasOwnProperty key
-          lastScope[key] = @lookupAndEvaluate(env, key)
+          lastScope[key] = @lookupAndEvaluate env, key
           true
 
   liquify: (object) ->
-    Q.when(object).then (object) =>
+    Promise.cast(object).then (object) =>
       unless object?
         return object 
       else if typeof object.toLiquid is "function"

@@ -1,22 +1,32 @@
-_ = require("underscore")._
-
 toNumber = (input) ->
-  Number(input)
+  Number input
+
+toObjectString = Object::toString
+  
+isString = (input) ->
+  toObjectString.call(input) is "[object String]"
 
 toString = (input) ->
-  return unless input
-
-  if _.isString(input)
+  unless input?
+    ""
+  else if isString input
     input
-  else if typeof input.toString == "function"
+  else if typeof input.toString is "function"
     input.toString()
   else
-    Object::toString.call(input)
+    toObjectString.call input
+
+# TODO: iterable -> array
+toArray = (input) ->
+  if Array.isArray input
+    input
+  else
+    [input]
 
 module.exports =
 
   size: (input) ->
-    input.length
+    input?.length ? 0
 
   downcase: (input) ->
     toString(input).toLowerCase()
@@ -73,8 +83,11 @@ module.exports =
 
   ## TODO!!!
 
-  join: (input, glue = ' ') ->
-    _(input).flatten().join(glue)
+  flatten: (input) ->
+    Liquid.Helpers.flatten toArray(input)
+
+  join: (input, glue=' ') ->
+    @flatten(input).join(glue)
 
   ## TODO!!!
 
@@ -85,7 +98,7 @@ module.exports =
   #    {{ product.images | first | to_img }}
   #
   first: (array) ->
-    if array.length > 0
+    if array?.length > 0
       array[0]
     else
       null
@@ -96,7 +109,7 @@ module.exports =
   #    {{ product.images | last | to_img }}
   #
   last: (array) ->
-    if array.length > 0
+    if array?.length > 0
       array[array.length-1]
     else
       null

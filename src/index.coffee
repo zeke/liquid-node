@@ -26,7 +26,6 @@ Liquid.Error = customError "Error"
 Liquid.Engine           = require("./liquid/engine")
 Liquid.Helpers          = require("./liquid/helpers")
 Liquid.Drop             = require("./liquid/drop")
-Liquid.Strainer         = require("./liquid/strainer")
 Liquid.Context          = require("./liquid/context")
 Liquid.Tag              = require("./liquid/tag")
 Liquid.Block            = require("./liquid/block")

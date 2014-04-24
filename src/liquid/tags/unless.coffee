@@ -6,6 +6,6 @@ module.exports = class Unless extends Liquid.If
   #
   #   {% unless x < 0 %} x is greater than zero {% end %}
   #
-  render: (context) ->
-    @blocks[0].negate = true
-    super
+  parse: ->
+    super.then =>
+      @blocks[0].negate = true

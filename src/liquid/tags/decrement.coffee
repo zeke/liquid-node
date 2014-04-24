@@ -19,7 +19,7 @@ Liquid = require "../../liquid"
 #    Hello: -3
 #
 module.exports = class Decrement extends Liquid.Tag
-  constructor: (template, tagName, markup, tokens) ->
+  constructor: (template, tagName, markup) ->
     @variable = markup.trim()
     super
 

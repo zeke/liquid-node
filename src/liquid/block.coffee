@@ -1,6 +1,6 @@
 Liquid = require("../liquid")
-_ = require("underscore")._
 util = require "util"
+Promise = require "bluebird"
 
 module.exports = class Block extends Liquid.Tag
   @IsTag             = ///^#{Liquid.TagStart.source}///
@@ -8,45 +8,50 @@ module.exports = class Block extends Liquid.Tag
   @FullToken         = ///^#{Liquid.TagStart.source}\s*(\w+)\s*(.*)?#{Liquid.TagEnd.source}$///
   @ContentOfVariable = ///^#{Liquid.VariableStart.source}(.*)#{Liquid.VariableEnd.source}$///
 
-  parse: (tokens) ->
-    @nodelist or= []
-    @nodelist.pop() while @nodelist.length > 0
-
-    while tokens.length > 0
-      token = tokens.shift()
-
-      if Block.IsTag.test(token)
-        if match = Block.FullToken.exec(token)
-          # if we found the proper block delimitor just end parsing
-          # here and let the outer block proceed
-
-          if @blockDelimiter() == match[1]
-            @endTag()
-            return
-
-          # fetch the tag from registered blocks
-          if tag = @template.tags[match[1]]
-            @nodelist.push new tag(@template, match[1], match[2], tokens)
-          else
-            # this tag is not registered with the system
-            # pass it to the current block for special
-            # handling or error reporting
-            @unknownTag(match[1], match[2], tokens)
-        else
-          throw new Liquid.SyntaxError("Tag '#{token}' was not properly terminated with regexp: #{Liquid.TagEnd.inspect}")
-      else if Block.IsVariable.test(token)
-        @nodelist.push @createVariable(token)
-      else if token == ''
-        # pass
-      else
-        @nodelist.push token
-
+  beforeParse: ->
+    @nodelist ?= []
+    @nodelist.length = 0 # clear array
+    
+  afterParse: ->
     # Make sure that its ok to end parsing in the current block.
     # Effectively this method will throw and exception unless the
     # current block is of type Document
     @assertMissingDelimitation()
 
+  parse: (tokens) ->
+    return Promise.cast() if tokens.length is 0 or @ended
+    token = tokens.shift()
+
+    Promise.try =>
+      if Block.IsTag.test(token.value)
+        match = Block.FullToken.exec(token.value)
+
+        unless match
+          throw new Liquid.SyntaxError("Tag '#{token.value}' was not properly terminated with regexp: #{Liquid.TagEnd.inspect}")
+
+        return @endTag() if @blockDelimiter() is match[1]
+
+        Tag = @template.tags[match[1]]
+        return @unknownTag match[1], match[2], tokens unless Tag
+
+        tag = new Tag @template, match[1], match[2]
+        @nodelist.push tag
+        tag.parseWithCallbacks tokens
+      else if Block.IsVariable.test(token.value)
+        @nodelist.push @createVariable(token)
+      else if token.value.length is 0
+        # skip empty tokens
+      else
+        @nodelist.push token.value
+    .catch (e) =>
+      e.message = "#{e.message}\n    at #{token.value} (#{token.filename}:#{token.line}:#{token.col})"
+      e.location ?= { col: token.col, line: token.line, filename: token.filename }
+      throw e
+    .then =>
+      @parse tokens
+
   endTag: ->
+    @ended = true
 
   unknownTag: (tag, params, tokens) ->
     switch tag
@@ -64,22 +69,29 @@ module.exports = class Block extends Liquid.Tag
     @tagName
 
   createVariable: (token) ->
-    match = Liquid.Block.ContentOfVariable.exec(token)?[1]
+    match = Liquid.Block.ContentOfVariable.exec(token.value)?[1]
     return new Liquid.Variable(match) if match
-    throw new Liquid.SyntaxError("Variable '#{@token}' was not properly terminated with regexp: #{Liquid.Block.VariableEnd.inspect}")
+    throw new Liquid.SyntaxError("Variable '#{token.value}' was not properly terminated with regexp: #{Liquid.Block.VariableEnd.inspect}")
 
   render: (context) ->
-    @renderAll(@nodelist, context)
+    @renderAll @nodelist, context
 
   assertMissingDelimitation: ->
-    throw new Liquid.SyntaxError("#{@blockName()} tag was never closed")
+    throw new Liquid.SyntaxError("#{@blockName()} tag was never closed") unless @ended
 
   renderAll: (list, context) ->
-    Liquid.async
-      .map list, (token) ->
-        try
-          if token.render then token.render(context) else token
-        catch e
-          context.handleError(e)
-          throw e
-      .then (result) -> result.join("")
+    Promise.reduce(list, (output, token) ->
+      if typeof token?.render is "function"
+        Promise.try ->
+          Promise
+          .cast(token.render(context))
+          .then (renderedToken) ->
+            output.push renderedToken
+            output
+        .catch (e) ->
+          output.push context.handleError e
+          output
+      else
+        output.push token
+        output
+    , [])

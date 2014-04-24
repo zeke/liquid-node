@@ -1,6 +1,5 @@
 Liquid = require "../../liquid"
-{ _ } = require "underscore"
-Q = require "q"
+Promise = require "bluebird"
 
 # "For" iterates over an array or collection.
 # Several useful variables are available to you within the loop.
@@ -53,13 +52,13 @@ module.exports = class For extends Liquid.Block
       \s*(reversed)?
     ///
 
-  constructor: (template, tagName, markup, tokens) ->
+  constructor: (template, tagName, markup) ->
     match = Syntax.exec(markup)
 
     if match
       @variableName = match[1]
       @collectionName = match[2]
-      @name = "#{match[1]}=#{match[2]}"
+      @registerName = "#{match[1]}=#{match[2]}"
       @reversed = match[3]
       @attributes = {}
 
@@ -71,18 +70,18 @@ module.exports = class For extends Liquid.Block
     @nodelist = @forBlock = []
     super
 
-  unknownTag: (tag, markup, tokens) ->
+  unknownTag: (tag, markup) ->
     return super unless tag == "else"
     @nodelist = @elseBlock = []
 
   render: (context) ->
     context.registers.for or= {}
 
-    Q.when(context.get(@collectionName)).then (collection) =>
+    Promise.cast(context.get(@collectionName)).then (collection) =>
       return @renderElse(context) unless collection and collection.forEach
 
       from = if @attributes.offset == "continue"
-        Number(context.registers["for"][@name]) or 0
+        Number(context.registers["for"][@registerName]) or 0
       else
         Number(@attributes.offset) or 0
 
@@ -98,27 +97,31 @@ module.exports = class For extends Liquid.Block
       length = segment.length
 
       # Store our progress through the collection for the continue flag
-      context.registers["for"][@name] = from + segment.length
+      context.registers["for"][@registerName] = from + segment.length
 
       context.stack =>
-        Liquid.async.map segment, (item, index) =>
-            try
-              context.set @variableName, item
-              context.set "forloop",
-                name    : @name
-                length  : length
-                index   : index + 1
-                index0  : index,
-                rindex  : length - index
-                rindex0 : length - index - 1
-                first   : index == 0
-                last    : index == length - 1
-
-              @renderAll(@forBlock, context)
-            catch e
-              console.log "for-loop failed: %s %s", e, e.stack
-              throw e
-          .then (chunks) -> chunks.join("")
+        Promise.reduce(segment, (output, item, index) =>
+          context.set @variableName, item
+          context.set "forloop",
+            name    : @registerName
+            length  : length
+            index   : index + 1
+            index0  : index,
+            rindex  : length - index
+            rindex0 : length - index - 1
+            first   : index == 0
+            last    : index == length - 1
+            
+          Promise
+          .try =>
+            @renderAll(@forBlock, context)
+          .then (rendered) ->
+            output.push rendered
+            output
+          .catch (e) ->
+            output.push context.handleError e
+            output
+        , [])
 
   sliceCollection: (collection, from, to) ->
     if to then collection[from...to] else collection[from...]

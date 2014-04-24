@@ -1,81 +1,68 @@
-Liquid = require("../src/index")
+describe "Liquid.Condition", ->
+  context "if", ->
+    it "renders on `true` variables", ->
+      renderTest('X', '{% if var %}X{% endif %}', var: true)
 
-module.exports =
-  test_if: renderTest (assert_template_result) ->
+    it "doesn't render on `false` variables", ->
+      renderTest('', '{% if var %}X{% endif %}', var: false)
 
+    it "renders on truthy variables", ->
+      renderTest('X', '{% if var %}X{% endif %}', var: "abc")
 
-    assert_template_result('  ',' {% if false %} this text should not go into the output {% endif %} ')
-    assert_template_result('  this text should go into the output  ',
-                           ' {% if true %} this text should go into the output {% endif %} ')
-    assert_template_result('  you rock ?','{% if false %} you suck {% endif %} {% if true %} you rock {% endif %}?')
+    it "doesn't render on falsy variables", ->
+      renderTest('', '{% if var %}X{% endif %}', var: null)
 
-  test_if_else: renderTest (assert_template_result) ->
+    it "renders on truthy object properties", ->
+      renderTest('X', '{% if foo.bar %}X{% endif %}', foo: { bar: "abc" })
 
+    it "doesn't render on falsy object properties", ->
+      renderTest('', '{% if foo.bar %}X{% endif %}', foo: { bar: null })
 
-    assert_template_result(' YES ','{% if false %} NO {% else %} YES {% endif %}')
-    assert_template_result(' YES ','{% if true %} YES {% else %} NO {% endif %}')
-    assert_template_result(' YES ','{% if "foo" %} YES {% else %} NO {% endif %}')
+    it "renders on truthy constants", ->
+      renderTest('X','{% if "foo" %}X{% endif %}')
 
-  test_if_boolean: renderTest (assert_template_result) ->
+    it "doesn't render on falsy constants", ->
+      renderTest('','{% if null %}X{% endif %}', null: 42)
 
+    context "with condition", ->
+      it "(true or true) renders", ->
+        renderTest('X','{% if a or b %}X{% endif %}', a: true, b: true)
 
-    assert_template_result(' YES ','{% if var %} YES {% endif %}', 'var': true)
+      it "(true or false) renders", ->
+        renderTest('X','{% if a or b %}X{% endif %}', a: true, b: false)
 
-  test_if_or: renderTest (assert_template_result) ->
+      it "(false or true) renders", ->
+        renderTest('X','{% if a or b %}X{% endif %}', a: false, b: true)
 
+      it "(true or true) doesn't render", ->
+        renderTest('', '{% if a or b %}X{% endif %}', a: false, b: false)
 
-    assert_template_result(' YES ','{% if a or b %} YES {% endif %}', 'a': true, 'b': true)
-    assert_template_result(' YES ','{% if a or b %} YES {% endif %}', 'a': true, 'b': false)
-    assert_template_result(' YES ','{% if a or b %} YES {% endif %}', 'a': false, 'b': true)
-    assert_template_result('',     '{% if a or b %} YES {% endif %}', 'a': false, 'b': false)
+    context "with operators", ->
+      it "that evaluate to true renders", ->
+        renderTest 'X','{% if a == 42 %}X{% endif %}', a: 42
 
-    assert_template_result(' YES ','{% if a or b or c %} YES {% endif %}', 'a': false, 'b': false, 'c': true)
-    assert_template_result('',     '{% if a or b or c %} YES {% endif %}', 'a': false, 'b': false, 'c': false)
+      it "that evaluate to false doesn't render", ->
+        renderTest '','{% if a != 42 %}X{% endif %}', a: 42
 
-  test_if_or_with_operators: renderTest (assert_template_result) ->
+    context "with awful markup", ->
+      it "renders correctly", ->
+        awful_markup = "a == 'and' and b == 'or' and c == 'foo and bar' and d == 'bar or baz' and e == 'foo' and foo and bar"
+        assigns = {'a': 'and', 'b': 'or', 'c': 'foo and bar', 'd': 'bar or baz', 'e': 'foo', 'foo': true, 'bar': true}
+        renderTest(' YES ',"{% if #{awful_markup} %} YES {% endif %}", assigns)
 
+    context "with else-branch", ->
+      it "renders else-branch on falsy variables", ->
+        renderTest 'ELSE', '{% if var %}IF{% else %}ELSE{% endif %}', var: false
 
-    assert_template_result(' YES ','{% if a == true or b == true %} YES {% endif %}', 'a': true, 'b': true)
-    assert_template_result(' YES ','{% if a == true or b == false %} YES {% endif %}', 'a': true, 'b': true)
-    assert_template_result('','{% if a == false or b == false %} YES {% endif %}', 'a': true, 'b': true)
+      it "renders if-branch on truthy variables", ->
+        renderTest 'IF', '{% if var %}IF{% else %}ELSE{% endif %}', var: true
 
-  test_comparison_of_strings_containing_and_or_or: renderTest (assert_template_result) ->
+  describe "unless", ->
+    it "negates 'false'", ->
+      renderTest(' TRUE ','{% unless false %} TRUE {% endunless %}')
 
+    it "negates 'true'", ->
+      renderTest('','{% unless true %} FALSE {% endunless %}')
 
-    awful_markup = "a == 'and' and b == 'or' and c == 'foo and bar' and d == 'bar or baz' and e == 'foo' and foo and bar"
-    assigns = {'a': 'and', 'b': 'or', 'c': 'foo and bar', 'd': 'bar or baz', 'e': 'foo', 'foo': true, 'bar': true}
-    assert_template_result(' YES ',"{% if #{awful_markup} %} YES {% endif %}", assigns)
-
-  test_if_from_variable: renderTest (assert_template_result) ->
-
-
-    assert_template_result('','{% if var %} NO {% endif %}', 'var': false)
-    assert_template_result('','{% if var %} NO {% endif %}', 'var': null)
-    assert_template_result('','{% if foo.bar %} NO {% endif %}', 'foo': {'bar': false})
-    assert_template_result('','{% if foo.bar %} NO {% endif %}', 'foo': {})
-    assert_template_result('','{% if foo.bar %} NO {% endif %}', 'foo': null)
-    assert_template_result('','{% if foo.bar %} NO {% endif %}', 'foo': true)
-
-    assert_template_result(' YES ','{% if var %} YES {% endif %}', 'var': "text")
-    assert_template_result(' YES ','{% if var %} YES {% endif %}', 'var': true)
-    assert_template_result(' YES ','{% if var %} YES {% endif %}', 'var': 1)
-    assert_template_result(' YES ','{% if var %} YES {% endif %}', 'var': {})
-    assert_template_result(' YES ','{% if var %} YES {% endif %}', 'var': [])
-    assert_template_result(' YES ','{% if "foo" %} YES {% endif %}')
-    assert_template_result(' YES ','{% if foo.bar %} YES {% endif %}', 'foo': {'bar': true})
-    assert_template_result(' YES ','{% if foo.bar %} YES {% endif %}', 'foo': {'bar': "text"})
-    assert_template_result(' YES ','{% if foo.bar %} YES {% endif %}', 'foo': {'bar': 1 })
-    assert_template_result(' YES ','{% if foo.bar %} YES {% endif %}', 'foo': {'bar': {} })
-    assert_template_result(' YES ','{% if foo.bar %} YES {% endif %}', 'foo': {'bar': [] })
-
-    assert_template_result(' YES ','{% if var %} NO {% else %} YES {% endif %}', 'var': false)
-    assert_template_result(' YES ','{% if var %} NO {% else %} YES {% endif %}', 'var': null)
-    assert_template_result(' YES ','{% if var %} YES {% else %} NO {% endif %}', 'var': true)
-    assert_template_result(' YES ','{% if "foo" %} YES {% else %} NO {% endif %}', 'var': "text")
-
-    assert_template_result(' YES ','{% if foo.bar %} NO {% else %} YES {% endif %}', 'foo': {'bar': false})
-    assert_template_result(' YES ','{% if foo.bar %} YES {% else %} NO {% endif %}', 'foo': {'bar': true})
-    assert_template_result(' YES ','{% if foo.bar %} YES {% else %} NO {% endif %}', 'foo': {'bar': "text"})
-    assert_template_result(' YES ','{% if foo.bar %} NO {% else %} YES {% endif %}', 'foo': {'notbar': true})
-    assert_template_result(' YES ','{% if foo.bar %} NO {% else %} YES {% endif %}', 'foo': {})
-    assert_template_result(' YES ','{% if foo.bar %} NO {% else %} YES {% endif %}', 'notfoo': {'bar': true})
+    it "supports else", ->
+      renderTest(' TRUE ','{% unless true %} FALSE {% else %} TRUE {% endunless %}')
