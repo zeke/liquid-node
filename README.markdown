@@ -60,11 +60,16 @@ For standard use you can just pass it the content of a file and call render with
 
 ```coffeescript
 Liquid = require "liquid-node"
-
 engine = new Liquid.Engine
+
+# registration of new tags
+# see https://github.com/sirlantis/liquid-node/tree/master/src/liquid/tags
 engine.registerTag "MyTag", MyTag
-engine.registerFilter myFilter: (input) ->
-  String(input).toUpperCase()
+
+# registration of new filters
+engine.registerFilters
+  myFilter: (input) ->
+    String(input).toUpperCase()
 ```
 
 ```coffeescript
