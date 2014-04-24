@@ -2,6 +2,8 @@
 
 ## 0.3.0 (next release)
 
+- API: Tag constructor doesn't get `tokens` anymore. It will be passed to `parse` instead.
+- API: Added `beforeParse` and `afterParse` hooks to allow better sharing of code.
 - API: Tags can now return arrays in `render()` that will be concatenated to a string.
 - API: `template.parse()` and `engine.parse()` will return a Promise now.
 - API: `template.parse()` is now async-aware. Any Tag can do async parsing now.

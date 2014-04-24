@@ -1,9 +1,8 @@
 Liquid = require "../../liquid"
 
 module.exports = class Raw extends Liquid.Block
-  _parse: (tokens) ->
-    @_promise = Promise
-    .try =>
+  parse: (tokens) ->
+    Promise.try =>
       return Promise.cast() if tokens.length is 0 or @ended
 
       token = tokens.shift()
@@ -15,4 +14,4 @@ module.exports = class Raw extends Liquid.Block
         @nodelist.push token
 
     .then =>
-      @_parse tokens
+      @parse tokens

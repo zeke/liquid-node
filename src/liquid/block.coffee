@@ -8,22 +8,21 @@ module.exports = class Block extends Liquid.Tag
   @FullToken         = ///^#{Liquid.TagStart.source}\s*(\w+)\s*(.*)?#{Liquid.TagEnd.source}$///
   @ContentOfVariable = ///^#{Liquid.VariableStart.source}(.*)#{Liquid.VariableEnd.source}$///
 
-  parse: (tokens) ->
+  beforeParse: ->
     @nodelist ?= []
     @nodelist.length = 0 # clear array
+    
+  afterParse: ->
+    # Make sure that its ok to end parsing in the current block.
+    # Effectively this method will throw and exception unless the
+    # current block is of type Document
+    @assertMissingDelimitation()
 
-    @_parse(tokens).then =>
-      # Make sure that its ok to end parsing in the current block.
-      # Effectively this method will throw and exception unless the
-      # current block is of type Document
-      @assertMissingDelimitation()
-
-  _parse: (tokens) ->
+  parse: (tokens) ->
     return Promise.cast() if tokens.length is 0 or @ended
     token = tokens.shift()
 
-    @_promise = Promise
-    .try =>
+    Promise.try =>
       if Block.IsTag.test(token.value)
         match = Block.FullToken.exec(token.value)
 
@@ -35,9 +34,9 @@ module.exports = class Block extends Liquid.Tag
         Tag = @template.tags[match[1]]
         return @unknownTag match[1], match[2], tokens unless Tag
 
-        tag = new Tag @template, match[1], match[2], tokens
+        tag = new Tag @template, match[1], match[2]
         @nodelist.push tag
-        tag._promise
+        tag.parseWithCallbacks tokens
       else if Block.IsVariable.test(token.value)
         @nodelist.push @createVariable(token)
       else if token.value.length is 0
@@ -49,7 +48,7 @@ module.exports = class Block extends Liquid.Tag
       e.location ?= { col: token.col, line: token.line, filename: token.filename }
       throw e
     .then =>
-      @_parse tokens
+      @parse tokens
 
   endTag: ->
     @ended = true

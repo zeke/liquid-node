@@ -21,12 +21,12 @@ module.exports = class If extends Liquid.Block
     +)
   ///
 
-  constructor: (template, tagName, markup, tokens) ->
+  constructor: (template, tagName, markup) ->
     @blocks = []
     @pushBlock('if', markup)
     super
 
-  unknownTag: (tag, markup, tokens) ->
+  unknownTag: (tag, markup) ->
     if ["elsif", "else"].indexOf(tag) >= 0
       @pushBlock(tag, markup)
     else

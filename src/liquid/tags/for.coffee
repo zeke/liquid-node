@@ -52,7 +52,7 @@ module.exports = class For extends Liquid.Block
       \s*(reversed)?
     ///
 
-  constructor: (template, tagName, markup, tokens) ->
+  constructor: (template, tagName, markup) ->
     match = Syntax.exec(markup)
 
     if match
@@ -70,7 +70,7 @@ module.exports = class For extends Liquid.Block
     @nodelist = @forBlock = []
     super
 
-  unknownTag: (tag, markup, tokens) ->
+  unknownTag: (tag, markup) ->
     return super unless tag == "else"
     @nodelist = @elseBlock = []
 
