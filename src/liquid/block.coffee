@@ -23,32 +23,35 @@ module.exports = class Block extends Liquid.Tag
     token = tokens.shift()
 
     Promise.try =>
-      if Block.IsTag.test(token.value)
-        match = Block.FullToken.exec(token.value)
-
-        unless match
-          throw new Liquid.SyntaxError("Tag '#{token.value}' was not properly terminated with regexp: #{Liquid.TagEnd.inspect}")
-
-        return @endTag() if @blockDelimiter() is match[1]
-
-        Tag = @template.tags[match[1]]
-        return @unknownTag match[1], match[2], tokens unless Tag
-
-        tag = new Tag @template, match[1], match[2]
-        @nodelist.push tag
-        tag.parseWithCallbacks tokens
-      else if Block.IsVariable.test(token.value)
-        @nodelist.push @createVariable(token)
-      else if token.value.length is 0
-        # skip empty tokens
-      else
-        @nodelist.push token.value
+      @parseToken token, tokens
     .catch (e) =>
       e.message = "#{e.message}\n    at #{token.value} (#{token.filename}:#{token.line}:#{token.col})"
       e.location ?= { col: token.col, line: token.line, filename: token.filename }
       throw e
     .then =>
       @parse tokens
+
+  parseToken: (token, tokens) ->
+    if Block.IsTag.test(token.value)
+      match = Block.FullToken.exec(token.value)
+
+      unless match
+        throw new Liquid.SyntaxError("Tag '#{token.value}' was not properly terminated with regexp: #{Liquid.TagEnd.inspect}")
+
+      return @endTag() if @blockDelimiter() is match[1]
+
+      Tag = @template.tags[match[1]]
+      return @unknownTag match[1], match[2], tokens unless Tag
+
+      tag = new Tag @template, match[1], match[2]
+      @nodelist.push tag
+      tag.parseWithCallbacks tokens
+    else if Block.IsVariable.test(token.value)
+      @nodelist.push @createVariable(token)
+    else if token.value.length is 0
+      # skip empty tokens
+    else
+      @nodelist.push token.value
 
   endTag: ->
     @ended = true
