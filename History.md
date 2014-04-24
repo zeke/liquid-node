@@ -3,6 +3,7 @@
 ## 0.3.1
 
 - ADDED: New `engine.parseAndRender(input, args...)` that simplifies `engine.parse(input).then (t) -> t.render(args...)`.
+- REFACTORING: Extracted `engine.parseToken` from `engine.parse`. (API does not break)
 
 ## 0.3.0
 
