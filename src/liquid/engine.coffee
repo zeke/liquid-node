@@ -31,3 +31,7 @@ module.exports = class Liquid.Engine
   parse: (source) ->
     template = new Liquid.Template
     template.parse @, source
+
+  parseAndRender: (source, args...) ->
+    @parse(source).then (template) ->
+      template.render(args...)

@@ -1,6 +1,10 @@
 # LiquidNode Change History
 
-## 0.3.0 (next release)
+## 0.3.1
+
+- ADDED: New `engine.parseAndRender(input, args...)` that simplifies `engine.parse(input).then (t) -> t.render(args...)`.
+
+## 0.3.0
 
 - API: Tag constructor doesn't get `tokens` anymore. It will be passed to `parse` instead.
 - API: Added `beforeParse` and `afterParse` hooks to allow better sharing of code.

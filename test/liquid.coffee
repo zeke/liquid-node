@@ -1,6 +1,11 @@
 describe "Liquid", ->
   beforeEach -> @engine = new Liquid.Engine
 
+  context "parseAndRender", ->
+    it "is supported", ->
+      expect(@engine.parseAndRender("{{ foo }}", foo: 123)).to.be.fulfilled.then (output) ->
+        expect(output).to.be.eq "123"
+
   context "parser", ->
     it "parses empty templates", ->
       expect(@engine.parse("")).to.be.fulfilled.then (template) ->
