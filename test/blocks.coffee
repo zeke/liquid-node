@@ -64,3 +64,11 @@ describe "IfChanged", ->
     renderTest('123', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', array: [ 1, 1, 2, 2, 3, 3 ])
   it "renders correctly", ->
     renderTest('1', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', array: [ 1, 1, 1, 1 ])
+
+describe "Capture", ->
+  it "captures", ->
+    renderTest 'X', '{% capture foo %}Foo{% endcapture %}{% if "Foo" == foo %}X{% endif %}'
+
+  it "assigns a variable", ->
+    renderTest  '.bar.', '{% assign foo = values %}.{{ foo[1] }}.',
+      values: ["foo", "bar", "baz"]

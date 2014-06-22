@@ -26,6 +26,7 @@ module.exports = class Capture extends Liquid.Block
     super
 
   render: (context) ->
-    output = super
-    context.lastScope()[@to] = output
-    ""
+    super.then (chunks) =>
+      output = Liquid.Helpers.toFlatString chunks
+      context.lastScope()[@to] = output
+      ""
