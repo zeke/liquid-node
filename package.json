@@ -12,7 +12,7 @@
     }
   ],
   "description": "Node.js port of Tobias Lütke's Liquid template engine.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "homepage": "https://github.com/sirlantis/liquid-node",
   "bugs": "https://github.com/sirlantis/liquid-node/issues",
   "repository": {
