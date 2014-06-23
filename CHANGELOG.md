@@ -1,5 +1,9 @@
 # LiquidNode Change History
 
+## 1.1.0
+
+- COMPAT: Update `bluebird` dependency.
+
 ## 1.0.0
 
 - COMPAT: Require Node.js `>=0.10`.
