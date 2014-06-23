@@ -83,18 +83,11 @@ module.exports = class Block extends Liquid.Tag
     throw new Liquid.SyntaxError("#{@blockName()} tag was never closed") unless @ended
 
   renderAll: (list, context) ->
-    Promise.reduce(list, (output, token) ->
-      if typeof token?.render is "function"
-        Promise.try ->
-          Promise
-          .cast(token.render(context))
-          .then (renderedToken) ->
-            output.push renderedToken
-            output
-        .catch (e) ->
-          output.push context.handleError e
-          output
-      else
-        output.push token
-        output
-    , [])
+    Promise.map list, (token) ->
+      return token unless typeof token?.render is "function"
+
+      Promise.try ->
+        token.render context
+      .catch (e) ->
+        context.handleError e
+    , concurrency: 1
