@@ -1,4 +1,4 @@
 # TODOs
 
-- port missing filters from Ruby
-- exceptions with line numbers
+- [x] port missing filters from Ruby
+- [ ] exceptions with line numbers
