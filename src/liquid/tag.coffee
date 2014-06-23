@@ -8,7 +8,7 @@ module.exports = class Tag
       parse = => @parse(args...).then => @afterParse(args...)
     else
       parse = => @parse(args...)
-      
+
     if @beforeParse
       Promise.cast(@beforeParse(args...)).then parse
     else

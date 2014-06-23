@@ -6,7 +6,7 @@ module.exports = class Liquid.Engine
     @tags = {}
     @Strainer = (@context) ->
     @registerFilters Liquid.StandardFilters
-    
+
     isSubclassOf = (klass, ofKlass) ->
       unless typeof klass is 'function'
         false
@@ -14,7 +14,7 @@ module.exports = class Liquid.Engine
         true
       else
         isSubclassOf klass.__super__?.constructor, ofKlass
-    
+
     for own tagName, tag of Liquid
       continue unless isSubclassOf(tag, Liquid.Tag)
       isBlockOrTagBaseClass = [Liquid.Tag, Liquid.Block].indexOf(tag.constructor) >= 0

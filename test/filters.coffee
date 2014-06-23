@@ -8,7 +8,7 @@ describe "StandardFilters", ->
 
   for own filterName, filter of Liquid.StandardFilters
     describe filterName, ->
-      [null, undefined, true, false, 1, "string", [], {}].forEach (param) =>
+      [null, undefined, true, false, 1, "string", [], {}].forEach (param) ->
         paramString = JSON.stringify param
         it "handles `#{paramString}` as input", ->
           expect ->

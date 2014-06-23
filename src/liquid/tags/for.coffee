@@ -111,7 +111,7 @@ module.exports = class For extends Liquid.Block
             rindex0 : length - index - 1
             first   : index == 0
             last    : index == length - 1
-            
+
           Promise
           .try =>
             @renderAll(@forBlock, context)

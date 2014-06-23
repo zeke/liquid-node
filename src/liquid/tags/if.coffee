@@ -36,7 +36,7 @@ module.exports = class If extends Liquid.Block
     context.stack =>
       Promise.reduce(@blocks, (chosenBlock, block) ->
         return chosenBlock if chosenBlock? # short-circuit
-        
+
         Promise
         .try ->
           block.evaluate context
