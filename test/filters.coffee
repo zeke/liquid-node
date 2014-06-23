@@ -83,7 +83,7 @@ describe "StandardFilters", ->
         { name: "sirlantis" }
       ])
 
-  describe "map", -> 
+  describe "map", ->
     it "maps/collects an array on a given property", ->
       expect(@filters.map([1, 2, 3])).to.deep.equal([1, 2, 3])
       expect(@filters.map([
@@ -94,7 +94,7 @@ describe "StandardFilters", ->
 
   describe "escape", ->
     it "escapes strings", ->
-      expect(@filters.escape("<strong>")).to.equal "&lt;strong&gt;" 
+      expect(@filters.escape("<strong>")).to.equal "&lt;strong&gt;"
 
   describe "escape_once", ->
     it "returns an escaped version of html without affecting existing escaped entities", ->
@@ -105,11 +105,11 @@ describe "StandardFilters", ->
     it "strip html from string", ->
       expect(@filters.strip_html("<div>test</div>")).to.equal "test"
       expect(@filters.strip_html("<div id='test'>test</div>")).to.equal "test"
-      
+
       expect(@filters.strip_html(
         "<script type='text/javascript'>document.write('some stuff');</script>"
       )).to.equal ""
-      
+
       expect(@filters.strip_html(
         "<style type='text/css'>foo bar</style>"
       )).to.equal ""
