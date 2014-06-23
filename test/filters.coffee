@@ -157,10 +157,10 @@ describe "StandardFilters", ->
       expect(@filters.date("2006-07-05 10:00:00", "%B")).to.equal "July"
 
     it "formats without format", ->
-      expect(@filters.date("2006-05-05 10:00:00")).to.equal "Fri, 05 May 2006 08:00:00 GMT"
-      expect(@filters.date("2006-05-05 10:00:00", undefined)).to.equal "Fri, 05 May 2006 08:00:00 GMT"
-      expect(@filters.date("2006-05-05 10:00:00", null)).to.equal "Fri, 05 May 2006 08:00:00 GMT"
-      expect(@filters.date("2006-05-05 10:00:00", "")).to.equal "Fri, 05 May 2006 08:00:00 GMT"
+      expect(@filters.date("2006-05-05 08:00:00 GMT")).to.equal "Fri, 05 May 2006 08:00:00 GMT"
+      expect(@filters.date("2006-05-05 08:00:00 GMT", undefined)).to.equal "Fri, 05 May 2006 08:00:00 GMT"
+      expect(@filters.date("2006-05-05 08:00:00 GMT", null)).to.equal "Fri, 05 May 2006 08:00:00 GMT"
+      expect(@filters.date("2006-05-05 08:00:00 GMT", "")).to.equal "Fri, 05 May 2006 08:00:00 GMT"
 
     it "formats with format", ->
       expect(@filters.date("2006-07-05 10:00:00", "%m/%d/%Y")).to.equal "07/05/2006"
