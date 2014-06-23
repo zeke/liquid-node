@@ -23,6 +23,19 @@ toArray = (input) ->
   else
     [input]
 
+HTML_ESCAPE = (chr) ->
+  switch chr
+    when "&" then '&amp;'
+    when ">" then '&gt;'
+    when "<" then '&lt;'
+    when '"' then '&quot;'
+    when "'" then '&#39;'
+
+HTML_ESCAPE_ONCE_REGEXP = /["><']|&(?!([a-zA-Z]+|(#\d+));)/g
+
+HTML_ESCAPE_REGEXP = /([&><"'])/g
+
+
 module.exports =
 
   size: (input) ->
@@ -35,17 +48,73 @@ module.exports =
     toString(input).toUpperCase()
 
   append: (input, other) ->
-    [toString(input), toString(other)].join()
+    [toString(input), toString(other)].join("")
 
   prepend: (input, other) ->
-    [toString(other), toString(input)].join()
+    [toString(other), toString(input)].join("")
 
   empty: (input) ->
     return true unless input
     return false unless input.length?
     true
 
-  ## TODO!!!
+  capitalize: (input) ->
+    toString(input).replace /^([a-z])/, (m, chr) ->
+      chr.toUpperCase()
+
+  sort: (input, property) ->
+    if property?
+      toArray(input).sort (a, b) ->
+        aValue = a[property] 
+        bValue = b[property] 
+
+        aValue > bValue ? 1 : (aValue == bValue ? 0 : -1)
+    else
+      toArray(input).sort()
+
+  map: (input, property) ->
+    toArray(input).map (e) ->
+      if property? 
+        e[property]
+      else
+        e
+
+  escape: (input) ->
+    toString(input).replace HTML_ESCAPE_REGEXP, HTML_ESCAPE
+
+  escape_once: (input) ->
+    toString(input).replace HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE
+
+  # References:
+  # - http://www.sitepoint.com/forums/showthread.php?218218-Javascript-Regex-making-Dot-match-new-lines 
+  strip_html: (input) ->
+    toString(input)
+      .replace(/<script[\s\S]*?<\/script>/g, "")
+      .replace(/<!--[\s\S]*?-->/g, "")
+      .replace(/<style[\s\S]*?<\/style>/g, "")
+      .replace(/<[^>]*?>/g, "")
+
+  strip_newlines: (input) ->
+    toString(input).replace(/\r?\n/g, "")
+
+  newline_to_br: (input) ->
+    toString(input).replace(/\n/g, "<br />\n")
+
+  # To be accurate, we might need to escape special chars in the string
+  # 
+  # References:
+  # - http://stackoverflow.com/a/1144788/179691
+  replace: (input, string, replacement = "") ->
+    toString(input).replace(new RegExp(string, 'g'), replacement)
+
+  replace_first: (input, string, replacement = "") ->
+    toString(input).replace(string, replacement)
+
+  remove: (input, string) ->
+    @replace(input, string)
+
+  remove_first: (input, string) ->
+    @replace_first(input, string)
 
   truncate: (input, length = 50, truncateString = '...') ->
     input = toString(input)
@@ -125,6 +194,9 @@ module.exports =
 
   dividedBy: (input, operand) ->
     toNumber(input) / toNumber(operand)
+
+  divided_by: (input, operand) ->
+    @dividedBy(input, operand)
 
   modulo: (input, operand) ->
     toNumber(input) % toNumber(operand)
