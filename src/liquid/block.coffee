@@ -11,7 +11,7 @@ module.exports = class Block extends Liquid.Tag
   beforeParse: ->
     @nodelist ?= []
     @nodelist.length = 0 # clear array
-    
+
   afterParse: ->
     # Make sure that its ok to end parsing in the current block.
     # Effectively this method will throw and exception unless the
@@ -24,7 +24,7 @@ module.exports = class Block extends Liquid.Tag
 
     Promise.try =>
       @parseToken token, tokens
-    .catch (e) =>
+    .catch (e) ->
       e.message = "#{e.message}\n    at #{token.value} (#{token.filename}:#{token.line}:#{token.col})"
       e.location ?= { col: token.col, line: token.line, filename: token.filename }
       throw e

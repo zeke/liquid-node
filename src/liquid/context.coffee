@@ -33,7 +33,7 @@ module.exports = class Context
 
   invoke: (methodName, args...) ->
     method = @strainer[methodName]
-    
+
     if method instanceof Function
       method.apply @strainer, args
     else
@@ -162,7 +162,7 @@ module.exports = class Context
         throw new Error "No scopes to find variable in."
 
     variable ?= @lookupAndEvaluate(variableScope, key)
-    
+
     Promise.cast(variable).then (v) => @liquify v
 
   variable: (markup) ->
@@ -204,7 +204,7 @@ module.exports = class Context
               # Some special cases. If the part wasn't in square brackets
               # and no key with the same name was found we interpret
               # following calls as commands and call them on the
-              # current object              
+              # current object
               switch part
                 when "size"
                   @liquify(object.length)
@@ -218,7 +218,7 @@ module.exports = class Context
       # The iterator walks through the parsed path step
       # by step and waits for promises to be fulfilled.
       iterator = (object, index) ->
-        if index < parts.length       
+        if index < parts.length
           mapper(parts[index], object).then (object) -> iterator(object, index + 1)
         else
           Promise.cast(object)
@@ -246,7 +246,7 @@ module.exports = class Context
   liquify: (object) ->
     Promise.cast(object).then (object) =>
       unless object?
-        return object 
+        return object
       else if typeof object.toLiquid is "function"
         object = object.toLiquid()
       else if typeof object is "object"

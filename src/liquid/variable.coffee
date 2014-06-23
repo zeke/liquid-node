@@ -41,7 +41,7 @@ module.exports = class Variable
   render: (context) ->
     return '' unless @name?
 
-    reducer = (output, filter) =>
+    reducer = (output, filter) ->
       filterArgs = filter[1].map (a) -> context.get a
 
       Promise
@@ -58,7 +58,7 @@ module.exports = class Variable
     .then (value) =>
       Promise
       .reduce(@filters, reducer, value)
-      .then (value) =>
+      .then (value) ->
         if value instanceof Liquid.Drop
           if typeof value.toString == "function"
             value.context = context

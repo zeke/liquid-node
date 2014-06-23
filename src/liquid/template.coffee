@@ -18,7 +18,7 @@ module.exports = class Liquid.Template
   parse: (@engine, source = "") ->
     Promise.try =>
       tokens = @_tokenize source
-      
+
       @tags = @engine.tags
       @root = new Liquid.Document @
       @root.parseWithCallbacks(tokens).then => @
@@ -60,7 +60,7 @@ module.exports = class Liquid.Template
       context.registerFilters options.filters...
 
     @root.render(context)
-    .then (chunks) =>
+    .then (chunks) ->
       Liquid.Helpers.toFlatString chunks
     .finally =>
       @errors = context.errors
