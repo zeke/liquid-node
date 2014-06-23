@@ -1,7 +1,8 @@
 # Liquid with Node.js
 
-[![Travis CI Status](https://secure.travis-ci.org/sirlantis/liquid-node.png?branch=master)](https://travis-ci.org/sirlantis/liquid-node)
 [![NPM version](https://badge.fury.io/js/liquid-node.svg)](http://badge.fury.io/js/liquid-node)
+[![Travis CI Status](https://secure.travis-ci.org/sirlantis/liquid-node.png?branch=master)](https://travis-ci.org/sirlantis/liquid-node)
+[![Coverage Status](https://img.shields.io/coveralls/sirlantis/liquid-node.svg)](https://coveralls.io/r/sirlantis/liquid-node?branch=master)
 [![Dependency Status](https://david-dm.org/sirlantis/liquid-node.svg)](https://david-dm.org/sirlantis/liquid-node)
 [![devDependency Status](https://david-dm.org/sirlantis/liquid-node/dev-status.svg)](https://david-dm.org/sirlantis/liquid-node#info=devDependencies)
 
