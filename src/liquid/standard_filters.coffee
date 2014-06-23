@@ -1,3 +1,5 @@
+strftime = require "strftime"
+
 toNumber = (input) ->
   Number input
 
@@ -5,6 +7,10 @@ toObjectString = Object::toString
 
 isString = (input) ->
   toObjectString.call(input) is "[object String]"
+
+# from jQuery
+isNumber = (input) ->
+  !Array.isArray(input) and (input - parseFloat(input)) >= 0
 
 toString = (input) ->
   unless input?
@@ -22,6 +28,19 @@ toArray = (input) ->
     input
   else
     [input]
+
+toDate = (input) ->
+  return unless input?
+  return input if input instanceof Date
+
+  if isNumber input
+    input = parseInt input
+  else
+    input = toString input
+    return if input.length is 0
+    input = Date.parse input
+
+  new Date input if input?
 
 HTML_ESCAPE = (chr) ->
   switch chr
@@ -200,3 +219,13 @@ module.exports =
 
   modulo: (input, operand) ->
     toNumber(input) % toNumber(operand)
+
+  date: (input, format) ->
+    input = toDate input
+
+    unless input?
+      ""
+    else if toString(format).length is 0
+      input.toUTCString()
+    else
+      strftime format, input

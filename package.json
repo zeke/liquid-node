@@ -27,7 +27,8 @@
     "node": ">= 0.4"
   },
   "dependencies": {
-    "bluebird": "^1.2.2"
+    "bluebird": "^1.2.2",
+    "strftime": "^0.8.0"
   },
   "devDependencies": {
     "coffee-script": "~1.7.1",

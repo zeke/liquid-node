@@ -142,3 +142,38 @@ describe "StandardFilters", ->
   describe "remove_first", ->
     it "remove the first occurrence", ->
       expect(@filters.remove_first("a a a a", "a")).to.equal " a a a"
+
+  describe "date", ->
+    parseDate = (s) -> new Date(Date.parse(s))
+
+    it "formats dates", ->
+      expect(@filters.date(parseDate("2006-05-05 10:00:00"), "%B")).to.equal "May"
+      expect(@filters.date(parseDate("2006-06-05 10:00:00"), "%B")).to.equal "June"
+      expect(@filters.date(parseDate("2006-07-05 10:00:00"), "%B")).to.equal "July"
+
+    it "formats date strings", ->
+      expect(@filters.date("2006-05-05 10:00:00", "%B")).to.equal "May"
+      expect(@filters.date("2006-06-05 10:00:00", "%B")).to.equal "June"
+      expect(@filters.date("2006-07-05 10:00:00", "%B")).to.equal "July"
+
+    it "formats without format", ->
+      expect(@filters.date("2006-05-05 10:00:00")).to.equal "Fri, 05 May 2006 08:00:00 GMT"
+      expect(@filters.date("2006-05-05 10:00:00", undefined)).to.equal "Fri, 05 May 2006 08:00:00 GMT"
+      expect(@filters.date("2006-05-05 10:00:00", null)).to.equal "Fri, 05 May 2006 08:00:00 GMT"
+      expect(@filters.date("2006-05-05 10:00:00", "")).to.equal "Fri, 05 May 2006 08:00:00 GMT"
+
+    it "formats with format", ->
+      expect(@filters.date("2006-07-05 10:00:00", "%m/%d/%Y")).to.equal "07/05/2006"
+      expect(@filters.date("Fri Jul 16 01:00:00 2004", "%m/%d/%Y")).to.equal "07/16/2004"
+
+    # TODO: now/today?
+
+    it "ignores non-dates", ->
+      expect(@filters.date(null, "%B")).to.equal ""
+      expect(@filters.date(undefined, "%B")).to.equal ""
+
+    # This differs from the original Ruby implementation since JavaScript
+    # uses epoch milliseconds and not epoch seconds.
+    it "formats numbers", ->
+      expect(@filters.date(1152098955000, "%m/%d/%Y")).to.equal "07/05/2006"
+      expect(@filters.date("1152098955000", "%m/%d/%Y")).to.equal "07/05/2006"
