@@ -2,7 +2,7 @@ toNumber = (input) ->
   Number input
 
 toObjectString = Object::toString
-  
+
 isString = (input) ->
   toObjectString.call(input) is "[object String]"
 
@@ -65,8 +65,8 @@ module.exports =
   sort: (input, property) ->
     if property?
       toArray(input).sort (a, b) ->
-        aValue = a[property] 
-        bValue = b[property] 
+        aValue = a[property]
+        bValue = b[property]
 
         aValue > bValue ? 1 : (aValue == bValue ? 0 : -1)
     else
@@ -74,7 +74,7 @@ module.exports =
 
   map: (input, property) ->
     toArray(input).map (e) ->
-      if property? 
+      if property?
         e[property]
       else
         e
@@ -86,7 +86,7 @@ module.exports =
     toString(input).replace HTML_ESCAPE_ONCE_REGEXP, HTML_ESCAPE
 
   # References:
-  # - http://www.sitepoint.com/forums/showthread.php?218218-Javascript-Regex-making-Dot-match-new-lines 
+  # - http://www.sitepoint.com/forums/showthread.php?218218-Javascript-Regex-making-Dot-match-new-lines
   strip_html: (input) ->
     toString(input)
       .replace(/<script[\s\S]*?<\/script>/g, "")
@@ -101,7 +101,7 @@ module.exports =
     toString(input).replace(/\n/g, "<br />\n")
 
   # To be accurate, we might need to escape special chars in the string
-  # 
+  #
   # References:
   # - http://stackoverflow.com/a/1144788/179691
   replace: (input, string, replacement = "") ->
