@@ -4,10 +4,10 @@
 [![NPM version](https://badge.fury.io/js/liquid-node.svg)](http://badge.fury.io/js/liquid-node)
 [![Dependency Status](https://david-dm.org/sirlantis/liquid-node.svg)](https://david-dm.org/sirlantis/liquid-node)
 
-LiquidNode is a port of the Liquid template engine (originally written in Ruby) to *Node.js*.
-It uses Promises to support non-blocking, asynchronous variables/filters/blocks.
-Most code has been translated from Ruby to CoffeeScript,
-with a few adjustments (casing) to make it feel more *CoffeeScript/JavaScript-ish*.
+> LiquidNode is a port of the original Liquid template engine from *Ruby* to *Node.js*.
+> It uses Promises to support non-blocking/asynchronous variables, filters, and blocks.
+> Most code has been translated from Ruby to CoffeeScript,
+> with a few adjustments (casing) to make it feel more *CoffeeScript/JavaScript-ish*.
 
 ## How *LiquidNode* differs from [*Liquid*](https://github.com/Shopify/liquid/)
 
