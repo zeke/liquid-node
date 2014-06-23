@@ -1,4 +1,4 @@
-# LiquidNode - The Liquid template engine for Node.js
+# Liquid with Node.js
 
 [![Travis CI Status](https://secure.travis-ci.org/sirlantis/liquid-node.png?branch=master)](https://travis-ci.org/sirlantis/liquid-node)
 [![NPM version](https://badge.fury.io/js/liquid-node.svg)](http://badge.fury.io/js/liquid-node)
@@ -9,7 +9,7 @@ It uses Promises to support non-blocking, asynchronous variables/filters/blocks.
 Most code has been translated from Ruby to CoffeeScript,
 with a few adjustments (casing) to make it feel more *CoffeeScript/JavaScript-ish*.
 
-## How LiquidNode differs from [Liquid](https://github.com/Shopify/liquid/)
+## How *LiquidNode* differs from [*Liquid*](https://github.com/Shopify/liquid/)
 
 Besides being written in CoffeeScript (that easily compiles to JavaScript)
 LiquidNode had to solve a problem which Liquid for Ruby didn't have:
@@ -103,7 +103,7 @@ engine.parseAndRender("hi {{name}}", name: "tobi")
     console.log output # >> "hi tobi"
 ```
 
-## Promises with `bluebird`
+## Promises with *Bluebird*
 
 LiquidNode uses the promise implementation of [bluebird](https://github.com/petkaantonov/bluebird)
 which adheres to the the open standard [Promises/A+](http://promisesaplus.com/).
