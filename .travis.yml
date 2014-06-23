@@ -8,7 +8,7 @@ branches:
     - master
 
 script:
-  - export COVERALLS_SERVICE_NAME=travis-pro
+  - export COVERALLS_SERVICE_NAME=travis-ci
   - export COVERALLS_REPO_TOKEN=wEPmOB8VfKBdChU8hQ9tv9LfkeQHRl16D
   - npm test
   - npm run coverage
