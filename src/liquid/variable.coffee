@@ -41,12 +41,8 @@ module.exports = class Variable
   render: (context) ->
     return '' unless @name?
 
-    UNDEFINED = {}
-
-    mapper = (output, filter) =>
+    reducer = (output, filter) =>
       filterArgs = filter[1].map (a) -> context.get a
-
-      output = undefined if output is UNDEFINED
 
       Promise
       .join(output, filterArgs...)
@@ -60,10 +56,8 @@ module.exports = class Variable
     Promise
     .cast(context.get(@name))
     .then (value) =>
-      value = UNDEFINED unless value?
-
       Promise
-      .reduce(@filters, mapper, value)
+      .reduce(@filters, reducer, value)
       .then (value) =>
         if value instanceof Liquid.Drop
           if typeof value.toString == "function"
