@@ -1,5 +1,25 @@
 # LiquidNode Change History
 
+## 1.0.0
+
+- COMPAT: Require Node.js `>=0.10`.
+- COMPAT: Stricter dependencies (i.e. bluebird, strftime) with `~` instead of `^`.
+
+## 0.3.4
+
+- ADDED: Added a `date` filter.
+
+## 0.3.3
+
+- ADDED: Added various standard filters (by **@dotnil**).
+- FIXED: `toString` helper used by filters didn't return a String in all cases.
+- FIXED: `undefined | my_filter:123` would output the string `my_filter:123`.
+- IMPROVEMENT: append and prepend filters don't use Array.join anymore.
+
+## 0.3.2
+
+- FIX: `capture` tag captured output as an arrays and not as a string.
+
 ## 0.3.1
 
 - ADDED: New `engine.parseAndRender(input, args...)` that simplifies `engine.parse(input).then (t) -> t.render(args...)`.
