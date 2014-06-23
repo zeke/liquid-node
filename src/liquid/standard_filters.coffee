@@ -12,7 +12,7 @@ toString = (input) ->
   else if isString input
     input
   else if typeof input.toString is "function"
-    input.toString()
+    toString input.toString()
   else
     toObjectString.call input
 

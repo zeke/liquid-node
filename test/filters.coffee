@@ -2,6 +2,10 @@ describe "StandardFilters", ->
   beforeEach ->
     @filters = Liquid.StandardFilters
 
+  describe "taking string inputs", ->
+    it "handles odd objects", ->
+      expect(@filters.upcase(toString: -> ->)).to.equal "FUNCTION () {}"
+
   for own filterName, filter of Liquid.StandardFilters
     describe filterName, ->
       [null, undefined, true, false, 1, "string", [], {}].forEach (param) =>
