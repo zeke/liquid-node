@@ -1,6 +1,8 @@
 # LiquidNode - The Liquid template engine for Node.js
 
 [![Travis CI Status](https://secure.travis-ci.org/sirlantis/liquid-node.png?branch=master)](https://travis-ci.org/sirlantis/liquid-node)
+[![NPM version](https://badge.fury.io/js/liquid-node.svg)](http://badge.fury.io/js/liquid-node)
+[![Dependency Status](https://david-dm.org/sirlantis/liquid-node.svg)](https://david-dm.org/sirlantis/liquid-node)
 
 LiquidNode is a port of the Liquid template engine (originally written in Ruby) to *Node.js*.
 It uses Promises to support non-blocking, asynchronous variables/filters/blocks.
