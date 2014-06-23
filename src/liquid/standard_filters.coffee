@@ -47,11 +47,11 @@ module.exports =
   upcase: (input) ->
     toString(input).toUpperCase()
 
-  append: (input, other) ->
-    [toString(input), toString(other)].join("")
+  append: (input, suffix) ->
+    toString(input) + toString(suffix)
 
-  prepend: (input, other) ->
-    [toString(other), toString(input)].join("")
+  prepend: (input, prefix) ->
+    toString(prefix) + toString(input)
 
   empty: (input) ->
     return true unless input
