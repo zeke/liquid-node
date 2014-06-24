@@ -29,6 +29,12 @@ toArray = (input) ->
   else
     [input]
 
+toIterable = (input) ->
+  if isString input
+    input
+  else
+    toArray input
+
 toDate = (input) ->
   return unless input?
   return input if input instanceof Date
@@ -179,22 +185,17 @@ module.exports =
   # Example:
   #    {{ product.images | first | to_img }}
   #
-  first: (array) ->
-    if array?.length > 0
-      array[0]
-    else
-      null
+  first: (input) ->
+    toIterable(input)[0]
 
   # Get the last element of the passed in array
   #
   # Example:
   #    {{ product.images | last | to_img }}
   #
-  last: (array) ->
-    if array?.length > 0
-      array[array.length-1]
-    else
-      null
+  last: (input) ->
+    input = toIterable(input)
+    input[input.length - 1]
 
   plus: (input, operand) ->
     toNumber(input) + toNumber(operand)

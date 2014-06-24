@@ -216,10 +216,12 @@ describe "StandardFilters", ->
     it "returns last element", ->
       expect(@filters.last([1,2,3])).to.equal 3
       expect(@filters.last("abc")).to.equal "c"
+      expect(@filters.last(1)).to.equal 1
       expect(@filters.last([])).to.not.exist
 
   describe "first", ->
     it "returns first element", ->
       expect(@filters.first([1,2,3])).to.equal 1
       expect(@filters.first("abc")).to.equal "a"
-      expect(@filters.last([])).to.not.exist
+      expect(@filters.first(1)).to.equal 1
+      expect(@filters.first([])).to.not.exist
