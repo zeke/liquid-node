@@ -72,13 +72,13 @@ module.exports = class Liquid.Template
     return [] if source.length is 0
     tokens = source.split Liquid.TemplateParser
 
-    # removes the rogue empty element at the beginning of the array
-    tokens.shift() if tokens[0]?.length is 0
-
     line = 1
     col = 1
 
-    tokens.map (value) ->
+    tokens
+    .filter (token) ->
+      token.length > 0
+    .map (value) ->
       result = { value, col, line }
 
       lastIndex = value.lastIndexOf "\n"
