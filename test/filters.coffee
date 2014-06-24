@@ -1,3 +1,5 @@
+Promise = require "bluebird"
+
 describe "StandardFilters", ->
   beforeEach ->
     @filters = Liquid.StandardFilters
@@ -9,7 +11,7 @@ describe "StandardFilters", ->
 
   describe "taking array inputs", ->
     it "handles non-arrays", ->
-      expect(@filters.sort(1)).to.deep.equal [1]
+      expect(@filters.sort(1)).to.become [1]
 
   for own filterName, filter of Liquid.StandardFilters
     describe filterName, ->
@@ -63,9 +65,12 @@ describe "StandardFilters", ->
 
   describe "join", ->
     it "joins arrays", ->
-      expect(@filters.join([1, 2])).to.equal "1 2"
-      expect(@filters.join([1, 2], "-")).to.equal "1-2"
-      expect(@filters.join([])).to.equal ""
+      Promise.all [
+        expect(@filters.join([1, 2])).to.become "1 2"
+        expect(@filters.join([1, 2], "-")).to.become "1-2"
+        expect(@filters.join([])).to.become ""
+        expect(@filters.join(new Liquid.Range(1, 5))).to.become "1 2 3 4"
+      ]
 
   describe "split", ->
     it "splits strings", ->
@@ -86,27 +91,42 @@ describe "StandardFilters", ->
 
   describe "sort", ->
     it "sorts elements in array", ->
-      expect(@filters.sort([1, 3, 2])).to.deep.equal([1, 2, 3])
+      expect(@filters.sort([1, 3, 2])).to.become [1, 2, 3]
 
     it "sorts non-primitive elements in array via property", ->
       expect(@filters.sort([
         { name: "sirlantis" },
         { name: "shopify" },
         { name: "dotnil" }
-      ], "name")).to.deep.equal([
+      ], "name")).to.become([
         { name: "dotnil" },
         { name: "shopify" },
         { name: "sirlantis" }
       ])
 
+    it "sorts on future properties", ->
+      input = [
+        { count: Promise.cast(5) }
+        { count: Promise.cast(3) }
+        { count: Promise.cast(7) }
+      ]
+
+      expect(@filters.sort(input, "count")).to.become [
+        input[1],
+        input[0]
+        input[2]
+      ]
+
   describe "map", ->
-    it "maps/collects an array on a given property", ->
-      expect(@filters.map([1, 2, 3])).to.deep.equal([1, 2, 3])
+    it "maps array without property", ->
+      expect(@filters.map([1, 2, 3])).to.deep.equal [1, 2, 3]
+
+    it "maps array with property", ->
       expect(@filters.map([
         { name: "sirlantis" },
         { name: "shopify" },
         { name: "dotnil" }
-      ], "name")).to.deep.equal([ "sirlantis", "shopify", "dotnil" ])
+      ], "name")).to.become [ "sirlantis", "shopify", "dotnil" ]
 
   describe "escape", ->
     it "escapes strings", ->
@@ -235,14 +255,20 @@ describe "StandardFilters", ->
 
   describe "last", ->
     it "returns last element", ->
-      expect(@filters.last([1,2,3])).to.equal 3
-      expect(@filters.last("abc")).to.equal "c"
-      expect(@filters.last(1)).to.equal 1
-      expect(@filters.last([])).to.not.exist
+      Promise.all [
+        expect(@filters.last([1,2,3])).to.become 3
+        expect(@filters.last("abc")).to.become "c"
+        expect(@filters.last(1)).to.become 1
+        expect(@filters.last([])).to.eventually.not.exist
+        expect(@filters.last(new Liquid.Range(0, 1000))).to.become 999
+      ]
 
   describe "first", ->
     it "returns first element", ->
-      expect(@filters.first([1,2,3])).to.equal 1
-      expect(@filters.first("abc")).to.equal "a"
-      expect(@filters.first(1)).to.equal 1
-      expect(@filters.first([])).to.not.exist
+      Promise.all [
+        expect(@filters.first([1,2,3])).to.become 1
+        expect(@filters.first("abc")).to.become "a"
+        expect(@filters.first(1)).to.become 1
+        expect(@filters.first([])).to.eventually.not.exist
+        expect(@filters.first(new Liquid.Range(0, 1000))).to.become 0
+      ]

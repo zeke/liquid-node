@@ -126,9 +126,17 @@ module.exports = class Context
     else if match = /^(\d+)$/.exec(key) # Integer and floats
       Number(match[1])
     else if match = /^\((\S+)\.\.(\S+)\)$/.exec(key) # Ranges
-      lo = Number(resolve(match[1]))
-      hi = Number(resolve(match[2]))
-      throw new Error "Ranges are not supported."
+      lo = @resolve(match[1])
+      hi = @resolve(match[2])
+
+      Promise
+      .join(lo, hi)
+      .spread (lo, hi) ->
+        lo = Number lo
+        hi = Number hi
+        return [] if isNaN(lo) or isNaN(hi)
+        new Liquid.Range(lo, hi + 1)
+
     else if match = /^(\d[\d\.]+)$/.exec(key) # Floats
       Number(match[1])
     else

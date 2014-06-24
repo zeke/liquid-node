@@ -1,5 +1,6 @@
 Liquid = require "../../liquid"
 Promise = require "bluebird"
+Iterable = require "../iterable"
 
 # "For" iterates over an array or collection.
 # Several useful variables are available to you within the loop.
@@ -88,43 +89,44 @@ module.exports = class For extends Liquid.Block
       limit = @attributes.limit
       to    = if limit then Number(limit) + from else null
 
-      segment = @sliceCollection(collection, from, to)
+      @sliceCollection(collection, from, to).then (segment) =>
+        return @renderElse(context) if segment.length == 0
 
-      return @renderElse(context) if segment.length == 0
+        segment.reverse() if @reversed
 
-      segment.reverse() if @reversed
+        length = segment.length
 
-      length = segment.length
+        # Store our progress through the collection for the continue flag
+        context.registers["for"][@registerName] = from + segment.length
 
-      # Store our progress through the collection for the continue flag
-      context.registers["for"][@registerName] = from + segment.length
+        context.stack =>
+          Promise.reduce(segment, (output, item, index) =>
+            context.set @variableName, item
+            context.set "forloop",
+              name    : @registerName
+              length  : length
+              index   : index + 1
+              index0  : index,
+              rindex  : length - index
+              rindex0 : length - index - 1
+              first   : index == 0
+              last    : index == length - 1
 
-      context.stack =>
-        Promise.reduce(segment, (output, item, index) =>
-          context.set @variableName, item
-          context.set "forloop",
-            name    : @registerName
-            length  : length
-            index   : index + 1
-            index0  : index,
-            rindex  : length - index
-            rindex0 : length - index - 1
-            first   : index == 0
-            last    : index == length - 1
-
-          Promise
-          .try =>
-            @renderAll(@forBlock, context)
-          .then (rendered) ->
-            output.push rendered
-            output
-          .catch (e) ->
-            output.push context.handleError e
-            output
-        , [])
+            Promise
+            .try =>
+              @renderAll(@forBlock, context)
+            .then (rendered) ->
+              output.push rendered
+              output
+            .catch (e) ->
+              output.push context.handleError e
+              output
+          , [])
 
   sliceCollection: (collection, from, to) ->
-    if to then collection[from...to] else collection[from...]
+    args = [from]
+    args.push to if to?
+    Iterable.cast(collection).slice args...
 
   renderElse: (context) ->
     if @elseBlock

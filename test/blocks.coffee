@@ -48,6 +48,9 @@ describe "For", ->
   it "loops", ->
     renderTest('abc', '{%for item in array%}{{item}}{%endfor%}', array: ['a', '', 'b', '', 'c'])
 
+  it "loops over ranges", ->
+    renderTest '1234', '{%for item in (1..4)%}{{item}}{%endfor%}'
+
   it "supports else", ->
     renderTest 'none yet', '{% for item in array %}{{ item }}{% else %}none yet{% endfor %}'
 

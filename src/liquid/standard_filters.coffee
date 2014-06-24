@@ -1,4 +1,6 @@
 strftime = require "strftime"
+Promise = require "bluebird"
+Iterable = require "./iterable"
 
 toNumber = (input) ->
   Number input
@@ -22,7 +24,6 @@ toString = (input) ->
   else
     toObjectString.call input
 
-# TODO: iterable -> array
 toArray = (input) ->
   if Array.isArray input
     input
@@ -30,10 +31,7 @@ toArray = (input) ->
     [input]
 
 toIterable = (input) ->
-  if isString input
-    input
-  else
-    toArray input
+  Iterable.cast input
 
 toDate = (input) ->
   return unless input?
@@ -88,21 +86,24 @@ module.exports =
       chr.toUpperCase()
 
   sort: (input, property) ->
-    if property?
-      toArray(input).sort (a, b) ->
-        aValue = a[property]
-        bValue = b[property]
+    return toIterable(input).sort() unless property?
 
-        aValue > bValue ? 1 : (aValue == bValue ? 0 : -1)
-    else
-      toArray(input).sort()
+    toIterable(input)
+    .map (item) ->
+      Promise.cast(item?[property])
+      .then (key) ->
+        { key, item }
+    .then (array) ->
+      array.sort (a, b) ->
+        a.key > b.key ? 1 : (a.key is b.key ? 0 : -1)
+      .map (a) -> a.item
 
   map: (input, property) ->
-    toArray(input).map (e) ->
-      if property?
-        e[property]
-      else
-        e
+    return input unless property?
+
+    toIterable(input)
+    .map (e) ->
+      e?[property]
 
   escape: (input) ->
     toString(input).replace HTML_ESCAPE_REGEXP, HTML_ESCAPE
@@ -170,10 +171,12 @@ module.exports =
   ## TODO!!!
 
   flatten: (input) ->
-    Liquid.Helpers.flatten toArray(input)
+    toIterable(input).toArray().then (a) ->
+      Liquid.Helpers.flatten a
 
   join: (input, glue=' ') ->
-    @flatten(input).join(glue)
+    @flatten(input).then (a) ->
+      a.join(glue)
 
   ## TODO!!!
 
@@ -184,7 +187,7 @@ module.exports =
   #    {{ product.images | first | to_img }}
   #
   first: (input) ->
-    toIterable(input)[0]
+    toIterable(input).first()
 
   # Get the last element of the passed in array
   #
@@ -192,8 +195,7 @@ module.exports =
   #    {{ product.images | last | to_img }}
   #
   last: (input) ->
-    input = toIterable(input)
-    input[input.length - 1]
+    toIterable(input).last()
 
   plus: (input, operand) ->
     toNumber(input) + toNumber(operand)

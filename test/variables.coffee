@@ -67,6 +67,9 @@ describe "Liquid.Variable", ->
   it "renders when empty", ->
     renderTest '', '{{ }}'
 
+  it "allows ranges", ->
+    renderTest '1-2-3', '{{ (1..3) | join:"-" }}'
+
   context "with filter", ->
     it "renders", ->
       MoneyFilter =
