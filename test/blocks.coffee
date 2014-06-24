@@ -72,3 +72,10 @@ describe "Capture", ->
   it "assigns a variable", ->
     renderTest  '.bar.', '{% assign foo = values %}.{{ foo[1] }}.',
       values: ["foo", "bar", "baz"]
+
+describe "Raw", ->
+  it "ignores liquid-tags in body", ->
+    renderTest '{% if value %}{{ value }}{% endif %}',
+      '{% raw %}{% if value %}{{ value }}{% endif %}{% endraw %}',
+      value: true
+
