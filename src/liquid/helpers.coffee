@@ -35,8 +35,3 @@ module.exports =
 
     _scan(string)
     result
-
-  functionName: (f) ->
-    return f.__name__ if f.__name__
-    return f.name if f.name
-    f.toString().match(/\W*function\s+([\w\$]+)\(/)?[1]
