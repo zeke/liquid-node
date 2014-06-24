@@ -41,12 +41,12 @@ module.exports = class Variable
   render: (context) ->
     return '' unless @name?
 
-    reducer = (output, filter) ->
+    reducer = (output, filter) =>
       filterArgs = filter[1].map (a) -> context.get a
 
       Promise
       .join(output, filterArgs...)
-      .spread (output, filterArgs...) ->
+      .spread (output, filterArgs...) =>
         try
           context.invoke filter[0], output, filterArgs...
         catch e
@@ -67,3 +67,5 @@ module.exports = class Variable
             "Liquid.Drop"
         else
           value
+      , (e) ->
+        context.handleError e

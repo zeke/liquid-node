@@ -84,6 +84,9 @@ describe "Liquid.Variable", ->
     it "renders empty string", ->
       renderTest '', '{{ test | append: "" }}', {}
 
+    it "renders on unknown filter", ->
+      renderTest /filter 'doesNotExist' in ' 1 \| doesNotExist ' could not be found/, '{{ 1 | doesNotExist }}', {}, false
+
   # TODO: This doesn't work yet.
   it.skip "prevents 'RangeError: Maximum call stack size exceeded'", ->
     doc = "{{ a"

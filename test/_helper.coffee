@@ -13,12 +13,13 @@ stringify = (v) ->
   catch e
     "Couldn't stringify: #{v}"
 
-global.renderTest = (expected, templateString, assigns) ->
+global.renderTest = (expected, templateString, assigns, rethrowErrors = true) ->
   engine = new Liquid.Engine
 
   parser = engine.parse templateString
 
   renderer = parser.then (template) ->
+    template.rethrowErrors = rethrowErrors
     template.render assigns
 
   test = renderer.then (output) ->

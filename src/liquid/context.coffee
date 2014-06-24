@@ -38,7 +38,7 @@ module.exports = class Context
       method.apply @strainer, args
     else
       available = Object.keys @strainer
-      throw new Error "Unknown method `#{methodName}`, available: [#{available.join(', ')}]"
+      throw new Liquid.FilterNotFound "Unknown filter `#{methodName}`, available: [#{available.join(', ')}]"
 
   push: (newScope = {}) ->
     @scopes.unshift newScope
