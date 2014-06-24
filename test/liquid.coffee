@@ -51,3 +51,18 @@ describe "Liquid", ->
     it "in the middle of a line", ->
       expect(@engine.parse("{{ okay }}\n\n   {% illegal %}")).to.be.rejectedWith Liquid.SyntaxError,
         "Unknown tag 'illegal'\n    at {% illegal %} (undefined:3:4)"
+
+  context "template", ->
+    context ".render()", ->
+      it "fails unless parsed", ->
+        template = new Liquid.Template()
+        expect(template.render()).to.be.rejectedWith Error, /No document root/
+
+      it "fails with illegal context", ->
+        expect(@engine.parse("foo")).to.be.fulfilled.then (template) ->
+          expect(template.render(1)).to.be.rejectedWith Error, /Expected Object or Liquid::Context as parameter/
+
+      it "takes a context and options", ->
+        expect(@engine.parse("foo")).to.be.fulfilled.then (template) ->
+          ctx = new Liquid.Context
+          expect(template.render(ctx, { registers: { x: 3 }, filters: {} })).to.be.fulfilled
