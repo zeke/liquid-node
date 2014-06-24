@@ -23,7 +23,11 @@ global.renderTest = (expected, templateString, assigns) ->
 
   test = renderer.then (output) ->
     expect(output).to.be.a "string"
-    expect(output).to.eq expected
+
+    if expected instanceof RegExp
+      expect(output).to.match expected
+    else
+      expect(output).to.eq expected
 
   Promise.all([
     expect(parser).to.be.fulfilled
