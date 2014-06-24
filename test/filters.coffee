@@ -61,6 +61,17 @@ describe "StandardFilters", ->
       o = toString: -> "aString"
       expect(@filters.upcase(o)).to.equal "ASTRING"
 
+  describe "join", ->
+    it "joins arrays", ->
+      expect(@filters.join([1, 2])).to.equal "1 2"
+      expect(@filters.join([1, 2], "-")).to.equal "1-2"
+      expect(@filters.join([])).to.equal ""
+
+  describe "split", ->
+    it "splits strings", ->
+      expect(@filters.split("1-2-3", "-")).to.deep.equal ["1", "2", "3"]
+      expect(@filters.split("", "-")).to.not.exist
+
   describe "append", ->
     it "appends strings", ->
       expect(@filters.append("Hi", "There")).to.equal "HiThere"
