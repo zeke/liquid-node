@@ -1,5 +1,24 @@
 Promise = require "bluebird"
 
+describe "Blocks (in general)", ->
+  beforeEach -> @engine = new Liquid.Engine
+
+  it "don't accept 'else'", ->
+    expect(@engine.parse("{% capture %}{% else %}{% endcapture %}")).to.be.rejectedWith Liquid.SyntaxError,
+      /tag does not expect else tag/
+
+  it "don't accept plain 'end'", ->
+    expect(@engine.parse("{% capture %}{% end %}")).to.be.rejectedWith Liquid.SyntaxError,
+      /'end' is not a valid delimiter/
+
+  it "fail if not terminated", ->
+    expect(@engine.parse("{% capture %}")).to.be.rejectedWith Liquid.SyntaxError,
+      /tag was never closed/
+
+  it "fail on odd tags", ->
+    expect(@engine.parse("{% %}")).to.be.rejectedWith Liquid.SyntaxError,
+      /was not properly terminated/
+
 describe "Assign", ->
   it "assigns a variable", ->
     renderTest '.foo.', '{% assign foo = values %}.{{ foo[0] }}.',
