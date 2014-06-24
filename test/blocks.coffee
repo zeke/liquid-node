@@ -48,6 +48,9 @@ describe "For", ->
   it "loops", ->
     renderTest('abc', '{%for item in array%}{{item}}{%endfor%}', array: ['a', '', 'b', '', 'c'])
 
+  it "supports else", ->
+    renderTest 'none yet', '{% for item in array %}{{ item }}{% else %}none yet{% endfor %}'
+
   describe "with reverse", ->
     it "does not modify the source array", ->
       array = [ 1, 2, 3 ]
