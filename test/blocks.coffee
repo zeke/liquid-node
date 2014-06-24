@@ -105,6 +105,11 @@ describe "Raw", ->
       '{% raw %}{% if value %}{{ value }}{% endif %}{% endraw %}',
       value: true
 
+describe "Comment", ->
+  it "it swallows it's body", ->
+    renderTest '',
+      '{% comment %}This is a comment{% endcomment %}'
+
 describe "Increment", ->
   it "increments like i++", ->
     renderTest '1', '{% increment i %}', i: 1
