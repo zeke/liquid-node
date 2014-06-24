@@ -79,3 +79,16 @@ describe "Raw", ->
       '{% raw %}{% if value %}{{ value }}{% endif %}{% endraw %}',
       value: true
 
+describe "Increment", ->
+  it "increments like i++", ->
+    renderTest '1', '{% increment i %}', i: 1
+
+  it "interprents non-existing variables as 0", ->
+    renderTest '0', '{% increment i %}'
+
+describe "Decrements", ->
+  it "decrements like --i", ->
+    renderTest '0', '{% decrement i %}', i: 1
+
+  it "interprents non-existing variables as 0", ->
+    renderTest '-1', '{% decrement i %}'
