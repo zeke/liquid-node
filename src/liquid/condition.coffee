@@ -53,20 +53,34 @@ module.exports = class Condition
   # private API
 
   equalVariables: (left, right) ->
-    # TODO: symbol stuff?
-    left == right
+    if typeof left is "function"
+      left right
+    else if typeof right is "function"
+      right left
+    else
+      left is right
+
+  LITERALS =
+    empty: (v) -> not (v?.length > 0) # false for non-collections
+    blank: (v) -> !v or v.toString().length is 0
+
+  resolveVariable: (v, context) ->
+    if v of LITERALS
+      Promise.cast LITERALS[v]
+    else
+      context.get v
 
   interpretCondition: (left, right, op, context) ->
     # If the operator is empty this means that the decision statement is just
     # a single variable. We can just poll this variable from the context and
     # return this as the result.
-    return context.get(left) unless op?
+    return @resolveVariable(left, context) unless op?
 
     operation = Condition.operators[op]
     throw new Error("Unknown operator #{op}") unless operation?
 
-    left = context.get(left)
-    right = context.get(right)
+    left = @resolveVariable left, context
+    right = @resolveVariable right, context
 
     Promise
     .join(left, right)

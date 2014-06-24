@@ -104,8 +104,6 @@ module.exports = class Context
     '': null
     'true': true
     'false': false
-    'empty': (v) -> not (v?.length > 0) # false for non-collections
-    'blank': (v) -> !v or v.toString().length is 0
 
   # Look up variable, either resolve directly after considering the name.
   # We can directly handle Strings, digits, floats and booleans (true,false).
