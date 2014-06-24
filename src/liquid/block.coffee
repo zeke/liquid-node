@@ -57,13 +57,12 @@ module.exports = class Block extends Liquid.Tag
     @ended = true
 
   unknownTag: (tag, params, tokens) ->
-    switch tag
-      when 'else'
-        throw new Liquid.SyntaxError("#{@blockName()} tag does not expect else tag")
-      when 'end'
-        throw new Liquid.SyntaxError("'end' is not a valid delimiter for #{@blockName()} tags. use #{@blockDelimiter()}")
-      else
-        throw new Liquid.SyntaxError("Unknown tag '#{tag}'")
+    if tag is 'else'
+      throw new Liquid.SyntaxError("#{@blockName()} tag does not expect else tag")
+    else if tag is 'end'
+      throw new Liquid.SyntaxError("'end' is not a valid delimiter for #{@blockName()} tags. use #{@blockDelimiter()}")
+    else
+      throw new Liquid.SyntaxError("Unknown tag '#{tag}'")
 
   blockDelimiter: ->
     "end#{@blockName()}"
