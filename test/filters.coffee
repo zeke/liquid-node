@@ -187,3 +187,39 @@ describe "StandardFilters", ->
     it "truncates", ->
       expect(@filters.truncate("Lorem ipsum", 5)).to.equal "Lo..."
       expect(@filters.truncate("Lorem ipsum", 5, "..")).to.equal "Lor.."
+      expect(@filters.truncate("Lorem ipsum", 0, "..")).to.equal ".."
+      expect(@filters.truncate("Lorem ipsum")).to.equal "Lorem ipsum"
+      expect(@filters.truncate("Lorem ipsum dolor sit amet, consetetur sadipscing elitr.")).to.equal "Lorem ipsum dolor sit amet, consetetur sadipsci..."
+
+  describe "minus", ->
+    it "subtracts", ->
+      expect(@filters.minus(2, 1)).to.equal 1
+
+  describe "plus", ->
+    it "adds", ->
+      expect(@filters.plus(2, 1)).to.equal 3
+
+  describe "times", ->
+    it "multiplies", ->
+      expect(@filters.times(2, 3)).to.equal 6
+
+  describe "dividedBy", ->
+    it "divides", ->
+      expect(@filters.dividedBy(8, 2)).to.equal 4
+      expect(@filters.divided_by(8, 2)).to.equal 4
+
+  describe "modulo", ->
+    it "applies modulo", ->
+      expect(@filters.modulo(7, 3)).to.equal 1
+
+  describe "last", ->
+    it "returns last element", ->
+      expect(@filters.last([1,2,3])).to.equal 3
+      expect(@filters.last("abc")).to.equal "c"
+      expect(@filters.last([])).to.not.exist
+
+  describe "first", ->
+    it "returns first element", ->
+      expect(@filters.first([1,2,3])).to.equal 1
+      expect(@filters.first("abc")).to.equal "a"
+      expect(@filters.last([])).to.not.exist

@@ -40,6 +40,22 @@ describe "Liquid.Condition", ->
     context "with operators", ->
       it "that evaluate to true renders", ->
         renderTest 'X','{% if a == 42 %}X{% endif %}', a: 42
+        renderTest 'X','{% if a is 42 %}X{% endif %}', a: 42
+
+        renderTest 'X','{% if a != 42 %}X{% endif %}', a: 41
+        renderTest 'X','{% if a isnt 42 %}X{% endif %}', a: 41
+        renderTest 'X','{% if a <> 42 %}X{% endif %}', a: 41
+
+        renderTest 'X','{% if a > 42 %}X{% endif %}', a: 43
+        renderTest 'X','{% if a >= 42 %}X{% endif %}', a: 43
+        renderTest 'X','{% if a >= 42 %}X{% endif %}', a: 42
+
+        renderTest 'X','{% if a < 42 %}X{% endif %}', a: 41
+        renderTest 'X','{% if a <= 42 %}X{% endif %}', a: 41
+        renderTest 'X','{% if a <= 42 %}X{% endif %}', a: 42
+
+        renderTest 'X','{% if a contains 2 %}X{% endif %}', a: [1,2,3]
+        renderTest 'X','{% if a contains "b" %}X{% endif %}', a: "abc"
 
       it "that evaluate to false doesn't render", ->
         renderTest '','{% if a != 42 %}X{% endif %}', a: 42

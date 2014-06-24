@@ -139,9 +139,6 @@ module.exports =
     input = toString(input)
     truncateString = toString(truncateString)
 
-    return unless input?
-    return unless input.slice
-
     length = toNumber(length)
     l = length - truncateString.length
     l = 0 if l < 0
@@ -150,9 +147,6 @@ module.exports =
 
   truncatewords: (input, words = 15, truncateString = '...') ->
     input = toString(input)
-
-    return unless input?
-    return unless input.slice
 
     wordlist = input.split(" ")
     words = toNumber(words)
