@@ -69,6 +69,14 @@ describe "Liquid.Condition", ->
 
           renderTest 'X','{% if a contains 2 %}X{% endif %}', a: [1,2,3]
           renderTest 'X','{% if a contains "b" %}X{% endif %}', a: "abc"
+
+          renderTest 'X','{% if a == empty %}X{% endif %}'
+          renderTest 'X','{% if empty == a %}X{% endif %}'
+          renderTest 'X','{% if a == empty %}X{% endif %}', a: []
+
+          renderTest 'X','{% if a == blank %}X{% endif %}'
+          renderTest 'X','{% if blank == a %}X{% endif %}'
+          renderTest 'X','{% if a != blank %}X{% endif %}', a: "a"
         ])
 
       it "that evaluate to false doesn't render", ->
