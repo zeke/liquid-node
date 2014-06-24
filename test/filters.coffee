@@ -209,6 +209,9 @@ describe "StandardFilters", ->
       expect(@filters.truncatewords("Lorem ipsum dolor sit", -2)).to.equal "Lorem..."
       expect(@filters.truncatewords("", 1)).to.equal ""
 
+      # default: 15 words
+      expect(@filters.truncatewords("A B C D E F G H I J K L M N O P Q")).to.equal "A B C D E F G H I J K L M N O..."
+
   describe "minus", ->
     it "subtracts", ->
       expect(@filters.minus(2, 1)).to.equal 1
