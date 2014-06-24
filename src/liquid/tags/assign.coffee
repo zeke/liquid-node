@@ -20,4 +20,4 @@ module.exports = class Assign extends Liquid.Tag
 
   render: (context) ->
     context.lastScope()[@to] = context.get(@from)
-    ''
+    super context
