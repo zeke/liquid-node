@@ -51,9 +51,6 @@ module.exports = class Condition
     @attachment = attachment
     attachment
 
-  else: ->
-    false
-
   inspect: ->
     operands = [@left, @operator, @right].join(' ')
     "<Condition [#{operands}], attachment: #{@attachment}>"
