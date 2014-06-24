@@ -177,3 +177,8 @@ describe "StandardFilters", ->
     it "formats numbers", ->
       expect(@filters.date(1152098955000, "%m/%d/%Y")).to.equal "07/05/2006"
       expect(@filters.date("1152098955000", "%m/%d/%Y")).to.equal "07/05/2006"
+
+  describe "truncate", ->
+    it "truncates", ->
+      expect(@filters.truncate("Lorem ipsum", 5)).to.equal "Lo..."
+      expect(@filters.truncate("Lorem ipsum", 5, "..")).to.equal "Lor.."

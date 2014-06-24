@@ -146,7 +146,7 @@ module.exports =
     l = length - truncateString.length
     l = 0 if l < 0
 
-    if input.length > length then input[..l] + truncateString else input
+    if input.length > length then input[...l] + truncateString else input
 
   truncatewords: (input, words = 15, truncateString = '...') ->
     input = toString(input)
