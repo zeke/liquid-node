@@ -60,6 +60,9 @@ describe "Liquid.Condition", ->
       it "that evaluate to false doesn't render", ->
         renderTest '','{% if a != 42 %}X{% endif %}', a: 42
 
+        renderTest '','{% if a contains 2 %}X{% endif %}'
+        renderTest '','{% if a contains 2 %}X{% endif %}', a: { indexOf: null }
+
     context "with awful markup", ->
       it "renders correctly", ->
         awful_markup = "a == 'and' and b == 'or' and c == 'foo and bar' and d == 'bar or baz' and e == 'foo' and foo and bar"
