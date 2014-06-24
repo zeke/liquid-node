@@ -46,14 +46,9 @@ module.exports = class Condition
   and: (@childCondition) ->
     @childRelation = "and"
 
-  # Returns parameter
+  # Returns first agument
   attach: (attachment) ->
     @attachment = attachment
-    attachment
-
-  inspect: ->
-    operands = [@left, @operator, @right].join(' ')
-    "<Condition [#{operands}], attachment: #{@attachment}>"
 
   # private API
 
