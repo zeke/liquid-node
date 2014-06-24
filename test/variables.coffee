@@ -64,6 +64,9 @@ describe "Liquid.Variable", ->
   it "renders", ->
     renderTest 'worked', '{{ test }}', test:'worked'
 
+  it "renders when empty", ->
+    renderTest '', '{{ }}'
+
   context "with filter", ->
     it "renders", ->
       MoneyFilter =
