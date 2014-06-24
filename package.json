@@ -44,7 +44,7 @@
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register -R spec test",
     "compile": "coffee --output lib --map --compile src",
-    "prepublish": "npm test && npm run-script compile",
+    "prepublish": "npm test && npm run compile",
     "precommit": "npm test && npm run lint",
     "coverage": "npm run compile && LIQUID_NODE_COVERAGE=1 mocha --compilers coffee:coffee-script/register -r jscoverage --reporter mocha-lcov-reporter test | coveralls",
     "coverage-report": "npm run compile && LIQUID_NODE_COVERAGE=1 mocha --compilers coffee:coffee-script/register -r jscoverage --covout html test",
