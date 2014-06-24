@@ -7,6 +7,10 @@ describe "StandardFilters", ->
       expect(@filters.upcase(toString: -> ->)).to.equal "FUNCTION () {}"
       expect(@filters.upcase(toString: null)).to.equal "[OBJECT OBJECT]"
 
+  describe "taking array inputs", ->
+    it "handles non-arrays", ->
+      expect(@filters.sort(1)).to.deep.equal [1]
+
   for own filterName, filter of Liquid.StandardFilters
     describe filterName, ->
       [null, undefined, true, false, 1, "string", [], {}].forEach (param) ->
