@@ -19,6 +19,10 @@ describe "Blocks (in general)", ->
     expect(@engine.parse("{% %}")).to.be.rejectedWith Liquid.SyntaxError,
       /was not properly terminated/
 
+  it "fail on illegal variables", ->
+    expect(@engine.parse("{{ 2394 ")).to.be.rejectedWith Liquid.SyntaxError,
+      /Variable .* was not properly terminated/
+
 describe "Assign", ->
   it "assigns a variable", ->
     renderTest '.foo.', '{% assign foo = values %}.{{ foo[0] }}.',

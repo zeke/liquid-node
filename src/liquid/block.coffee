@@ -73,7 +73,7 @@ module.exports = class Block extends Liquid.Tag
   createVariable: (token) ->
     match = Liquid.Block.ContentOfVariable.exec(token.value)?[1]
     return new Liquid.Variable(match) if match
-    throw new Liquid.SyntaxError("Variable '#{token.value}' was not properly terminated with regexp: #{Liquid.Block.VariableEnd.inspect}")
+    throw new Liquid.SyntaxError("Variable '#{token.value}' was not properly terminated with regexp: #{Liquid.VariableEnd.inspect}")
 
   render: (context) ->
     @renderAll @nodelist, context
