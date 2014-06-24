@@ -5,6 +5,7 @@ describe "StandardFilters", ->
   describe "taking string inputs", ->
     it "handles odd objects", ->
       expect(@filters.upcase(toString: -> ->)).to.equal "FUNCTION () {}"
+      expect(@filters.upcase(toString: null)).to.equal "[OBJECT OBJECT]"
 
   for own filterName, filter of Liquid.StandardFilters
     describe filterName, ->
