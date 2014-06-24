@@ -1,6 +1,16 @@
 Promise = require "bluebird"
 
 describe "Liquid.Condition", ->
+
+  it "evaluates without a context", ->
+    c = new Liquid.Condition "1", "==", "1"
+
+    expect(c.evaluate()).to.be.fulfilled.then (v) ->
+      expect(v).to.equal true
+
+  it "fails on illegal operators", ->
+    renderTest("Liquid error: Unknown operator baz", "{% if foo baz bar %}X{% endif %}", {}, false)
+
   context "if", ->
     it "renders on `true` variables", ->
       renderTest('X', '{% if var %}X{% endif %}', var: true)
