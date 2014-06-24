@@ -202,6 +202,13 @@ describe "StandardFilters", ->
       expect(@filters.truncate("Lorem ipsum")).to.equal "Lorem ipsum"
       expect(@filters.truncate("Lorem ipsum dolor sit amet, consetetur sadipscing elitr.")).to.equal "Lorem ipsum dolor sit amet, consetetur sadipsci..."
 
+  describe "truncatewords", ->
+    it "truncates", ->
+      expect(@filters.truncatewords("Lorem ipsum dolor sit", 2)).to.equal "Lorem ipsum..."
+      expect(@filters.truncatewords("Lorem ipsum dolor sit", 2, "..")).to.equal "Lorem ipsum.."
+      expect(@filters.truncatewords("Lorem ipsum dolor sit", -2)).to.equal "Lorem..."
+      expect(@filters.truncatewords("", 1)).to.equal ""
+
   describe "minus", ->
     it "subtracts", ->
       expect(@filters.minus(2, 1)).to.equal 1

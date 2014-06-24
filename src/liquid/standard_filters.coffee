@@ -155,12 +155,10 @@ module.exports =
     input = toString(input)
 
     wordlist = input.split(" ")
-    words = toNumber(words)
-    l = words - 1
-    l = 0 if l < 0
+    words = Math.max(1, toNumber(words))
 
-    if wordlist.length > l
-      wordlist[..l].join(" ") + truncateString
+    if wordlist.length > words
+      wordlist.slice(0, words).join(" ") + truncateString
     else
       input
 
