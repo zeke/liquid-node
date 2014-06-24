@@ -17,8 +17,7 @@ module.exports = class Tag
   parse: ->
 
   name: ->
-    # /^function (\w+)\(/.exec(@constructor.toString())?[1]
-    (@constructor.name ? 'UnknownTag').toLowerCase()
+    @constructor.name.toLowerCase()
 
   render: ->
     ""
