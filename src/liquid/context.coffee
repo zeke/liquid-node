@@ -94,7 +94,7 @@ module.exports = class Context
     @resolve(key)
 
   hasKey: (key) ->
-    !!@resolve(key)
+    !@resolve(key)?
 
   # PRIVATE API
 
