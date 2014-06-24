@@ -41,7 +41,6 @@ module.exports = class Context
       throw new Error "Unknown method `#{methodName}`, available: [#{available.join(', ')}]"
 
   push: (newScope = {}) ->
-    Liquid.log "SCOPE PUSH"
     @scopes.unshift newScope
     throw new Error("Nesting too deep") if @scopes.length > 100
 
@@ -50,7 +49,6 @@ module.exports = class Context
       @scopes[0][k] = v
 
   pop: ->
-    Liquid.log "SCOPE POP"
     throw new Error("ContextError") if @scopes.length <= 1
     @scopes.shift()
 
@@ -90,13 +88,10 @@ module.exports = class Context
   # Only allow String, Numeric, Hash, Array, Proc, Boolean
   # or <tt>Liquid::Drop</tt>
   set: (key, value) ->
-    Liquid.log "[SET] %s %j", key, value
     @scopes[0][key] = value
 
   get: (key) ->
-    value = @resolve(key)
-    Liquid.log "[GET] %s %j", key, value
-    value
+    @resolve(key)
 
   hasKey: (key) ->
     !!@resolve(key)

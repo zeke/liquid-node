@@ -1,12 +1,4 @@
 module.exports = class Liquid
-  @log = ->
-    return unless debug?
-
-    try
-      console.log(arguments...)
-    catch e
-      console.log "Failed to log. %s", e
-
   @FilterSeparator             = /\|/
   @ArgumentSeparator           = /,/
   @FilterArgumentSeparator     = /\:/
