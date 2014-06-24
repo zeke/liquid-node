@@ -18,9 +18,11 @@ module.exports = class Context
   # Template object. see <tt>Template.register_filter</tt>
   # for that
   registerFilters: (filters...) ->
-    filters.forEach (filter) =>
+    for filter in filters
       for own k, v of filter
         @strainer[k] = v if v instanceof Function
+
+    return
 
   handleError: (e) ->
     @errors.push e
@@ -94,7 +96,7 @@ module.exports = class Context
     @resolve(key)
 
   hasKey: (key) ->
-    !@resolve(key)?
+    Promise.cast(@resolve(key)).then (v) -> v?
 
   # PRIVATE API
 
@@ -206,6 +208,7 @@ module.exports = class Context
                 when "last"
                   @liquify(object[object.length-1])
                 else
+                  ### @covignore ###
                   throw new Error "Unknown special accessor: #{part}"
 
       # The iterator walks through the parsed path step

@@ -3,6 +3,9 @@ global.Liquid = Liquid = require("../#{if process.env.LIQUID_NODE_COVERAGE then 
 global.chai = chai = require "chai"
 chai.use require "chai-as-promised"
 
+global.sinon = sinon = require "sinon"
+chai.use require "sinon-chai"
+
 global.expect = expect = chai.expect
 Promise = require "bluebird"
 
