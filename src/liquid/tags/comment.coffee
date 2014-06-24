@@ -1,6 +1,6 @@
-Liquid = require "../../liquid"
+Raw = require "./raw"
 
-module.exports = class Comment extends Liquid.Block
+module.exports = class Comment extends Raw
   render: ->
     ""
 
