@@ -13,16 +13,21 @@ module.exports = class Range
     end = @end
     step = @step
 
-    while current < end
-      return unless f current
-      current += step
+    if step > 0
+      while current < end
+        return true if f current
+        current += step
+    else
+      while current > end
+        return true if f current
+        current += step
 
-    @
+    false
 
   forEach: (f) ->
     @some (e) ->
       f e
-      true
+      false
 
   toArray: ->
     array = []
