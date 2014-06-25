@@ -5,7 +5,7 @@ module.exports = class Context
 
   constructor: (engine, environments = {}, outerScope = {}, registers = {}, rethrowErrors = false) ->
     @environments = Liquid.Helpers.flatten [environments]
-    @scopes = [outerScope or {}]
+    @scopes = [outerScope]
     @registers = registers
     @errors = []
     @rethrowErrors = rethrowErrors
