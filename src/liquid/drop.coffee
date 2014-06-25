@@ -25,25 +25,38 @@
 # catch all
 module.exports = class Drop
 
-  @extend: (impl) ->
-    klass = class Droplet extends Drop
+  context: null
 
   hasKey: (key) ->
     true
 
   invokeDrop: (methodOrKey) ->
-    if methodOrKey and methodOrKey != '' and @[methodOrKey]?
-      if typeof(@[methodOrKey]) == "function"
-        @[methodOrKey].call(@)
-    else
-      @beforeMethod(methodOrKey)
+    if @constructor.isInvokable methodOrKey
+      value = @[methodOrKey]
 
-  # Catch all for the method
+      if typeof value is "function"
+        value.call @
+      else
+        value
+    else
+      @beforeMethod methodOrKey
+
   beforeMethod: (method) ->
-    undefined
+
+  @isInvokable: (method) ->
+    @invokableMethods ?= do =>
+      blacklist = Object.keys(Drop::)
+      whitelist = ["toLiquid"]
+
+      Object.keys(@::).forEach (k) ->
+        whitelist.push k unless blacklist.indexOf(k) >= 0
+
+      whitelist
+
+    @invokableMethods.indexOf(method) >= 0
 
   get: (methodOrKey) ->
-    invokeDrop(methodOrKey)
+    @invokeDrop methodOrKey
 
   toLiquid: ->
     @

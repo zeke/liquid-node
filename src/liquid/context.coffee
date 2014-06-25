@@ -192,7 +192,7 @@ module.exports = class Context
 
           Promise.cast(part).then (part) =>
             isArrayAccess = (Array.isArray(object) and isFinite(part))
-            isObjectAccess = (object instanceof Object and (part of object))
+            isObjectAccess = (object instanceof Object and (object.hasKey?(part) or part of object))
             isSpecialAccess = (
               !bracketMatch and object and
               (Array.isArray(object) or Object::toString.call(object) is "[object String]") and
@@ -218,6 +218,9 @@ module.exports = class Context
                 else
                   ### @covignore ###
                   throw new Error "Unknown special accessor: #{part}"
+            else
+              ### @covignore ###
+              throw new Error "Unknown access: #{part}"
 
       # The iterator walks through the parsed path step
       # by step and waits for promises to be fulfilled.
@@ -231,12 +234,10 @@ module.exports = class Context
         throw new Error "Couldn't walk variable: #{markup}: #{err}"
 
   lookupAndEvaluate: (obj, key) ->
-    value = obj[key]
-
-    if typeof value is 'function'
-      obj[key] = value.call obj, @ # cache result
+    if obj instanceof Liquid.Drop
+      obj.get(key)
     else
-      value
+      obj?[key]
 
   squashInstanceAssignsWithEnvironments: ->
     lastScope = @lastScope()
@@ -255,6 +256,10 @@ module.exports = class Context
         object = object.toLiquid()
       else if typeof object is "object"
         true # throw new Error "Complex object #{JSON.stringify(object)} would leak into template."
+      else if typeof object is "function"
+        object = ""
+      else
+        Object::toString.call object
 
       object.context = @ if object instanceof Liquid.Drop
       object

@@ -1,7 +1,7 @@
 Promise = require "bluebird"
 
 asyncResult = (result) ->
-  -> Promise.cast(result).delay(1)
+  Promise.cast(result).delay(1)
 
 describe "Futures", ->
   it "are supported as simple variables", ->
