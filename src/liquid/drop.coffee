@@ -60,3 +60,6 @@ module.exports = class Drop
 
   toLiquid: ->
     @
+
+  toString: ->
+    "[Liquid.Drop #{@constructor.name}]"

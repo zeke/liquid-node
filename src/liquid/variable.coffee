@@ -60,11 +60,8 @@ module.exports = class Variable
       .reduce(@filters, reducer, value)
       .then (value) ->
         if value instanceof Liquid.Drop
-          if typeof value.toString == "function"
-            value.context = context
-            value.toString()
-          else
-            "Liquid.Drop"
+          value.context = context
+          value.toString()
         else
           value
       , (e) ->

@@ -27,6 +27,9 @@ describe "Drop", ->
     expect(@Droplet.isInvokable("beforeMethod")).to.be.not.ok
     expect(@Droplet.isInvokable("hasKey")).to.be.not.ok
 
+  it "renders", ->
+    renderTest "[Liquid.Drop Droplet]", "{{ drop }}", { @drop }
+
   it "allows method-hooks", ->
     @drop.beforeMethod = (m) ->
       if m is "c"
