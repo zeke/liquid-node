@@ -24,12 +24,6 @@ toString = (input) ->
   else
     toObjectString.call input
 
-toArray = (input) ->
-  if Array.isArray input
-    input
-  else
-    [input]
-
 toIterable = (input) ->
   Iterable.cast input
 
