@@ -1,5 +1,19 @@
 # LiquidNode Change History
 
+## 1.2.0
+
+- API: Some standard filters might now return `Promise`s.
+- ADDED: Ranges `(0..5)`/`(0..foo)` are now supported.
+- FIX: `{% if foo is blank/empty %}` didn't work.
+- FIX: `context.hasKey` didn't work.
+- FIX: Tokenizer now removes all empty tokens.
+- CHANGE: `comment` now inherits from `raw` so that inner tags are ignored.
+- FIX: `isnt` wasn't the opposite of `is`.
+- FIX: `FilterNotFound` was never raised.
+- FIX: Unterminated variables `{{ foo` would raise a useless error.
+- FIX: `truncate` filter had an off-by-1 error.
+- FIX: `raw` tag didn't work.
+
 ## 1.1.0
 
 - COMPAT: Update `bluebird` dependency.
