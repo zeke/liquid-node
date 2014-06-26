@@ -6,7 +6,8 @@ describe "StandardFilters", ->
 
   describe "taking string inputs", ->
     it "handles odd objects", ->
-      expect(@filters.upcase(toString: -> ->)).to.equal "FUNCTION () {}"
+      noop = ->
+      expect(@filters.upcase(toString: -> noop)).to.equal "FUNCTION () {}"
       expect(@filters.upcase(toString: null)).to.equal "[OBJECT OBJECT]"
 
   describe "taking array inputs", ->

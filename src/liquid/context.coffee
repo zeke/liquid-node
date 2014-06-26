@@ -55,7 +55,7 @@ module.exports = class Context
     @scopes.shift()
 
   lastScope: ->
-    @scopes[@scopes.length-1]
+    @scopes[@scopes.length - 1]
 
   # Pushes a new local scope on the stack, pops it at the end of the block
   #
@@ -214,7 +214,7 @@ module.exports = class Context
                 when "first"
                   @liquify(object[0])
                 when "last"
-                  @liquify(object[object.length-1])
+                  @liquify(object[object.length - 1])
                 else
                   ### @covignore ###
                   throw new Error "Unknown special accessor: #{part}"

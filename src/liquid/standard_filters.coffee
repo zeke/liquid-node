@@ -168,7 +168,7 @@ module.exports =
     toIterable(input).toArray().then (a) ->
       Liquid.Helpers.flatten a
 
-  join: (input, glue=' ') ->
+  join: (input, glue = ' ') ->
     @flatten(input).then (a) ->
       a.join(glue)
 
