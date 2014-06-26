@@ -1,10 +1,13 @@
 # Liquid with Node.js
 
-[![NPM version](https://badge.fury.io/js/liquid-node.svg)](http://badge.fury.io/js/liquid-node)
-[![Build Status](https://travis-ci.org/sirlantis/liquid-node.svg?branch=master)](https://travis-ci.org/sirlantis/liquid-node)
-[![Coverage Status](https://img.shields.io/coveralls/sirlantis/liquid-node.svg)](https://coveralls.io/r/sirlantis/liquid-node?branch=master)
-[![Dependency Status](https://david-dm.org/sirlantis/liquid-node.svg)](https://david-dm.org/sirlantis/liquid-node)
-[![devDependency Status](https://david-dm.org/sirlantis/liquid-node/dev-status.svg)](https://david-dm.org/sirlantis/liquid-node#info=devDependencies)
+[![NPM version](https://img.shields.io/npm/v/liquid-node.svg?style=flat)](https://www.npmjs.org/package/liquid-node)
+[![GitHub Issues](http://img.shields.io/github/issues/sirlantis/liquid-node.svg?style=flat)](https://github.com/sirlantis/liquid-node/issues)
+[![Downloads](http://img.shields.io/npm/dm/liquid-node.svg?style=flat)](https://www.npmjs.org/package/liquid-node)
+<br>
+[![Build Status](https://img.shields.io/travis/sirlantis/liquid-node.svg?style=flat)](https://travis-ci.org/sirlantis/liquid-node)
+[![Coverage Status](https://img.shields.io/coveralls/sirlantis/liquid-node.svg?style=flat)](https://coveralls.io/r/sirlantis/liquid-node?branch=master)
+[![Dependency Status](http://img.shields.io/david/sirlantis/liquid-node.svg?style=flat)](https://david-dm.org/sirlantis/liquid-node)
+[![devDependency Status](http://img.shields.io/david/dev/sirlantis/liquid-node.svg?style=flat)](https://david-dm.org/sirlantis/liquid-node#info=devDependencies)
 
 > LiquidNode is a port of the original Liquid template engine from *Ruby* to *Node.js*.
 > It uses Promises to support non-blocking/asynchronous variables, filters, and blocks.
