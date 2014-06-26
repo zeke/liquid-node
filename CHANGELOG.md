@@ -1,5 +1,30 @@
 # LiquidNode Change History
 
+## 2.0.0
+
+LiquidNode always had the `Drop` class but it never worked
+and it was never tested. This has changed with 2.0.0.
+
+In 1.x the template "{{ user.save }}" with the variable configuration
+
+```javascript
+variables =
+  user:
+    save: ->
+      # code
+      return "ok"
+```
+
+would have called `save()` automatically and thus have rendered `ok`.
+This is now prevented. If you want to allow calling of functions
+you have to use a `Drop` now.
+
+```
+class Droplet extends Liquid.Drop
+  save: ->
+    "ok"
+```
+
 ## 1.2.0
 
 - API: Some standard filters might now return `Promise`s.
