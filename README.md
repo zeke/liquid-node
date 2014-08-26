@@ -11,39 +11,16 @@
 
 > LiquidNode is a port of the original Liquid template engine from *Ruby* to *Node.js*.
 > It uses Promises to support non-blocking/asynchronous variables, filters, and blocks.
-> Most code has been translated from Ruby to CoffeeScript,
-> with a few adjustments (casing) to make it feel more *CoffeeScript/JavaScript-ish*.
 
-## How *LiquidNode* differs from [*Liquid*](https://github.com/Shopify/liquid/)
+## Features
 
-Besides being written in CoffeeScript (that easily compiles to JavaScript)
-LiquidNode had to solve a problem which Liquid for Ruby didn't have:
-the power of Node.js lies in its non-blocking nature and its extensive use of callbacks.
-
-This presents a problem when using sequential/synchronous Liquid-expressions like `{{ store.items | count }}`
-which hide one or multiple blocking SQL-queries.
-
-LiquidNode solves that problem by using [Futures and Promises](http://en.wikipedia.org/wiki/Futures_and_promises).
-The programmer just has to return a `Promise` from asynchronous functions -
-the designer won't have to care about it.
-
-LiquidNode uses the fast [bluebird](https://github.com/petkaantonov/bluebird) implementation of [Promises/A+](http://promisesaplus.com/) since `0.3.0`.
-
-## Introduction to the Liquid template engine
-
-Liquid is a template engine which was written with very specific requirements:
-
-* It has to have beautiful and simple markup. Template engines which don't produce good looking markup are no fun to use.
-* It needs to be non `eval`ing and secure. Liquid templates are made so that users can edit them. You don't want to run code on your server which your users wrote.
-* It has to be stateless. Compile and render steps have to be separate so that the expensive parsing and compiling can be done once and later on you can just render it passing in a hash with local variables and objects.
-
-## Why you should use Liquid
-
-* You want to allow your users to edit the appearance of your application but don't want them to run **insecure code on your server**.
-* You want to render templates directly from the database
-* You like smarty (PHP) style template engines
-* You need a template engine which does HTML just as well as emails
-* You don't like the markup of your current templating engine
+- Supports asynchronous variables, tags, functions and filters (helpers)
+- Allows you to add custom tags and filters easily
+- Uses [bluebird](https://github.com/petkaantonov/bluebird) for super-fast [Promises/A+](http://promisesaplus.com/)
+- Supports full liquid syntax
+- Based on original Ruby code
+- Written in CoffeeScript
+- High test coverage
 
 ## What does it look like?
 
@@ -60,101 +37,79 @@ Liquid is a template engine which was written with very specific requirements:
 </ul>
 ```
 
-## How to use Liquid
+## Installation
+
+```
+npm install liquid-node --save
+```
+
+## Usage
 
 Liquid supports a very simple API based around the Liquid.Engine class.
 For standard use you can just pass it the content of a file and call render with an object.
 
-```coffeescript
-Liquid = require "liquid-node"
-engine = new Liquid.Engine
+```javascript
+Liquid = require("liquid-node")
+var engine = new Liquid.Engine
 
-# registration of new tags
-# see https://github.com/sirlantis/liquid-node/tree/master/src/liquid/tags
+engine
+  .parse("hi {{name}}")
+  .then(function(template) { return template.render({ name: "tobi" }); })
+  .then(function(result) { console.log(result) });
+  
+// or
+
+engine
+  .parseAndRender("hi {{name}}", { name: "tobi" })
+  .then(function(result) { console.log(result) });
+```
+
+### Usage with Connect
+
+```javascript
+app.get(function(req, res) {
+  engine
+    .parseAndRender("hi {{name}}", { name: "tobi" })
+    .nodeify(function(err, result) {
+      if (err) {
+        res.end("ERROR: " + err);
+      } else {
+        res.end(result);
+      }
+    });
+});
+```
+
+### Registration of new filters
+
+```javascript
+engine.registerFilters({
+  myFilter: function(input) {
+    return String(input).toUpperCase()
+  }
+});
+```
+
+### Registration of new Tags
+
+Since the code is based on the Ruby implementation we use CoffeeScript's `class`
+which is a little bit difficult to write in pure JavaScript.
+Take a look at the [existing tags](https://github.com/sirlantis/liquid-node/tree/master/src/liquid/tags)
+to see how to implement them.
+
+```coffeescript
+class MyTag extends Liquid.Tag
+  render: ->
+    "that's me!"
+    
 engine.registerTag "MyTag", MyTag
-
-# registration of new filters
-engine.registerFilters
-  myFilter: (input) ->
-    String(input).toUpperCase()
 ```
 
-```coffeescript
-parsePromise = engine.parse "hi {{name}}"
+## How to run the tests
 
-renderPromise = parsePromise
-  .then (template) ->
-    template.render name: "tobi"
-
-renderPromise.then (output) ->
-  console.log output # >> "hi tobi"
 ```
-
-or shorter
-
-```coffeescript
-engine.parse("hi {{name}}")
-  .then (template) ->
-    template.render name: "tobi"
-  .then (output) ->
-    console.log output # >> "hi tobi"
+npm test
 ```
-
-or even shorter
-
-```coffeescript
-engine.parseAndRender("hi {{name}}", name: "tobi")
-  .then (output) ->
-    console.log output # >> "hi tobi"
-```
-
-## Promises with *Bluebird*
-
-LiquidNode uses the promise implementation of [bluebird](https://github.com/petkaantonov/bluebird)
-which adheres to the the open standard [Promises/A+](http://promisesaplus.com/).
-
-```coffeescript
-fs = require "fs"
-Promise  = require "bluebird"
-
-class Server
-  name: ->
-    "Falkor"
-
-  # A deferred can either be resolved (no error) or rejected (error).
-  think: ->
-    Promise.cast(0).delay(1000).then -> 42
-
-  # This is an example of how to wait for a Promise:
-  patientMethod: ->
-    deepThought = @think()
-    deepThought.done (answer) -> console.log "The answer is: %s.", answer
-    deepThought.catch (e) -> console.log "Universe reset: %s.", e
-
-  # If you don't want to check, whether an object is a Promise or not
-  # just use `Promise.cast`. It wrap the object in a Promise if necessary.
-  unsure: (promiseWannabe) ->
-    Promise.cast(promiseWannabe)
-
-  # You can chain Promises using `promise.then().then().then()...`.
-  # A `then` will be called with the resolution of the previous `then`.
-  recipe: ->
-    gotoStore()
-      .then (store) -> store.getEggs()
-      .then (eggs) ->
-        # or nest the when-calls
-        eggs.split().then (yolk) -> bakeWith(yolk)
-      .done (pancake) ->
-        console.log "Pancake is ready!"
-```
-
-## State of development
-
-I'm developing this project alongside a different project.
-I translated a few basic tests from the original Liquid codebase -
-but there are hundreds of them.
-
-So if you find a bug-fix or have some time to translate further tests I'll be happy to pull them in.
 
 ## Similar libraries
 
