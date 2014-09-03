@@ -27,7 +27,7 @@ module.exports = class If extends Liquid.Block
     super
 
   unknownTag: (tag, markup) ->
-    if ["elsif", "else"].indexOf(tag) >= 0
+    if tag in ["elsif", "else"]
       @pushBlock(tag, markup)
     else
       super
