@@ -40,6 +40,7 @@ Liquid.ElseCondition    = require("./liquid/else_condition")
 
 Liquid.Assign           = require("./liquid/tags/assign")
 Liquid.Capture          = require("./liquid/tags/capture")
+Liquid.Case             = require("./liquid/tags/case")
 Liquid.Comment          = require("./liquid/tags/comment")
 Liquid.Decrement        = require("./liquid/tags/decrement")
 Liquid.For              = require("./liquid/tags/for")

@@ -109,3 +109,19 @@ describe "Liquid.Condition", ->
 
     it "supports else", ->
       renderTest(' TRUE ','{% unless true %} FALSE {% else %} TRUE {% endunless %}')
+
+  describe "case", ->
+    it "outputs truthy when branches", ->
+      renderTest ' 1 ', '{% case var %}{% when 1 %} 1 {% endcase %}', var: 1
+
+    it "doesn't output falsy when branches", ->
+      renderTest '', '{% case var %}{% when 1 %} 1 {% endcase %}', var: 2
+
+    it "only prints one branch (duplicate when)", ->
+      renderTest ' 1 ', '{% case var %}{% when 1 %} 1 {% when 1 %} 1 {% endcase %}', var: 1
+
+    it "does support `or`", ->
+      renderTest ' 1/2 ', '{% case var %}{% when 1 or 2 %} 1/2 {% endcase %}', var: 2
+
+    it "does support `else`", ->
+      renderTest ' ELSE ', '{% case var %}{% when 1 %} 1 {% else %} ELSE {% endcase %}', var: 2
