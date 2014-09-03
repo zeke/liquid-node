@@ -61,6 +61,5 @@ module.exports = class Case extends Liquid.Block
       for value in expressions[0]
         if value
           block = new Liquid.Condition(@markup, '==', value)
-          console.log block
           @blocks.push block
           @nodelist = block.attach nodelist
