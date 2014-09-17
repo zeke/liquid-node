@@ -1,3 +1,5 @@
+Liquid = requireLiquid()
+
 describe "Engine", ->
   beforeEach ->
     @filters = Liquid.StandardFilters

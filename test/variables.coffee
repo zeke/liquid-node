@@ -1,3 +1,4 @@
+Liquid = requireLiquid()
 util = require "util"
 
 describe "Liquid.Variable", ->

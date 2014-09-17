@@ -1,3 +1,4 @@
+Liquid = requireLiquid()
 Promise = require "bluebird"
 
 describe "Liquid.Condition", ->

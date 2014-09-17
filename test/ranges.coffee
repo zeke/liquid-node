@@ -1,3 +1,5 @@
+Liquid = requireLiquid()
+
 describe "Range", ->
   it "can be converted to array", ->
     expect(new Liquid.Range(0, 1).toArray()).to.deep.equal [0]

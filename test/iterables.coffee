@@ -1,3 +1,5 @@
+Liquid = requireLiquid()
+
 describe "Iterable", ->
   describe ".cast", ->
     it "doesn't cast iterables", ->

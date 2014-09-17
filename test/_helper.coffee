@@ -1,4 +1,5 @@
-global.Liquid = Liquid = require("../#{if process.env.LIQUID_NODE_COVERAGE then "lib" else "src"}/index")
+global.requireLiquid = -> require("../#{if process.env.LIQUID_NODE_COVERAGE then "lib" else "src"}/index")
+Liquid = requireLiquid()
 
 global.chai = chai = require "chai"
 chai.use require "chai-as-promised"

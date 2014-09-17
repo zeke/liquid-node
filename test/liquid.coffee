@@ -1,3 +1,5 @@
+Liquid = requireLiquid()
+
 describe "Liquid", ->
   beforeEach -> @engine = new Liquid.Engine
 

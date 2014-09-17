@@ -1,3 +1,5 @@
+Liquid = requireLiquid()
+
 describe "Context", ->
   beforeEach -> @ctx = new Liquid.Context()
 

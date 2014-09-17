@@ -1,3 +1,5 @@
+Liquid = requireLiquid()
+
 describe "Drop", ->
   beforeEach ->
     class @Droplet extends Liquid.Drop
