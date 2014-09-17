@@ -1,6 +1,7 @@
 strftime = require "strftime"
 Promise = require "bluebird"
 Iterable = require "./iterable"
+{ flatten } = require "./helpers"
 
 toNumber = (input) ->
   Number input
@@ -166,7 +167,7 @@ module.exports =
 
   flatten: (input) ->
     toIterable(input).toArray().then (a) ->
-      Liquid.Helpers.flatten a
+      flatten a
 
   join: (input, glue = ' ') ->
     @flatten(input).then (a) ->
