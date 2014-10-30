@@ -218,9 +218,6 @@ module.exports = class Context
                 else
                   ### @covignore ###
                   throw new Error "Unknown special accessor: #{part}"
-            else
-              ### @covignore ###
-              throw new Error "Unknown access: #{part}"
 
       # The iterator walks through the parsed path step
       # by step and waits for promises to be fulfilled.
@@ -230,7 +227,7 @@ module.exports = class Context
         else
           Promise.cast(object)
 
-      iterator(object, 0).then null, (err) ->
+      iterator(object, 0).catch (err) ->
         throw new Error "Couldn't walk variable: #{markup}: #{err}"
 
   lookupAndEvaluate: (obj, key) ->
