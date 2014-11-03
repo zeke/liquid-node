@@ -41,28 +41,33 @@ module.exports = class Variable
   render: (context) ->
     return '' unless @name?
 
-    reducer = (output, filter) =>
+    reducer = (input, filter) =>
       filterArgs = filter[1].map (a) -> context.get a
 
       Promise
-      .join(output, filterArgs...)
-      .spread (output, filterArgs...) =>
+      .join(input, filterArgs...)
+      .spread (input, filterArgs...) =>
         try
-          context.invoke filter[0], output, filterArgs...
+          context.invoke filter[0], input, filterArgs...
         catch e
           throw e unless e instanceof Liquid.FilterNotFound
           throw new Liquid.FilterNotFound("Error - filter '#{filter[0]}' in '#{@markup}' could not be found.")
 
-    Promise
-    .cast(context.get(@name))
-    .then (value) =>
-      Promise
-      .reduce(@filters, reducer, value)
-      .then (value) ->
-        if value instanceof Liquid.Drop
-          value.context = context
-          value.toString()
-        else
-          value
-      , (e) ->
-        context.handleError e
+    value = Promise.cast context.get(@name)
+
+    switch @filters.length
+      when 0
+        filtered = value
+      when 1
+        # Special case since Array#reduce doesn't call
+        # reducer if element has only a single element.
+        filtered = reducer value, @filters[0]
+      else
+        filtered = Promise.reduce @filters, reducer, value
+
+    filtered.then (f) ->
+      return f unless f instanceof Liquid.Drop
+      f.context = context
+      f.toString()
+    .catch (e) ->
+      context.handleError e
