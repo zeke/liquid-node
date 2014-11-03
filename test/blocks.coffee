@@ -96,12 +96,10 @@ describe "IfChanged", ->
     renderTest('1', '{%for item in array%}{%ifchanged%}{{item}}{% endifchanged %}{%endfor%}', array: [ 1, 1, 1, 1 ])
 
 describe "Capture", ->
-  it "captures", ->
+  it "captures variables", ->
     renderTest 'X', '{% capture foo %}Foo{% endcapture %}{% if "Foo" == foo %}X{% endif %}'
-
-  it "assigns a variable", ->
-    renderTest  '.bar.', '{% assign foo = values %}.{{ foo[1] }}.',
-      values: ["foo", "bar", "baz"]
+  it "captures and renders", ->
+    renderTest 'Foo', '{% capture foo %}Foo{% endcapture %}{{ foo }}'
 
 describe "Raw", ->
   it "ignores liquid-tags in body", ->

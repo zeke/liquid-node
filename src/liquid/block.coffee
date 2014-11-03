@@ -82,11 +82,18 @@ module.exports = class Block extends Liquid.Tag
     throw new Liquid.SyntaxError("#{@blockName()} tag was never closed") unless @ended
 
   renderAll: (list, context) ->
-    Promise.map list, (token) ->
-      return token unless typeof token?.render is "function"
+    accumulator = []
+
+    Promise.each list, (token) ->
+      unless typeof token?.render is "function"
+        accumulator.push token
+        return
 
       Promise.try ->
         token.render context
-      .catch (e) ->
-        context.handleError e
-    , concurrency: 1
+      .then (s) ->
+        accumulator.push s
+      , (e) ->
+        accumulator.push context.handleError e
+    .then ->
+      accumulator
