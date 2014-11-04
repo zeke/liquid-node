@@ -33,7 +33,7 @@ describe "Assign", ->
     renderTest  '.bar.', '{% assign foo = values %}.{{ foo[1] }}.',
       values: ["foo", "bar", "baz"]
 
-  it.only "applies filters", ->
+  it "applies filters", ->
     renderTest  '.BAR.', '{% assign foo = bar | upcase %}.{{ foo }}.',
       bar: 'bar'
 
