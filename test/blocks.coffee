@@ -33,6 +33,10 @@ describe "Assign", ->
     renderTest  '.bar.', '{% assign foo = values %}.{{ foo[1] }}.',
       values: ["foo", "bar", "baz"]
 
+  it.only "applies filters", ->
+    renderTest  '.BAR.', '{% assign foo = bar | upcase %}.{{ foo }}.',
+      bar: 'bar'
+
 describe "For", ->
   it "loops", ->
     renderTest(' 1  2  3 ', '{%for item in array%} {{item}} {%endfor%}', array: [1, 2, 3])

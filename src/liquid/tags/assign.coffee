@@ -6,18 +6,18 @@ module.exports = class Assign extends Liquid.Tag
   Syntax = ///
       ((?:#{Liquid.VariableSignature.source})+)
       \s*=\s*
-      ((?:#{Liquid.QuotedFragment.source}))
+      (.*)\s*
     ///
 
   constructor: (template, tagName, markup) ->
     if match = Syntax.exec(markup)
       @to = match[1]
-      @from = match[2]
+      @from = new Liquid.Variable match[2]
     else
       throw new Liquid.SyntaxError(SyntaxHelp)
 
     super
 
   render: (context) ->
-    context.lastScope()[@to] = context.get(@from)
+    context.lastScope()[@to] = @from.render(context)
     super context
