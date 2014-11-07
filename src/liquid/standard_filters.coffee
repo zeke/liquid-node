@@ -7,13 +7,20 @@ toNumber = (input) ->
   Number input
 
 toObjectString = Object::toString
+hasOwnProperty = Object::hasOwnProperty
 
 isString = (input) ->
   toObjectString.call(input) is "[object String]"
 
+isArray = (input) ->
+  Array.isArray(input)
+
+isArguments = (input) ->
+  toObjectString(input) is "[object Arguments]"
+
 # from jQuery
 isNumber = (input) ->
-  !Array.isArray(input) and (input - parseFloat(input)) >= 0
+  !isArray(input) and (input - parseFloat(input)) >= 0
 
 toString = (input) ->
   unless input?
@@ -40,6 +47,20 @@ toDate = (input) ->
     input = Date.parse input
 
   new Date input if input?
+
+# from underscore.js
+has = (input, key) ->
+  input? and hasOwnProperty.call(input, key)
+
+# from underscore.js
+isEmpty = (input) ->
+  return true unless input?
+  return input.length is 0 if isArray(input) or isString(input) or isArguments(input)
+  (return false if has key, input) for key of input
+  true
+
+isBlank = (input) ->
+  !(isNumber(input) or input is true) and isEmpty(input)
 
 HTML_ESCAPE = (chr) ->
   switch chr
@@ -72,9 +93,7 @@ module.exports =
     toString(prefix) + toString(input)
 
   empty: (input) ->
-    return true unless input
-    return false unless input.length?
-    true
+    isEmpty(input)
 
   capitalize: (input) ->
     toString(input).replace /^([a-z])/, (m, chr) ->
@@ -221,16 +240,6 @@ module.exports =
       strftime format, input
 
   default: (input, defaultValue) ->
-    if arguments.length < 2
-      defaultValue = ''
-
-    if !input? || input == '' || input == false
-      return defaultValue
-
-    if Array.isArray input && input.length == 0
-      return defaultValue
-
-    if typeof input == 'object' && Object.keys(input).length == 0
-      return defaultValue
-
-    return input
+    defaultValue = '' if arguments.length < 2
+    blank = input?.isBlank?() ? isBlank(input)
+    if blank then defaultValue else input
