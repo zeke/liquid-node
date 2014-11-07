@@ -221,6 +221,9 @@ module.exports =
       strftime format, input
 
   default: (input, defaultValue) ->
+    if arguments.length < 2
+      defaultValue = ''
+
     if !input? || input == '' || input == false
       return defaultValue
 

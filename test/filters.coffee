@@ -276,6 +276,12 @@ describe "StandardFilters", ->
       ]
 
   describe "default", ->
+    it "uses the empty string as the default defaultValue", ->
+      expect(@filters.default(undefined)).to.equal ""
+
+    it "allows using undefined values as defaultValue", ->
+      expect(@filters.default(undefined, undefined)).to.equal undefined
+
     it "uses input for non-empty string", ->
       expect(@filters.default("foo", "bar")).to.equal "foo"
 
