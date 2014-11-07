@@ -274,3 +274,31 @@ describe "StandardFilters", ->
         expect(@filters.first([])).to.eventually.not.exist
         expect(@filters.first(new Liquid.Range(0, 1000))).to.become 0
       ]
+
+  describe "default", ->
+    it "uses input for non-empty string", ->
+      expect(@filters.default("foo", "bar")).to.equal "foo"
+
+    it "uses default for undefined", ->
+      expect(@filters.default(undefined, "bar")).to.equal "bar"
+
+    it "uses default for null", ->
+      expect(@filters.default(null, "bar")).to.equal "bar"
+
+    it "uses default for false", ->
+      expect(@filters.default(false, "bar")).to.equal "bar"
+
+    it "uses default for blank string", ->
+      expect(@filters.default('', "bar")).to.equal "bar"
+
+    it "uses default for empty array", ->
+      expect(@filters.default([], "bar")).to.equal "bar"
+
+    it "uses default for empty object", ->
+      expect(@filters.default({}, "bar")).to.equal "bar"
+
+    it "uses input for number", ->
+      expect(@filters.default(123, "bar")).to.equal 123
+
+    it "uses input for 0", ->
+      expect(@filters.default(0, "bar")).to.equal 0

@@ -219,3 +219,15 @@ module.exports =
       input.toUTCString()
     else
       strftime format, input
+
+  default: (input, defaultValue) ->
+    if !input? || input == '' || input == false
+      return defaultValue
+
+    if Array.isArray input && input.length == 0
+      return defaultValue
+
+    if typeof input == 'object' && Object.keys(input).length == 0
+      return defaultValue
+
+    return input
