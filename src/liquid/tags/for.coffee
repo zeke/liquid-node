@@ -79,9 +79,14 @@ module.exports = class For extends Liquid.Block
     context.registers.for or= {}
 
     Promise.cast(context.get(@collectionName)).then (collection) =>
-      return @renderElse(context) unless collection and collection.forEach
+      if collection?.forEach
+        # pass
+      else if collection instanceof Object
+        collection = ([k, v] for own k, v of collection)
+      else
+        return @renderElse(context)
 
-      from = if @attributes.offset == "continue"
+      from = if @attributes.offset is "continue"
         Number(context.registers["for"][@registerName]) or 0
       else
         Number(@attributes.offset) or 0

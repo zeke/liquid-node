@@ -56,8 +56,18 @@ describe "For", ->
   it "loops over ranges", ->
     renderTest '1234', '{%for item in (1..4)%}{{item}}{%endfor%}'
 
-  it "supports else", ->
-    renderTest 'none yet', '{% for item in array %}{{ item }}{% else %}none yet{% endfor %}'
+  it "loops over hashes/objects", ->
+    renderTest 'A1B2', '{%for item in hash %}{{item[0] | upcase}}{{item[1]}}{%endfor%}', hash: { a: 1, b: 2 }
+
+  describe "else", ->
+    it "renders for undefined collections ", ->
+      renderTest 'none yet', '{% for i in c %}X{% else %}none yet{% endfor %}'
+
+    it "renders for empty collections", ->
+      renderTest 'none yet', '{% for i in c %}X{% else %}none yet{% endfor %}', c: []
+
+    it "renders for empty hashes", ->
+      renderTest 'none yet', '{% for i in c %}X{% else %}none yet{% endfor %}', c: {}
 
   describe "with reverse", ->
     it "does not modify the source array", ->
