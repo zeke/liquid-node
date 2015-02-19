@@ -16,7 +16,7 @@ module.exports = class Liquid.Engine
         isSubclassOf klass.__super__?.constructor, ofKlass
 
     # Assign the passed FileSystem instance or create a new one
-    if isSubclassOf fileSystem, Liquid.LocalFileSystem
+    if fileSystem instanceof Liquid.LocalFileSystem
       @fileSystem = fileSystem
     else
       @fileSystem = new Liquid.LocalFileSystem "./"
