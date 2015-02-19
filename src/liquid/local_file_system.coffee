@@ -3,7 +3,7 @@ Promise = require "bluebird"
 Fs = Promise.promisifyAll require "fs"
 Path = require "path"
 
-module.exports = class Liquid.LocalFileSystem
+module.exports = class Liquid.LocalFileSystem extends Liquid.BlankFileSystem
 
   PathPattern = ///^[^.\/][a-zA-Z0-9-_\/]+$///
 
@@ -11,8 +11,7 @@ module.exports = class Liquid.LocalFileSystem
     @root = root
     @fileExtension = extension
 
-  readTemplateFile: (templatePath, context) ->
-
+  readTemplateFile: (templatePath) ->
     @fullPath(templatePath)
       .then (fullPath) ->
         Fs.readFileAsync(fullPath, 'utf8')

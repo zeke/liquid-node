@@ -26,16 +26,21 @@ describe "Liquid", ->
         expect(template.root.nodelist[0]).to.be.instanceOf Liquid.Block
 
     it "parses includes", ->
+      @engine.registerFileSystem new Liquid.LocalFileSystem "./"
       expect(@engine.parse("{% include 'test/fixtures/include' %}")).to.be.fulfilled.then (template) ->
         expect(template.root.nodelist[0]).to.be.instanceOf Liquid.Include
 
     it "parses includes and renders the template with the correct context", ->
-      expect(@engine.parseAndRender("{% include 'test/fixtures/include' %}", { name: 'Josh'})).to.be.fulfilled.then (output) ->
+      @engine.registerFileSystem new Liquid.LocalFileSystem "./test"
+      expect(@engine.parseAndRender("{% include 'fixtures/include' %}", { name: 'Josh'})).to.be.fulfilled.then (output) ->
         expect(output).to.eq "Josh"
 
     it "parses nested-includes and renders the template with the correct context", ->
-      expect(@engine.parseAndRender("{% include 'test/fixtures/subinclude' %}", { name: 'Josh'})).to.be.fulfilled.then (output) ->
+      @engine.registerFileSystem new Liquid.LocalFileSystem "./test"
+      expect(@engine.parseAndRender("{% include 'fixtures/subinclude' %}", { name: 'Josh'})).to.be.fulfilled.then((output) ->
         expect(output).to.eq "<h1>Josh</h1>"
+      ).catch (err) ->
+        console.log err.message
 
     it "parses complex documents", ->
       expect(@engine.parse("{% for i in c %}foo{% endfor %}{{ var }}")).to.be.fulfilled.then (template) ->
