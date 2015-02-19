@@ -12,7 +12,7 @@ module.exports = class Include extends Liquid.Tag
 
     @filepath = match[1]
     @subTemplate = template.engine.fileSystem.readTemplateFile(@filepath)
-      .then((src) =>
+      .then((src) ->
         template.engine.parse(src)
       )
 

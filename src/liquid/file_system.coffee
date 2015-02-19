@@ -5,7 +5,7 @@ Path = require "path"
 
 module.exports = class Liquid.LocalFileSystem
 
-  PathPattern = ///^[^.\/][a-zA-Z0-9-_\/]+$///;
+  PathPattern = ///^[^.\/][a-zA-Z0-9-_\/]+$///
 
   constructor: (root, extension = "html") ->
     @root = root

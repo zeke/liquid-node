@@ -2,7 +2,7 @@ Liquid = requireLiquid()
 Promise = require "bluebird"
 Path = require "path"
 
-describe.only "Liquid.LocalFileSystem", ->
+describe "Liquid.LocalFileSystem", ->
 
   it "evaluates the correct path", ->
     c = new Liquid.LocalFileSystem './'
