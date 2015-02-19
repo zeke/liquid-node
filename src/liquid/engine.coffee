@@ -2,7 +2,7 @@ Liquid = require "../liquid"
 Promise = require "bluebird"
 
 module.exports = class Liquid.Engine
-  constructor: ->
+  constructor: (fileSystem) ->
     @tags = {}
     @Strainer = (@context) ->
     @registerFilters Liquid.StandardFilters
@@ -14,6 +14,12 @@ module.exports = class Liquid.Engine
         true
       else
         isSubclassOf klass.__super__?.constructor, ofKlass
+
+    # Assign the passed FileSystem instance or create a new one
+    if isSubclassOf fileSystem, Liquid.LocalFileSystem
+      @fileSystem = fileSystem
+    else
+      @fileSystem = new Liquid.LocalFileSystem "./"
 
     for own tagName, tag of Liquid
       continue unless isSubclassOf(tag, Liquid.Tag)
