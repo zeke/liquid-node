@@ -37,10 +37,9 @@ describe "Liquid", ->
 
     it "parses nested-includes and renders the template with the correct context", ->
       @engine.registerFileSystem new Liquid.LocalFileSystem "./test"
-      expect(@engine.parseAndRender("{% include 'fixtures/subinclude' %}", { name: 'Josh'})).to.be.fulfilled.then((output) ->
+      expect(@engine.parseAndRender("{% include 'fixtures/subinclude' %}", { name: 'Josh'})).to.be.fulfilled.then (output) ->
         expect(output).to.eq "<h1>Josh</h1>"
-      ).catch (err) ->
-        console.log err.message
+
 
     it "parses complex documents", ->
       expect(@engine.parse("{% for i in c %}foo{% endfor %}{{ var }}")).to.be.fulfilled.then (template) ->

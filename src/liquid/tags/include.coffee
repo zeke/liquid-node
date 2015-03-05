@@ -11,7 +11,7 @@ module.exports = class Include extends Liquid.Tag
     throw new Liquid.SyntaxError(SyntaxHelp) unless match
 
     @filepath = match[1]
-    @subTemplate = template.engine.fileSystem.readTemplateFile @filepath
+    @subTemplate = template.engine.fileSystem.readTemplateFile(@filepath)
       .then (src) ->
         template.engine.parse(src)
 
