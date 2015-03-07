@@ -37,6 +37,8 @@ Liquid.Template         = require("./liquid/template")
 Liquid.StandardFilters  = require("./liquid/standard_filters")
 Liquid.Condition        = require("./liquid/condition")
 Liquid.ElseCondition    = require("./liquid/else_condition")
+Liquid.BlankFileSystem  = require("./liquid/blank_file_system")
+Liquid.LocalFileSystem  = require("./liquid/local_file_system")
 
 Liquid.Assign           = require("./liquid/tags/assign")
 Liquid.Capture          = require("./liquid/tags/capture")
@@ -49,5 +51,6 @@ Liquid.Ifchanged        = require("./liquid/tags/ifchanged")
 Liquid.Increment        = require("./liquid/tags/increment")
 Liquid.Raw              = require("./liquid/tags/raw")
 Liquid.Unless           = require("./liquid/tags/unless")
+Liquid.Include          = require("./liquid/tags/include")
 
 module.exports = Liquid

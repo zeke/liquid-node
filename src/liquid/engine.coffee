@@ -2,10 +2,13 @@ Liquid = require "../liquid"
 Promise = require "bluebird"
 
 module.exports = class Liquid.Engine
-  constructor: ->
+
+  constructor: () ->
     @tags = {}
     @Strainer = (@context) ->
     @registerFilters Liquid.StandardFilters
+
+    @fileSystem = new Liquid.BlankFileSystem
 
     isSubclassOf = (klass, ofKlass) ->
       unless typeof klass is 'function'
@@ -17,7 +20,8 @@ module.exports = class Liquid.Engine
 
     for own tagName, tag of Liquid
       continue unless isSubclassOf(tag, Liquid.Tag)
-      isBlockOrTagBaseClass = [Liquid.Tag, Liquid.Block].indexOf(tag.constructor) >= 0
+      isBlockOrTagBaseClass = [Liquid.Tag,
+                               Liquid.Block].indexOf(tag.constructor) >= 0
       @registerTag tagName.toLowerCase(), tag unless isBlockOrTagBaseClass
 
   registerTag: (name, tag) ->
@@ -35,3 +39,7 @@ module.exports = class Liquid.Engine
   parseAndRender: (source, args...) ->
     @parse(source).then (template) ->
       template.render(args...)
+
+  registerFileSystem: (fileSystem) ->
+    throw Liquid.ArgumentError "Must be subclass of Liquid.BlankFileSystem" unless fileSystem instanceof Liquid.BlankFileSystem
+    @fileSystem = fileSystem
