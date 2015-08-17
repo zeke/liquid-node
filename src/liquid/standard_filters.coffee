@@ -226,6 +226,9 @@ module.exports =
   divided_by: (input, operand) ->
     @dividedBy(input, operand)
 
+  round: (input, operand) ->
+    toNumber(input).toFixed(operand)
+
   modulo: (input, operand) ->
     toNumber(input) % toNumber(operand)
 
