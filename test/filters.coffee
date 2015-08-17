@@ -251,6 +251,11 @@ describe "StandardFilters", ->
       expect(@filters.dividedBy(8, 2)).to.equal 4
       expect(@filters.divided_by(8, 2)).to.equal 4
 
+  describe "round", ->
+    it "rounds", ->
+      expect(@filters.round(3.1415,2)).to.equal "3.14"
+      expect(@filters.round(3.9999,2)).to.equal "4.00"
+
   describe "modulo", ->
     it "applies modulo", ->
       expect(@filters.modulo(7, 3)).to.equal 1
