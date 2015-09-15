@@ -1,12 +1,12 @@
 Liquid = require "../../liquid"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 module.exports = class IfChanged extends Liquid.Block
   render: (context) ->
     context.stack =>
       rendered = @renderAll @nodelist, context
 
-      Promise.cast(rendered).then (output) ->
+      Promise.resolve(rendered).then (output) ->
         output = Liquid.Helpers.toFlatString output
 
         if output isnt context.registers.ifchanged

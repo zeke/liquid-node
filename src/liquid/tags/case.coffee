@@ -1,5 +1,6 @@
 Liquid = require "../../liquid"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
+PromiseReduce = require "../../promise_reduce"
 
 module.exports = class Case extends Liquid.Block
   SyntaxHelp = "Syntax Error in tag 'case' - Valid syntax: case [expression]"
@@ -31,14 +32,14 @@ module.exports = class Case extends Liquid.Block
 
   render: (context) ->
     context.stack =>
-      Promise.reduce(@blocks, (chosenBlock, block) ->
+      PromiseReduce(@blocks, (chosenBlock, block) ->
         return chosenBlock if chosenBlock? # short-circuit
 
-        Promise
-        .try ->
-          block.evaluate context
-        .then (ok) ->
-          block if ok
+        Promise.resolve()
+          .then ->
+            block.evaluate context
+          .then (ok) ->
+            block if ok
       , null)
       .then (block) =>
         if block?

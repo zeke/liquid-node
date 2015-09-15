@@ -1,5 +1,4 @@
 Liquid = require "../liquid"
-Promise = require "bluebird"
 
 module.exports = class Liquid.Engine
 

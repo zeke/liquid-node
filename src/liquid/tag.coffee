@@ -1,4 +1,4 @@
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 module.exports = class Tag
   constructor: (@template, @tagName, @markup) ->
@@ -10,7 +10,7 @@ module.exports = class Tag
       parse = => @parse(args...)
 
     if @beforeParse
-      Promise.cast(@beforeParse(args...)).then parse
+      Promise.resolve(@beforeParse(args...)).then parse
     else
       parse()
 

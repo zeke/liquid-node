@@ -1,5 +1,6 @@
 Liquid = require("../liquid")
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
+PromiseReduce = require "../promise_reduce"
 
 # Holds variables. Variables are only loaded "just in time"
 # and are not evaluated as part of the render stage
@@ -44,16 +45,15 @@ module.exports = class Variable
     reducer = (input, filter) =>
       filterArgs = filter[1].map (a) -> context.get a
 
-      Promise
-      .join(input, filterArgs...)
-      .spread (input, filterArgs...) =>
+      Promise.all([input, filterArgs...]).then (results) =>
+        input = results.shift()
         try
-          context.invoke filter[0], input, filterArgs...
+          context.invoke filter[0], input, results...
         catch e
           throw e unless e instanceof Liquid.FilterNotFound
           throw new Liquid.FilterNotFound("Error - filter '#{filter[0]}' in '#{@markup}' could not be found.")
 
-    value = Promise.cast context.get(@name)
+    value = Promise.resolve context.get(@name)
 
     switch @filters.length
       when 0
@@ -63,7 +63,7 @@ module.exports = class Variable
         # reducer if element has only a single element.
         filtered = reducer value, @filters[0]
       else
-        filtered = Promise.reduce @filters, reducer, value
+        filtered = PromiseReduce @filters, reducer, value
 
     filtered.then (f) ->
       return f unless f instanceof Liquid.Drop

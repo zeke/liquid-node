@@ -1,5 +1,4 @@
 Liquid = require "../../liquid"
-Promise = require "bluebird"
 
 module.exports = class Assign extends Liquid.Tag
   SyntaxHelp = "Syntax Error in 'assign' - Valid syntax: assign [var] = [source]"

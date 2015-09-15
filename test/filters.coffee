@@ -1,5 +1,5 @@
 Liquid = requireLiquid()
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 describe "StandardFilters", ->
   beforeEach ->
@@ -108,9 +108,9 @@ describe "StandardFilters", ->
 
     it "sorts on future properties", ->
       input = [
-        { count: Promise.cast(5) }
-        { count: Promise.cast(3) }
-        { count: Promise.cast(7) }
+        { count: Promise.resolve(5) }
+        { count: Promise.resolve(3) }
+        { count: Promise.resolve(7) }
       ]
 
       expect(@filters.sort(input, "count")).to.become [

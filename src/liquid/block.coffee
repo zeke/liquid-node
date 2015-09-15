@@ -1,6 +1,6 @@
 Liquid = require("../liquid")
 util = require "util"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 module.exports = class Block extends Liquid.Tag
   @IsTag             = ///^#{Liquid.TagStart.source}///
@@ -19,10 +19,10 @@ module.exports = class Block extends Liquid.Tag
     @assertMissingDelimitation()
 
   parse: (tokens) ->
-    return Promise.cast() if tokens.length is 0 or @ended
+    return Promise.resolve() if tokens.length is 0 or @ended
     token = tokens.shift()
 
-    Promise.try =>
+    Promise.resolve().then =>
       @parseToken token, tokens
     .catch (e) ->
       e.message = "#{e.message}\n    at #{token.value} (#{token.filename}:#{token.line}:#{token.col})"
@@ -89,7 +89,7 @@ module.exports = class Block extends Liquid.Tag
         accumulator.push token
         return
 
-      Promise.try ->
+      Promise.resolve().then ->
         token.render context
       .then (s) ->
         accumulator.push s

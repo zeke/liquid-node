@@ -1,5 +1,5 @@
 Liquid = require "../liquid"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 module.exports = class Liquid.Template
 
@@ -16,7 +16,7 @@ module.exports = class Liquid.Template
   # Parse source code.
   # Returns self for easy chaining
   parse: (@engine, source = "") ->
-    Promise.try =>
+    Promise.resolve().then =>
       tokens = @_tokenize source
 
       @tags = @engine.tags
@@ -37,7 +37,7 @@ module.exports = class Liquid.Template
   #    liquid more with its host application
   #
   render: (args...) ->
-    Promise.try => @_render args...
+    Promise.resolve().then => @_render args...
 
   _render: (assigns, options) ->
     throw new Error "No document root. Did you parse the document yet?" unless @root?

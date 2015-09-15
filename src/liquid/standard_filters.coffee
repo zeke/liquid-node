@@ -1,5 +1,5 @@
 strftime = require "strftime"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 Iterable = require "./iterable"
 { flatten } = require "./helpers"
 
@@ -104,7 +104,7 @@ module.exports =
 
     toIterable(input)
     .map (item) ->
-      Promise.cast(item?[property])
+      Promise.resolve(item?[property])
       .then (key) ->
         { key, item }
     .then (array) ->
