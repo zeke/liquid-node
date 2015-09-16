@@ -1,5 +1,9 @@
 # LiquidNode Change History
 
+## 2.6.0
+
+- Migrated to `native-or-bluebird` so that native Promises are used (thanks @dotnil).
+
 ## 2.5.0
 
 - Added `include` with a file-system layer (very big thanks to @imjoshholloway).
