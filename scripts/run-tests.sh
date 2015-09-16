@@ -2,10 +2,6 @@
 
 set -euo pipefail
 
-if [ "${PROMISES}" = "bluebird" ]; then
-  npm install bluebird
-fi
-
 npm test
 
 if [ "${TRAVIS_NODE_VERSION}" = "4" ] && [ "${PROMISES}" = "native" ]; then

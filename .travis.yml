@@ -20,6 +20,7 @@ branches:
   only:
     - master
 
+before_install: ./scripts/before-install.sh
 script: ./scripts/run-tests.sh
 
 sudo: false
