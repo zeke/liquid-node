@@ -1,5 +1,42 @@
 # LiquidNode Change History
 
+## 2.5.0
+
+- Added `include` with a file-system layer (very big thanks to @imjoshholloway).
+
+## 2.4.0
+
+- For-Loops now can iterate over objects (like Ruby's Hashes).
+
+## 2.3.0
+
+- Added `default` filter (thanks to @sebastianseilund).
+
+## 2.2.0
+
+- Make `assign` support filters.
+
+## 2.1.4
+
+- Performance optimizations.
+- Make `bluebird` a `peerDependency`.
+
+## 2.1.3
+
+- Fixed undefined properties causing exceptions (thanks to @vmira).
+
+## 2.1.2
+
+- Fixed `undefined variable Liquid` in join-helper.
+
+## 2.1.1
+
+- Removed a stray `console.log` in the library.
+
+## 2.1.0
+
+- Added support for `case` tag.
+
 ## 2.0.0
 
 LiquidNode always had the `Drop` class but it never worked
