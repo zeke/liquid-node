@@ -1,8 +1,10 @@
 Liquid = requireLiquid()
 Promise = require "native-or-bluebird"
 
-asyncResult = (result) ->
-  Promise.resolve(result).delay(1)
+asyncResult = (result, delay = 1) ->
+  new Promise (resolve) ->
+    onTimeout = -> resolve(result)
+    setTimeout onTimeout, delay
 
 describe "Futures", ->
   it "are supported as simple variables", ->
