@@ -59,11 +59,19 @@ module.exports = class Liquid.Template
     if options?.filters
       context.registerFilters options.filters...
 
+    copyErrors = (actualResult) =>
+      @errors = context.errors
+      actualResult
+
     @root.render(context)
     .then (chunks) ->
       Liquid.Helpers.toFlatString chunks
-    .finally =>
+    .then (result) ->
       @errors = context.errors
+      result
+    , (error) ->
+      @errors = context.errors
+      throw error
 
   # Uses the <tt>Liquid::TemplateParser</tt> regexp to tokenize
   # the passed source
