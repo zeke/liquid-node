@@ -82,7 +82,5 @@ module.exports = class Condition
     left = @resolveVariable left, context
     right = @resolveVariable right, context
 
-    Promise
-    .join(left, right)
-    .spread (left, right) =>
+    Promise.all([left, right]).then ([left, right]) =>
       operation @, left, right

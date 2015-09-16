@@ -129,9 +129,7 @@ module.exports = class Context
       lo = @resolve(match[1])
       hi = @resolve(match[2])
 
-      Promise
-      .join(lo, hi)
-      .spread (lo, hi) ->
+      Promise.all([lo, hi]).then ([lo, hi]) ->
         lo = Number lo
         hi = Number hi
         return [] if isNaN(lo) or isNaN(hi)
