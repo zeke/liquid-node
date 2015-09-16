@@ -1,5 +1,6 @@
 Liquid = require "../../liquid"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
+PromiseReduce = require "../../promise_reduce"
 
 module.exports = class If extends Liquid.Block
   SyntaxHelp = "Syntax Error in tag 'if' - Valid syntax: if [expression]"
@@ -34,15 +35,15 @@ module.exports = class If extends Liquid.Block
 
   render: (context) ->
     context.stack =>
-      Promise.reduce(@blocks, (chosenBlock, block) ->
+      PromiseReduce(@blocks, (chosenBlock, block) ->
         return chosenBlock if chosenBlock? # short-circuit
 
-        Promise
-        .try ->
-          block.evaluate context
-        .then (ok) ->
-          ok = !ok if block.negate
-          block if ok
+        Promise.resolve()
+          .then () ->
+            block.evaluate context
+          .then (ok) ->
+            ok = !ok if block.negate
+            block if ok
       , null)
       .then (block) =>
         if block?

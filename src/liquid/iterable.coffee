@@ -1,5 +1,5 @@
 Range = require "./range"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 isString = (input) ->
   Object::toString.call(input) is "[object String]"
@@ -41,7 +41,7 @@ class IterableForArray extends Iterable
   constructor: (@array) ->
 
   slice: ->
-    Promise.cast @array.slice arguments...
+    Promise.resolve @array.slice arguments...
 
   last: ->
-    Promise.cast @array[@array.length - 1]
+    Promise.resolve @array[@array.length - 1]

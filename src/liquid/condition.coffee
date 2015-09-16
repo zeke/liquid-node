@@ -1,5 +1,5 @@
 Liquid = require "../liquid"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 # Container for liquid nodes which conveniently wraps decision making logic
 #
@@ -32,10 +32,10 @@ module.exports = class Condition
 
     switch @childRelation
       when "or"
-        Promise.cast(result).then (result) =>
+        Promise.resolve(result).then (result) =>
           result or @childCondition.evaluate(context)
       when "and"
-        Promise.cast(result).then (result) =>
+        Promise.resolve(result).then (result) =>
           result and @childCondition.evaluate(context)
       else
         result
@@ -66,7 +66,7 @@ module.exports = class Condition
 
   resolveVariable: (v, context) ->
     if v of LITERALS
-      Promise.cast LITERALS[v]
+      Promise.resolve LITERALS[v]
     else
       context.get v
 

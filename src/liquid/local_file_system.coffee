@@ -1,7 +1,16 @@
 Liquid = require "../liquid"
-Promise = require "bluebird"
-Fs = Promise.promisifyAll require "fs"
+Promise = require "native-or-bluebird"
+Fs = require "fs"
 Path = require "path"
+
+readFile = (fpath, encoding) ->
+  new Promise (resolve, reject) ->
+    Fs.readFile fpath, encoding, (err, content) ->
+      if (err)
+        reject err
+      else
+        resolve content
+
 
 module.exports = class Liquid.LocalFileSystem extends Liquid.BlankFileSystem
 
@@ -14,12 +23,11 @@ module.exports = class Liquid.LocalFileSystem extends Liquid.BlankFileSystem
   readTemplateFile: (templatePath) ->
     @fullPath(templatePath)
       .then (fullPath) ->
-        Fs.readFileAsync(fullPath, 'utf8')
-          .catch (err) ->
-            throw new Liquid.FileSystemError "Error loading template: #{err.message}"
-
+        readFile(fullPath, 'utf8').catch (err) ->
+          throw new Liquid.FileSystemError "Error loading template: #{err.message}"
 
   fullPath: (templatePath) ->
-    new Promise (resolve, reject) =>
-      reject new Liquid.ArgumentError "Illegal template name '#{templatePath}'" unless PathPattern.test templatePath
-      resolve Path.resolve(Path.join(@root, Path.dirname(templatePath), Path.basename(templatePath + ".#{@fileExtension}")))
+    if PathPattern.test templatePath
+      Promise.resolve Path.resolve(Path.join(@root, templatePath + ".#{@fileExtension}"))
+    else
+      Promise.reject new Liquid.ArgumentError "Illegal template name '#{templatePath}'"

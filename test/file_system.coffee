@@ -1,5 +1,4 @@
 Liquid = requireLiquid()
-Promise = require "bluebird"
 Path = require "path"
 
 describe "Liquid.FileSystem", ->

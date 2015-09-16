@@ -1,8 +1,8 @@
 Liquid = requireLiquid()
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 asyncResult = (result) ->
-  Promise.cast(result).delay(1)
+  Promise.resolve(result).delay(1)
 
 describe "Futures", ->
   it "are supported as simple variables", ->

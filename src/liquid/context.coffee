@@ -1,5 +1,5 @@
 Liquid = require "../liquid"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 module.exports = class Context
 
@@ -96,7 +96,7 @@ module.exports = class Context
     @resolve(key)
 
   hasKey: (key) ->
-    Promise.cast(@resolve(key)).then (v) -> v?
+    Promise.resolve(@resolve(key)).then (v) -> v?
 
   # PRIVATE API
 
@@ -166,10 +166,10 @@ module.exports = class Context
 
     variable ?= @lookupAndEvaluate(variableScope, key)
 
-    Promise.cast(variable).then (v) => @liquify v
+    Promise.resolve(variable).then (v) => @liquify v
 
   variable: (markup) ->
-    Promise.try =>
+    Promise.resolve().then =>
       parts = Liquid.Helpers.scan(markup, Liquid.VariableParser)
       squareBracketed = /^\[(.*)\]$/
 
@@ -182,15 +182,15 @@ module.exports = class Context
       return object if parts.length is 0
 
       mapper = (part, object) =>
-        return Promise.cast(object) unless object?
+        return Promise.resolve(object) unless object?
 
-        Promise.cast(object).then(@liquify.bind(@)).then (object) =>
+        Promise.resolve(object).then(@liquify.bind(@)).then (object) =>
           return object unless object?
 
           bracketMatch = squareBracketed.exec part
           part = @resolve(bracketMatch[1]) if bracketMatch
 
-          Promise.cast(part).then (part) =>
+          Promise.resolve(part).then (part) =>
             isArrayAccess = (Array.isArray(object) and isFinite(part))
             isObjectAccess = (object instanceof Object and (object.hasKey?(part) or part of object))
             isSpecialAccess = (
@@ -202,7 +202,7 @@ module.exports = class Context
             if isArrayAccess or isObjectAccess
               # If object is a hash- or array-like object we look for the
               # presence of the key and if its available we return it
-              Promise.cast(@lookupAndEvaluate(object, part)).then(@liquify.bind(@))
+              Promise.resolve(@lookupAndEvaluate(object, part)).then(@liquify.bind(@))
             else if isSpecialAccess
               # Some special cases. If the part wasn't in square brackets
               # and no key with the same name was found we interpret
@@ -225,7 +225,7 @@ module.exports = class Context
         if index < parts.length
           mapper(parts[index], object).then (object) -> iterator(object, index + 1)
         else
-          Promise.cast(object)
+          Promise.resolve(object)
 
       iterator(object, 0).catch (err) ->
         throw new Error "Couldn't walk variable: #{markup}: #{err}"
@@ -246,7 +246,7 @@ module.exports = class Context
           true
 
   liquify: (object) ->
-    Promise.cast(object).then (object) =>
+    Promise.resolve(object).then (object) =>
       unless object?
         return object
       else if typeof object.toLiquid is "function"

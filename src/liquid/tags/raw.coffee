@@ -1,10 +1,10 @@
 Liquid = require "../../liquid"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
 
 module.exports = class Raw extends Liquid.Block
   parse: (tokens) ->
-    Promise.try =>
-      return Promise.cast() if tokens.length is 0 or @ended
+    Promise.resolve().then =>
+      return Promise.resolve() if tokens.length is 0 or @ended
 
       token = tokens.shift()
       match = Liquid.Block.FullToken.exec token.value

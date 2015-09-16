@@ -1,5 +1,4 @@
 Liquid = requireLiquid()
-Promise = require "bluebird"
 
 describe "Blocks (in general)", ->
   beforeEach -> @engine = new Liquid.Engine

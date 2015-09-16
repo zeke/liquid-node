@@ -1,5 +1,6 @@
 Liquid = require "../../liquid"
-Promise = require "bluebird"
+Promise = require "native-or-bluebird"
+PromiseReduce = require "../../promise_reduce"
 Iterable = require "../iterable"
 
 # "For" iterates over an array or collection.
@@ -78,7 +79,7 @@ module.exports = class For extends Liquid.Block
   render: (context) ->
     context.registers.for or= {}
 
-    Promise.cast(context.get(@collectionName)).then (collection) =>
+    Promise.resolve(context.get(@collectionName)).then (collection) =>
       if collection?.forEach
         # pass
       else if collection instanceof Object
@@ -105,7 +106,7 @@ module.exports = class For extends Liquid.Block
         context.registers["for"][@registerName] = from + segment.length
 
         context.stack =>
-          Promise.reduce(segment, (output, item, index) =>
+          PromiseReduce(segment, (output, item, index) =>
             context.set @variableName, item
             context.set "forloop",
               name    : @registerName
@@ -117,15 +118,15 @@ module.exports = class For extends Liquid.Block
               first   : index == 0
               last    : index == length - 1
 
-            Promise
-            .try =>
-              @renderAll(@forBlock, context)
-            .then (rendered) ->
-              output.push rendered
-              output
-            .catch (e) ->
-              output.push context.handleError e
-              output
+            Promise.resolve()
+              .then () =>
+                @renderAll(@forBlock, context)
+              .then (rendered) ->
+                output.push rendered
+                output
+              .catch (e) ->
+                output.push context.handleError e
+                output
           , [])
 
   sliceCollection: (collection, from, to) ->
