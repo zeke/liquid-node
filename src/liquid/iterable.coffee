@@ -9,7 +9,9 @@ module.exports = class Iterable
     @slice(0, 1).then (a) -> a[0]
 
   map: ->
-    @toArray().map arguments...
+    args = arguments
+    @toArray().then (a) ->
+      Promise.all a.map args...
 
   sort: ->
     args = arguments
