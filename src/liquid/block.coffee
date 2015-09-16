@@ -2,6 +2,18 @@ Liquid = require("../liquid")
 util = require "util"
 Promise = require "native-or-bluebird"
 
+# Iterates over promises sequentially
+Promise_each = (promises, cb) ->
+  iterator = (index) ->
+    return Promise.resolve() if index >= promises.length
+    promise = promises[index]
+
+    Promise.resolve(promise).then (value) ->
+      Promise.resolve(cb(value)).then ->
+        iterator(index + 1)
+
+  iterator(0)
+
 module.exports = class Block extends Liquid.Tag
   @IsTag             = ///^#{Liquid.TagStart.source}///
   @IsVariable        = ///^#{Liquid.VariableStart.source}///
@@ -84,7 +96,7 @@ module.exports = class Block extends Liquid.Tag
   renderAll: (list, context) ->
     accumulator = []
 
-    Promise.each list, (token) ->
+    Promise_each list, (token) ->
       unless typeof token?.render is "function"
         accumulator.push token
         return
