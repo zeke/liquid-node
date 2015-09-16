@@ -1,22 +1,31 @@
 language: node_js
 
 node_js:
-  - "4"
-  - "3"
-  - "2"
-  - "1"
-  - "0.12"
+  - 4
+  - 3
+  - 2
+  - 1
+  - 0.12
   - "0.10"
+
+env:
+  global:
+    - export COVERALLS_SERVICE_NAME=travis-ci
+    - export COVERALLS_REPO_TOKEN=wEPmOB8VfKBdChU8hQ9tv9LfkeQHRl16D
+  matrix:
+    - PROMISES=native
+    - PROMISES=bluebird
 
 branches:
   only:
     - master
 
-script:
-  - export COVERALLS_SERVICE_NAME=travis-ci
-  - export COVERALLS_REPO_TOKEN=wEPmOB8VfKBdChU8hQ9tv9LfkeQHRl16D
-  - npm test
-  - npm run coverage
-  - npm run lint
+script: ./scripts/run-tests.sh
 
 sudo: false
+
+matrix:
+  fast_finish: true
+  exclude:
+    - node_js: "0.10"
+      env: PROMISES=native
