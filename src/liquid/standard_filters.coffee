@@ -38,6 +38,7 @@ toIterable = (input) ->
 toDate = (input) ->
   return unless input?
   return input if input instanceof Date
+  return new Date() if input is 'now'
 
   if isNumber input
     input = parseInt input

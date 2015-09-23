@@ -1,5 +1,6 @@
 Liquid = requireLiquid()
 Promise = require "native-or-bluebird"
+strftime = require "strftime"
 
 describe "StandardFilters", ->
   beforeEach ->
@@ -204,7 +205,8 @@ describe "StandardFilters", ->
       expect(@filters.date("2006-07-05 10:00:00", "%m/%d/%Y")).to.equal "07/05/2006"
       expect(@filters.date("Fri Jul 16 01:00:00 2004", "%m/%d/%Y")).to.equal "07/16/2004"
 
-    # TODO: now/today?
+    it "formats the date when passing in now", ->
+      expect(@filters.date("now", "%m/%d/%Y")).to.equal strftime("%m/%d/%Y")
 
     it "ignores non-dates", ->
       expect(@filters.date(null, "%B")).to.equal ""
