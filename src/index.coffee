@@ -17,8 +17,8 @@ Liquid.Error = customError "Error"
 
 # Errors
 [ "ArgumentError", "ContextError", "FilterNotFound",
-  "FilterNotFound", "FileSystemError", "StandardError",
-  "StackLevelError", "SyntaxError"
+  "FileSystemError", "StandardError", "StackLevelError",
+  "SyntaxError"
 ].forEach (className) ->
 
   Liquid[className] = customError("Liquid.#{className}", Liquid.Error)
