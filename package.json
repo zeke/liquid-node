@@ -9,6 +9,9 @@
     {
       "name": "Henry Bergius",
       "email": "henri.bergius@iki.fi"
+    },
+    {
+      "name":"Chen Yicai"
     }
   ],
   "description": "Node.js port of Tobias Lütke's Liquid template engine.",
