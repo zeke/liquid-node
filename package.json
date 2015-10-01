@@ -11,11 +11,11 @@
       "email": "henri.bergius@iki.fi"
     },
     {
-      "name":"Chen Yicai"
+      "name": "Chen Yicai"
     }
   ],
   "description": "Node.js port of Tobias Lütke's Liquid template engine.",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "license": "MIT",
   "homepage": "https://github.com/sirlantis/liquid-node",
   "bugs": "https://github.com/sirlantis/liquid-node/issues",
