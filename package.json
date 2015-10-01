@@ -20,6 +20,11 @@
     "type": "git",
     "url": "git://github.com/sirlantis/liquid-node.git"
   },
+  "keywords": [
+    "liquid",
+    "template",
+    "jinja"
+  ],
   "directories": {
     "lib": "./lib"
   },
