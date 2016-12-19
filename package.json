@@ -40,14 +40,14 @@
     "strftime": "~0.9.2"
   },
   "devDependencies": {
-    "chai": "~3.2.0",
-    "chai-as-promised": "~5.1.0",
+    "chai": "~3.5.0",
+    "chai-as-promised": "~5.3.0",
     "coffee-script": "~1.10.0",
     "coffeelint": "^1.11.1",
     "coveralls": "^2.11.4",
     "jscoverage": "^0.6.0",
-    "mocha": "~2.3.2",
-    "mocha-lcov-reporter": "0.0.2",
+    "mocha": "~2.5.3",
+    "mocha-lcov-reporter": "1.2.0",
     "sinon": "^1.16.1",
     "sinon-chai": "^2.8.0"
   },
