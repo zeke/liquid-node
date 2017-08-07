@@ -15,7 +15,7 @@
     }
   ],
   "description": "Node.js port of Tobias Lütke's Liquid template engine.",
-  "version": "2.6.1",
+  "version": "3.0.0",
   "license": "MIT",
   "homepage": "https://github.com/sirlantis/liquid-node",
   "bugs": "https://github.com/sirlantis/liquid-node/issues",
