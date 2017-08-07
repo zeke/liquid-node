@@ -1,5 +1,4 @@
 Liquid = require("../liquid")
-Promise = require "native-or-bluebird"
 PromiseReduce = require "../promise_reduce"
 
 # Holds variables. Variables are only loaded "just in time"

@@ -33,10 +33,9 @@
   },
   "main": "./lib/index.js",
   "engines": {
-    "node": ">= 0.10"
+    "node": ">=4"
   },
   "dependencies": {
-    "native-or-bluebird": "~1.2.0",
     "strftime": "~0.9.2"
   },
   "devDependencies": {

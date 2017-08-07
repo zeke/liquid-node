@@ -1,5 +1,3 @@
-Promise = require "native-or-bluebird"
-
 module.exports = class Tag
   constructor: (@template, @tagName, @markup) ->
 

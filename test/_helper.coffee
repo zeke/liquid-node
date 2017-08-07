@@ -8,7 +8,6 @@ global.sinon = sinon = require "sinon"
 chai.use require "sinon-chai"
 
 global.expect = expect = chai.expect
-Promise = require "native-or-bluebird"
 
 # JSON.stringify fails for circular dependencies
 stringify = (v) ->

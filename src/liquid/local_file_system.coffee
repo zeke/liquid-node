@@ -1,5 +1,4 @@
 Liquid = require "../liquid"
-Promise = require "native-or-bluebird"
 Fs = require "fs"
 Path = require "path"
 

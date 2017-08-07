@@ -1,5 +1,3 @@
-Promise = require "native-or-bluebird"
-
 
 reduce = (collection, reducer, value) ->
   Promise.all(collection).then (items) ->

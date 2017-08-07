@@ -1,5 +1,4 @@
 Liquid = requireLiquid()
-Promise = require "native-or-bluebird"
 
 asyncResult = (result, delay = 1) ->
   new Promise (resolve) ->
