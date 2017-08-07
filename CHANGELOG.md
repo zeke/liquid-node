@@ -1,5 +1,10 @@
 # LiquidNode Change History
 
+## 3.0.0
+
+- Migrated from native-or-bluebird to any-promise (thanks @swashcap).
+- Upgraded developer dependencies (thanks @RobLoach).
+
 ## 2.6.0
 
 - Migrated to `native-or-bluebird` so that native Promises are used (thanks @dotnil).
