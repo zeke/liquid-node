@@ -18,7 +18,6 @@
 - Allows you to add custom tags and filters easily
 - Supports full liquid syntax
 - Based on original Ruby code
-- Written in CoffeeScript
 - High test coverage
 
 ## What does it look like?
