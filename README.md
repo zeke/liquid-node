@@ -1,7 +1,7 @@
 # 🚧 Deprecation Notice 🚧
 
 The `liquid-node` package has been renamed to 
-[`liquid`](https://ghub.io/liquid), starting at version 4.0.0. 
+[`liquid`](https://npmjs.com/liquid), starting at version 4.0.0. 
 
 To upgrade:
 
